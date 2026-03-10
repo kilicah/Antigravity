@@ -1,0 +1,215 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id              Int                     @id @default(autoincrement())
+  name            String
+  address         String?
+  district        String?
+  city            String?
+  country         String?
+  zipCode         String?
+  taxOffice       String?
+  taxNo           String?
+  registrationNo  String?
+  phone           String?
+  isSeller        Boolean                 @default(false)
+  isBuyer         Boolean                 @default(false)
+  sellerOrders    Order[]                 @relation("SellerContracts")
+  buyerOrders     Order[]                 @relation("BuyerContracts")
+  shipToOrders    Order[]                 @relation("ShipToContracts")
+  bankInfos       BankInfo[]
+  representatives CompanyRepresentative[]
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+}
+
+model CompanyRepresentative {
+  id        Int      @id @default(autoincrement())
+  companyId Int
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name      String
+  title     String? // Görevi
+  phone     String?
+  email     String?
+  sellerOrders Order[] @relation("SellerReps")
+  buyerOrders  Order[] @relation("BuyerReps")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BankInfo {
+  id        Int      @id @default(autoincrement())
+  companyId Int
+  currency  String // EUR, USD, GBP, TRY
+  bankName  String
+  branch    String?
+  accountNo String?
+  iban      String?
+  swift     String?
+  isDefault Boolean  @default(false)
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Brand {
+  id              Int                  @id @default(autoincrement())
+  name            String
+  address         String?
+  district        String?
+  city            String?
+  country         String?
+  zipCode         String?
+  taxOffice       String?
+  taxNo           String?
+  registrationNo  String?
+  phone           String?
+  representatives BrandRepresentative[]
+  orders          Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BrandRepresentative {
+  id        Int      @id @default(autoincrement())
+  brandId   Int
+  brand     Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  name      String
+  title     String? // Görevi
+  phone     String?
+  email     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Deprecated: left here to preserve existing logic if needed in older code, but unused now
+model Representative {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String?
+  phone        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Order {
+  id           Int      @id @default(autoincrement())
+  contractNo   String   @unique
+  contractDate DateTime
+  buyerPoNo    String?
+
+  // Relationships
+  sellerId    Int
+  buyerId     Int
+  shipToId    Int?
+  brandId     Int?
+  sellerRepId Int?
+  buyerRepId  Int?
+
+  seller    Company         @relation("SellerContracts", fields: [sellerId], references: [id])
+  buyer     Company         @relation("BuyerContracts", fields: [buyerId], references: [id])
+  shipTo    Company?        @relation("ShipToContracts", fields: [shipToId], references: [id])
+  brand     Brand?          @relation(fields: [brandId], references: [id])
+  sellerRep CompanyRepresentative? @relation("SellerReps", fields: [sellerRepId], references: [id])
+  buyerRep  CompanyRepresentative? @relation("BuyerReps", fields: [buyerRepId], references: [id])
+
+  // Terms
+  deliveryTerms String?
+  paymentTerms  String?
+  transporter   String?
+  currency      String  @default("USD")
+  language      String  @default("TR")
+
+  // Tolerans
+  tolerance    String?
+
+  // Specific Requests
+  specialDocsRequest   Boolean @default(false)
+  specialDocsDetail    String?
+  specialLoadingRequest Boolean @default(false)
+  specialLoadingDetail  String?
+
+  // Extensions
+  items           OrderItem[]
+  productionOrder ProductionOrder?
+  invoice         Invoice?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id             Int     @id @default(autoincrement())
+  orderId        Int
+  buyerModelName String?
+  qualityName    String?
+  qualityCode    String?
+  colorCode      String?
+  composition    String?
+  weight         String?
+  width          String?
+  quantity       Float
+  unitPrice      Float
+  totalAmount    Float
+  deliveryDate   String?
+
+  // Specific Item Requests
+  bsRequest      Boolean @default(false)
+  ldRequest      Boolean @default(false)
+  ldDetail       String?
+  ppsRequest     Boolean @default(false)
+  topsRequest    Boolean @default(false)
+  srlRequest     Boolean @default(false)
+  srlDetail      String?
+  fdRequest      Boolean @default(false)
+  pshpRequest    Boolean @default(false)
+  susRequest     Boolean @default(false)
+  ltRequest      Boolean @default(false)
+  ltDetail       String?
+
+  // Production Tracking per Item
+  bdd            DateTime?
+  bq             Float?
+  exmd           DateTime?
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model ProductionOrder {
+  id                     Int       @id @default(autoincrement())
+  orderId                Int       @unique
+  exMillDate             DateTime?
+  bulkDate               DateTime?
+  packingInstructions    String?
+  fabricDirection        String?
+  partialShipmentAllowed Boolean   @default(false)
+
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Invoice {
+  id          Int       @id @default(autoincrement())
+  orderId     Int       @unique
+  invoiceNo   String?
+  invoiceDate DateTime?
+  grossKg     Float?
+  netKg       Float?
+  rollCount   Int?
+  sackCount   Int?
+
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
