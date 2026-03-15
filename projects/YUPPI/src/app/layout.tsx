@@ -11,7 +11,7 @@ export default function RootLayout({
       <body className="antialiased bg-slate-50 text-slate-900">
         <div className="flex min-h-screen">
           <Sidebar />
-          <main className="flex-1 p-8 overflow-auto">
+          <main className="flex-1 p-8 overflow-auto print:p-0 print:overflow-visible">
             {children}
           </main>
         </div>

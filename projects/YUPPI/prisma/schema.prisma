@@ -109,6 +109,7 @@ model Order {
   paymentTerms        String?
   transporter         String?
   currency            String  @default("USD")
+  unit                String  @default("MT") // MT, YD, KG, ADET
   language            String  @default("TR")
 
   // Tolerans
@@ -185,16 +186,10 @@ model OrderItem {
   ltAd  DateTime?
   bsad  DateTime?
 
-  // Invoice & Packing List tracking
-  pl               Boolean   @default(false)
-  fabricType       String?
-  apQuantity       Float?
-  totalGrossWeight Float?
-  totalNetWeight   Float?
-  numberOfSacks    Int?
-  numberOfRolls    Int?
-  invoiceNo        String?
-  invoiceDate      DateTime?
+  // Post-Production fields
+  pl         Boolean @default(false)
+  fabricType String?
+  apQuantity Float?
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }

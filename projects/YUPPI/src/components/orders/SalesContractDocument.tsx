@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import PrintButton from "@/components/PrintButton";
 
 export default function SalesContractDocument({
@@ -11,6 +12,8 @@ export default function SalesContractDocument({
   displayPaymentTerms,
   displayDeliveryTerms
 }: any) {
+  const [isSigned, setIsSigned] = useState(false);
+
   const totalQuantity = order.items.reduce((sum: number, item: any) => sum + item.quantity, 0);
   const totalAmount = order.items.reduce((sum: number, item: any) => sum + item.totalAmount, 0);
 
@@ -108,8 +111,40 @@ export default function SalesContractDocument({
   };
 
   return (
-    <div className="w-full overflow-x-auto print:overflow-visible">
-      <div className="mx-auto w-[1002px] min-w-[1002px] max-w-[1002px] space-y-4 print:space-y-0 text-black">
+    <div className="w-full">
+      {/* BAŞLIK & BUTONLAR */}
+      <div className="flex justify-between items-center print:hidden mb-6">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-800">Sözleşme Detayı</h1>
+          <p className="text-slate-500">Ref: {order.contractNo}</p>
+        </div>
+        <div className="space-x-4 flex items-center">
+          <Link 
+            href="/orders" 
+            className="px-4 py-2 text-slate-600 bg-white border border-slate-300 rounded hover:bg-slate-50 transition-colors"
+          >
+            &larr; Geri Dön
+          </Link>
+          <Link 
+            href={`/orders/${order.id}/edit`}
+            className="px-4 py-2 text-blue-600 bg-white border border-blue-300 shadow-sm rounded hover:bg-blue-50 transition-colors flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+            Düzenle
+          </Link>
+          <button 
+            onClick={() => setIsSigned(!isSigned)}
+            className="px-4 py-2 text-white bg-emerald-600 shadow-sm rounded hover:bg-emerald-700 transition-colors flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+            {isSigned ? 'İmzayı Kaldır' : 'Sözleşmeyi İmzala'}
+          </button>
+          <PrintButton />
+        </div>
+      </div>
+
+      <div className="w-full overflow-x-auto print:overflow-visible">
+        <div className="mx-auto w-[1002px] min-w-[1002px] max-w-[1002px] space-y-4 print:space-y-0 text-black">
         {/* YAZDIRILABİLİR SÖZLEŞME ALANI (SAYFA 1) */}
         <div className="bg-white print:p-0 font-['Arial_Narrow',_'Arial_Narrow_MT',_Arial,_sans-serif] text-[11px] relative overflow-hidden min-h-[1050px] print:min-h-0 print:h-auto">
         {renderHeader()}
@@ -221,21 +256,31 @@ export default function SalesContractDocument({
         </div>
 
         {/* Signature Block */}
-        <div className="flex text-[11px] text-center border-x border-b border-slate-800">
-          <div className="w-1/2 p-3 border-r border-slate-800 min-h-[140px] flex flex-col justify-between items-start relative overflow-hidden">
-            <div className="font-bold text-[11px] underline text-left mb-6">{isEng ? 'AUTHORIZED SIGNATURE & STAMP' : 'YETKİLİ İMZA VE KAŞE'}</div>
-            {/* Stamp simulation */}
-            <div className="text-[11px] text-left leading-tight text-slate-800 font-normal max-w-[80%] absolute bottom-4 left-4 border-b border-blue-900/20 pb-1 italic z-10">
-              <div className="font-bold text-[11px] mb-1">{order.seller.name}</div>
-              {order.seller.address && <div>{order.seller.address}</div>}
-              {order.seller.phone && <div>T: {order.seller.phone}  E: info@usktekstil.com.tr</div>}
-              <div>{order.seller.taxOffice} VD. {order.seller.taxNo} / Sicil No: {order.seller.registrationNo}</div>
-            </div>
+        <div className="flex justify-between items-start text-[11px] text-center border-x border-b border-slate-800 relative h-[90px] min-h-[90px] max-h-[90px] overflow-hidden bg-white">
+          <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+            <img 
+              src={order.seller.name.toUpperCase().includes('MENSUCAT') ? '/images/Defenni-M-Mavi.jpg' : '/images/Defenni-T-Mavi.jpg'} 
+              onError={(e) => { e.currentTarget.src = order.seller.name.toUpperCase().includes('MENSUCAT') ? '/images/Defenni-M.jpg' : '/images/Defenni-T.jpg'; }}
+              alt="Company Stamp" 
+              className="w-[210px] h-[90px] object-contain" 
+            />
           </div>
-          <div className="w-1/2 p-3 min-h-[140px] flex flex-col justify-between items-end">
+          <div className="w-1/2 p-3 flex flex-col items-start relative z-10">
+            <div className="font-bold text-[11px] underline text-left">{isEng ? 'AUTHORIZED SIGNATURE & STAMP' : 'YETKİLİ İMZA VE KAŞE'}</div>
+            {isSigned && (
+              <img 
+                src={order.seller.name.toUpperCase().includes('MENSUCAT') ? '/images/USKM-Kase-Imza.png' : '/images/USKT-Kase-Imza.png'} 
+                alt="Seller Signature" 
+                className="w-[170px] h-[60px] object-contain mt-1" 
+              />
+            )}
+          </div>
+          <div className="w-1/2 p-3 flex flex-col items-end relative z-10">
             <div className="font-bold text-[11px] underline text-right">{isEng ? 'AUTHORIZED SIGNATURE & STAMP' : 'YETKİLİ İMZA VE KAŞE'}</div>
           </div>
         </div>
+        {/* Padding to restore 140px total layout height to keep perfect A4 print alignment */}
+        <div className="h-[50px] w-full bg-transparent"></div>
 
       </div>
 
@@ -248,16 +293,34 @@ export default function SalesContractDocument({
           ))}
         </div>
         {/* Signature Block Page 2 */}
-        <div className="flex text-[11px] text-center border-x border-b border-slate-800 bg-white shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.1)] relative z-10 w-full mt-[-10px]">
-          <div className="w-1/2 p-3 border-r border-slate-800 min-h-[140px] flex flex-col justify-between items-start">
-            <div className="font-bold text-[11px] underline text-left mb-6">{isEng ? 'AUTHORIZED SIGNATURE & STAMP' : 'YETKİLİ İMZA VE KAŞE'}</div>
+        <div className="flex justify-between items-start text-[11px] text-center border-x border-b border-slate-800 bg-white shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.1)] relative z-10 w-full mt-[-10px] h-[90px] min-h-[90px] max-h-[90px] overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+            <img 
+              src={order.seller.name.toUpperCase().includes('MENSUCAT') ? '/images/Defenni-M-Mavi.jpg' : '/images/Defenni-T-Mavi.jpg'} 
+              onError={(e) => { e.currentTarget.src = order.seller.name.toUpperCase().includes('MENSUCAT') ? '/images/Defenni-M.jpg' : '/images/Defenni-T.jpg'; }}
+              alt="Company Stamp" 
+              className="w-[210px] h-[90px] object-contain" 
+            />
           </div>
-          <div className="w-1/2 p-3 min-h-[140px] flex flex-col justify-between items-end">
+          <div className="w-1/2 p-3 flex flex-col items-start relative z-10">
+            <div className="font-bold text-[11px] underline text-left">{isEng ? 'AUTHORIZED SIGNATURE & STAMP' : 'YETKİLİ İMZA VE KAŞE'}</div>
+            {isSigned && (
+              <img 
+                src={order.seller.name.toUpperCase().includes('MENSUCAT') ? '/images/USKM-Kase-Imza.png' : '/images/USKT-Kase-Imza.png'} 
+                alt="Seller Signature" 
+                className="w-[170px] h-[60px] object-contain mt-1" 
+              />
+            )}
+          </div>
+          <div className="w-1/2 p-3 flex flex-col items-end relative z-10">
             <div className="font-bold text-[11px] underline text-right">{isEng ? 'AUTHORIZED SIGNATURE & STAMP' : 'YETKİLİ İMZA VE KAŞE'}</div>
           </div>
         </div>
+        {/* Padding to restore 140px total layout height to keep perfect A4 print alignment */}
+        <div className="h-[50px] w-full bg-transparent"></div>
       </div>
       </div>
+    </div>
     </div>
   );
 }

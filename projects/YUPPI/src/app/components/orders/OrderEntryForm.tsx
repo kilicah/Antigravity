@@ -29,6 +29,7 @@ export default function OrderEntryForm({ companies, representatives, initialData
     paymentTerms: "",
     transporter: "",
     currency: "USD",
+    unit: "MT",
     language: "TR",
     tolerance: "5%",
     labDipRequest: false,
@@ -77,7 +78,8 @@ export default function OrderEntryForm({ companies, representatives, initialData
         fabricDirection: initialData.productionOrder?.fabricDirection || "",
         partialShipmentAllowed: initialData.productionOrder?.partialShipmentAllowed || false,
         
-        // Invoice
+        // Order and Invoice
+        unit: initialData.unit || "MT",
         invoiceNo: initialData.invoice?.invoiceNo || "",
         grossKg: initialData.invoice?.grossKg?.toString() || "",
         netKg: initialData.invoice?.netKg?.toString() || "",
@@ -123,13 +125,7 @@ export default function OrderEntryForm({ companies, representatives, initialData
     bsad: "",
     pl: false,
     fabricType: "",
-    apQuantity: "",
-    totalGrossWeight: "",
-    totalNetWeight: "",
-    numberOfSacks: "",
-    numberOfRolls: "",
-    invoiceNo: "",
-    invoiceDate: ""
+    apQuantity: ""
   }]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -183,7 +179,10 @@ export default function OrderEntryForm({ companies, representatives, initialData
       ltDetail: "",
       bdd: "",
       bq: "",
-      exmd: ""
+      exmd: "",
+      pl: false,
+      fabricType: "",
+      apQuantity: ""
     }]);
   };
 
@@ -440,6 +439,23 @@ export default function OrderEntryForm({ companies, representatives, initialData
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 pt-6 border-t border-slate-200 mt-6">
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-slate-700 mb-1">
+              BİRİM <span className="text-red-500">*</span>
+            </label>
+            <select 
+              name="unit" 
+              required
+              value={formData.unit}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm bg-white"
+            >
+              <option value="MT">MT</option>
+              <option value="YD">YARDA</option>
+              <option value="KG">KG</option>
+              <option value="AD">ADET</option>
+            </select>
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-slate-700 mb-1">
               {formData.language === 'ENG' ? 'CURRENCY' : 'PARA BIRIMI'} <span className="text-red-500">*</span>
             </label>
             <select 
@@ -455,7 +471,7 @@ export default function OrderEntryForm({ companies, representatives, initialData
               <option value="TRY">TRY (₺)</option>
             </select>
           </div>
-          <div className="md:col-span-8">
+          <div className="md:col-span-6">
             <label className="block text-sm font-medium text-slate-700 mb-1">
               {formData.language === 'ENG' ? 'PAYMENT TERMS' : 'ODEME SEKLI'}
             </label>
@@ -686,99 +702,81 @@ export default function OrderEntryForm({ companies, representatives, initialData
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm border-collapse">
-            <thead>
-              <tr className="bg-slate-100 text-slate-600 border-b border-t border-slate-200 text-xs">
-                <th className="p-2 font-medium border-l border-slate-200 flex-1">
+            <thead className="bg-slate-800 text-slate-200 text-xs whitespace-nowrap sticky top-0 z-10 shadow-md">
+              <tr className="border-b-2 border-slate-900">
+                <th className="p-3 font-semibold w-28 min-w-[100px] text-left border-r border-slate-700">
                   {formData.language === 'ENG' ? 'BUYER MODEL' : 'ALICI MODEL'}
                 </th>
-                <th className="p-2 font-medium w-32">
+                <th className="p-3 font-semibold w-32 border-r border-slate-700 text-left">
                   {formData.language === 'ENG' ? 'QUALITY NAME' : 'KALITE ISMI'}
                 </th>
-                <th className="p-2 font-medium w-32">
+                <th className="p-3 font-semibold w-32 border-r border-slate-700 text-left">
                   {formData.language === 'ENG' ? 'QUALITY CODE' : 'KALITE KODU'}
                 </th>
-                <th className="p-2 font-medium w-32">
+                <th className="p-3 font-semibold w-32 border-r border-slate-700 text-left">
                   {formData.language === 'ENG' ? 'COLOR CODE' : 'RENK KODU'}
                 </th>
-                <th className="p-2 font-medium w-32">
+                <th className="p-3 font-semibold w-32 border-r border-slate-700 text-left">
                   {formData.language === 'ENG' ? 'COMPOSITION' : 'KOMPOZISYON'}
                 </th>
-                <th className="p-2 font-medium w-[90px]">
+                <th className="p-3 font-semibold w-[90px] border-r border-slate-700 text-left">
                   {formData.language === 'ENG' ? 'WEIGHT' : 'GRAMAJ'}
                 </th>
-                <th className="p-2 font-medium w-[90px]">
+                <th className="p-3 font-semibold w-[90px] border-r border-slate-700 text-left">
                   {formData.language === 'ENG' ? 'WIDTH' : 'EN'}
                 </th>
-                <th className="p-2 font-medium w-40 border-l border-slate-200">
+                <th className="p-3 font-semibold w-40 border-r border-slate-700 text-center">
                   {formData.language === 'ENG' ? 'DELIVERY' : 'TERMIN'}
                 </th>
-                <th className="p-2 font-medium w-32 border-l border-slate-200 text-right">
-                  {formData.language === 'ENG' ? 'QUANTITY' : 'MIKTAR'}
+                <th className="p-3 font-semibold w-32 border-r border-slate-700 text-right text-emerald-300">
+                  {formData.language === 'ENG' ? 'QUANTITY' : 'MIKTAR'} ({formData.unit})
                 </th>
-                <th className="p-2 font-medium w-[90px] text-right">
+                <th className="p-3 font-semibold w-[90px] text-right bg-slate-700">
                   {formData.language === 'ENG' ? 'UNIT PRICE' : 'B. FIYAT'}
                 </th>
-                <th className="p-2 font-medium w-32 bg-slate-200 border-l border-slate-300 text-right">
+                <th className="p-3 font-bold w-32 bg-slate-900 text-emerald-400 border-r border-slate-700 text-right">
                   {formData.language === 'ENG' ? 'AMOUNT' : 'TUTAR'}
                 </th>
-                <th className="p-2 font-medium w-36 min-w-[140px] border-l border-slate-200 text-center">
+                <th className="p-3 font-semibold w-36 min-w-[140px] border-r border-slate-700 text-center text-blue-300">
                   {formData.language === 'ENG' ? 'REQUEST-1' : 'ISTEK-1'}
                 </th>
-                <th className="p-2 font-medium w-36 min-w-[140px] border-l border-slate-200 text-center">
+                <th className="p-3 font-semibold w-36 min-w-[140px] border-r border-slate-700 text-center text-blue-300">
                   {formData.language === 'ENG' ? 'REQUEST-2' : 'ISTEK-2'}
                 </th>
-                <th className="p-2 font-medium w-36 min-w-[140px] border-l border-slate-200 text-center">
+                <th className="p-3 font-semibold w-36 min-w-[140px] border-r border-slate-700 text-center text-blue-300">
                   {formData.language === 'ENG' ? 'REQUEST-3' : 'ISTEK-3'}
                 </th>
-                <th className="p-2 font-medium w-32 border-l border-slate-200 cursor-help" title="Bulk Sample Delivery Date">B/S-DD</th>
-                <th className="p-2 font-medium w-[90px] border-l border-slate-200 text-right cursor-help" title="Bulk Sample Quantity">B/S-Q</th>
-                <th className="p-2 font-medium w-32 border-l border-slate-200 cursor-help" title="Ex-Mill Date">ExMD</th>
-                <th className="p-2 font-medium w-12 text-center border-l border-slate-200">
+                <th className="p-3 font-semibold w-32 border-r border-slate-700 text-center cursor-help" title="Bulk Sample Delivery Date">B/S-DD</th>
+                <th className="p-3 font-semibold w-[90px] border-r border-slate-700 text-right cursor-help text-emerald-300" title="Bulk Sample Quantity">B/S-Q</th>
+                <th className="p-3 font-semibold w-32 border-r border-slate-700 text-center cursor-help" title="Ex-Mill Date">ExMD</th>
+                <th className="p-3 font-semibold w-12 text-center border-r border-slate-700 text-red-400">
                   {formData.language === 'ENG' ? 'DEL' : 'SIL'}
                 </th>
-                <th className="p-2 font-medium min-w-[130px] border-l-4 border-l-blue-400 bg-blue-50 text-blue-800 text-center" title="Estimated Date of Departure">ETD</th>
-                <th className="p-2 font-medium min-w-[90px] border-l border-blue-200 bg-blue-50 text-blue-800 text-center" title="FDS Form Sent?">FDS</th>
-                <th className="p-2 font-medium min-w-[90px] border-l border-blue-200 bg-blue-50 text-blue-800 text-center" title="Counter Sample Apply?">C/S</th>
-                <th className="p-2 font-medium min-w-[130px] border-l border-blue-200 bg-blue-50 text-blue-800 text-center" title="Counter Sample Sent Date">C/S-SD</th>
-                <th className="p-2 font-medium min-w-[130px] border-l border-blue-200 bg-blue-50 text-blue-800 text-center" title="Counter Sample Approval Date">C/S-AD</th>
-                <th className="p-2 font-medium min-w-[130px] border-l border-blue-200 bg-blue-50 text-blue-800 text-center" title="Lab Dip Sent Date">L/D-SD</th>
-                <th className="p-2 font-medium min-w-[130px] border-l border-blue-200 bg-blue-50 text-blue-800 text-center" title="Lab Dip Sample Approval Date">L/D-AD</th>
-                <th className="p-2 font-medium min-w-[130px] border-l border-blue-200 bg-blue-50 text-blue-800 text-center" title="Bulk Sent Date">B/S-SD</th>
-                <th className="p-2 font-medium min-w-[130px] border-l border-blue-200 bg-blue-50 text-blue-800 text-center" title="Bulk Approval Date">B/S-AD</th>
-                <th className="p-2 font-medium min-w-[90px] border-l-4 border-green-500 bg-green-50 text-green-800 text-center" title="Mill Production Approval">M.PA</th>
-                <th className="p-2 font-medium min-w-[90px] border-l border-green-200 bg-green-50 text-green-800 text-center" title="Designer Production Approval">D.PA</th>
-                <th className="p-2 font-medium min-w-[90px] border-l border-green-200 bg-green-50 text-green-800 text-center" title="Reference Sample">R/S</th>
-                <th className="p-2 font-medium min-w-[130px] border-l border-green-200 bg-green-50 text-green-800 text-center" title="Reference Sample Sent Mill">R/S-MS</th>
-                <th className="p-2 font-medium min-w-[130px] border-l border-green-200 bg-green-50 text-green-800 text-center" title="Buyer's Reference Sample Sent Mill">B.S-MS</th>
-                <th className="p-2 font-medium min-w-[130px] border-l border-green-200 bg-green-50 text-green-800 text-center" title="Buyer's Laboratory Test Received Date">B.LT-RD</th>
-                <th className="p-2 font-medium min-w-[130px] border-l border-green-200 bg-green-50 text-green-800 text-center" title="Buyer's Laboratory Test Mill Sent">B.LT-MS</th>
-                <th className="p-2 font-medium min-w-[130px] border-l border-green-200 bg-green-50 text-green-800 text-center" title="Buyer's Laboratory Test Mill Approved">B.LT-MA</th>
-                <th className="p-2 font-medium min-w-[130px] border-l border-green-200 bg-green-50 text-green-800 text-center" title="Laboratory Test Approved">LT-AD</th>
-                <th className="p-2 font-medium min-w-[130px] border-l border-green-200 bg-green-50 text-green-800 text-center" title="Buyer's Shipment Approval Date">B.SAD</th>
-                <th className="p-2 font-medium min-w-[70px] border-l border-green-200 bg-green-50 text-green-800 text-center" title="Packing List">PL</th>
-                <th className="p-2 font-medium min-w-[140px] border-l-4 border-red-500 bg-red-50 text-red-800 text-center" title="Fabric Type">
+                <th className="p-3 font-semibold min-w-[130px] border-l-2 border-r border-sky-600 bg-sky-900/50 text-sky-300 text-center" title="Estimated Date of Departure">ETD</th>
+                <th className="p-3 font-semibold min-w-[90px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center" title="FDS Form Sent?">FDS</th>
+                <th className="p-3 font-semibold min-w-[90px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center" title="Counter Sample Apply?">C/S</th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center" title="Counter Sample Sent Date">C/S-SD</th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center" title="Counter Sample Approval Date">C/S-AD</th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center" title="Lab Dip Sent Date">L/D-SD</th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center" title="Lab Dip Sample Approval Date">L/D-AD</th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center" title="Bulk Sent Date">B/S-SD</th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center" title="Bulk Approval Date">B/S-AD</th>
+                <th className="p-3 font-semibold min-w-[90px] border-l-2 border-r border-green-600 bg-green-900/50 text-green-400 text-center" title="Mill Production Approval">M.PA</th>
+                <th className="p-3 font-semibold min-w-[90px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Designer Production Approval">D.PA</th>
+                <th className="p-3 font-semibold min-w-[90px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Reference Sample">R/S</th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Reference Sample Sent Mill">R/S-MS</th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Buyer's Reference Sample Sent Mill">B.S-MS</th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Buyer's Laboratory Test Received Date">B.LT-RD</th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Buyer's Laboratory Test Mill Sent">B.LT-MS</th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Buyer's Laboratory Test Mill Approved">B.LT-MA</th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Laboratory Test Approved">LT-AD</th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Buyer's Shipment Approval Date">B.SAD</th>
+                <th className="p-3 font-semibold min-w-[70px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Packing List">PL</th>
+                <th className="p-3 font-semibold min-w-[140px] border-l-2 border-r border-rose-600 bg-rose-900/50 text-rose-300 text-center" title="Fabric Type">
                   {formData.language === 'ENG' ? 'FABRIC TYPE' : 'URUN CINSI'}
                 </th>
-                <th className="p-2 font-medium min-w-[120px] border-l border-red-200 bg-red-50 text-red-800 text-center" title="After Production Quantity">
+                <th className="p-3 font-semibold min-w-[120px] border-r border-rose-800 bg-rose-900/50 text-rose-300 text-center" title="After Production Quantity">
                   {formData.language === 'ENG' ? 'AP. QUANTITY' : 'US. MIKTAR'}
-                </th>
-                <th className="p-2 font-medium min-w-[120px] border-l border-red-200 bg-red-50 text-red-800 text-center" title="Total Gross Weight">
-                  {formData.language === 'ENG' ? 'TOTAL GROSS WEIGHT' : 'TOPLAM BRÜT KG'}
-                </th>
-                <th className="p-2 font-medium min-w-[120px] border-l border-red-200 bg-red-50 text-red-800 text-center" title="Total Net Weight">
-                  {formData.language === 'ENG' ? 'TOTAL NET WEIGHT' : 'TOPLAM NET KG'}
-                </th>
-                <th className="p-2 font-medium min-w-[100px] border-l border-red-200 bg-red-50 text-red-800 text-center" title="Number of Sacks">
-                  {formData.language === 'ENG' ? 'NUMBER OF SACKS' : 'ÇUVAL SAYISI'}
-                </th>
-                <th className="p-2 font-medium min-w-[100px] border-l border-red-200 bg-red-50 text-red-800 text-center" title="Number of Rolls">
-                  {formData.language === 'ENG' ? 'NUMBER OF ROLLS' : 'TOP SAYISI'}
-                </th>
-                <th className="p-2 font-medium min-w-[120px] border-l border-red-200 bg-red-50 text-red-800 text-center" title="Invoice No">
-                  {formData.language === 'ENG' ? 'INVOICE NO' : 'FATURA NO'}
-                </th>
-                <th className="p-2 font-medium min-w-[120px] border-l border-red-200 bg-red-50 text-red-800 text-center" title="Invoice Date">
-                  {formData.language === 'ENG' ? 'INVOICE DATE' : 'FATURA TARİHİ'}
                 </th>
               </tr>
             </thead>
@@ -830,7 +828,7 @@ export default function OrderEntryForm({ companies, representatives, initialData
                       type="text" 
                       value={item.weight || ''} 
                       onChange={(e) => handleItemChange(index, "weight", e.target.value)} 
-                      placeholder="gr/m2"
+                      placeholder={formData.unit === 'YD' ? 'oz/yd2' : formData.unit === 'AD' ? 'gr/pc' : 'gr/m2'}
                       className="w-full px-2 py-1.5 min-w-[90px] text-sm border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400" 
                     />
                   </td>
@@ -839,7 +837,7 @@ export default function OrderEntryForm({ companies, representatives, initialData
                       type="text" 
                       value={item.width || ''} 
                       onChange={(e) => handleItemChange(index, "width", e.target.value)} 
-                      placeholder="cm"
+                      placeholder={formData.unit === 'YD' ? 'inch' : formData.unit === 'AD' ? 'x' : 'cm'}
                       className="w-full px-2 py-1.5 min-w-[90px] text-sm border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-slate-400" 
                     />
                   </td>
@@ -859,23 +857,23 @@ export default function OrderEntryForm({ companies, representatives, initialData
                       min="0"
                       value={item.quantity || ''} 
                       onChange={(e) => handleItemChange(index, "quantity", e.target.value)} 
-                      className="w-full px-2 py-1.5 min-w-[130px] text-sm border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-right font-mono" 
+                      className="w-full px-2 py-1.5 min-w-[70px] text-sm border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-right font-mono" 
                     />
                   </td>
-                  <td className="p-1.5">
+                  <td className="p-1.5 bg-slate-50 border-x border-slate-200">
                     <input 
                       type="number" 
                       step="0.01"
                       min="0"
                       value={item.unitPrice || ''} 
                       onChange={(e) => handleItemChange(index, "unitPrice", e.target.value)} 
-                      className="w-full px-2 py-1.5 min-w-[90px] text-sm border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-right font-mono" 
+                      className="w-full px-2 py-1.5 min-w-[90px] text-sm border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-right font-mono font-semibold" 
                     />
                   </td>
-                  <td className="p-1.5 bg-slate-100 min-w-[130px] border-l border-r border-slate-300 font-mono text-right font-bold text-slate-700">
+                  <td className="p-1.5 bg-emerald-50 min-w-[130px] border-r border-emerald-200 font-mono text-right font-bold text-emerald-700">
                     {item.totalAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </td>
-                  <td className="p-1.5 border-l border-slate-200 align-top min-w-[140px]">
+                  <td className="p-1.5 align-top min-w-[140px] border-r border-slate-200">
                     <div className="flex flex-col gap-1.5 text-xs text-slate-700">
                       <label className="flex items-center gap-1 cursor-pointer">
                         <input type="checkbox" checked={item.bsRequest || false} onChange={(e) => handleItemChange(index, "bsRequest", e.target.checked as boolean)} className="rounded text-blue-600" />
@@ -941,58 +939,58 @@ export default function OrderEntryForm({ companies, representatives, initialData
                       )}
                     </div>
                   </td>
-                  <td className="p-1.5 border-l border-slate-200">
+                  <td className="p-1.5 border-r border-slate-200">
                     <input 
                       type="date" 
-                      value={item.bdd || ''} 
-                      onChange={(e) => handleItemChange(index, "bdd", e.target.value)} 
-                      className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                      value={item.bsdd || ''} 
+                      onChange={(e) => handleItemChange(index, "bsdd", e.target.value)} 
+                      className="w-full px-1 py-1.5 text-xs font-mono border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
                     />
                   </td>
-                  <td className="p-1.5 border-l border-slate-200">
+                  <td className="p-1.5 border-r border-slate-200">
                     <input 
                       type="number" 
                       step="0.01"
                       min="0"
-                      value={item.bq || ''} 
-                      onChange={(e) => handleItemChange(index, "bq", e.target.value)} 
-                      className="w-full px-2 py-1.5 min-w-[90px] text-sm border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-right font-mono" 
+                      value={item.bsq || ''} 
+                      onChange={(e) => handleItemChange(index, "bsq", e.target.value)} 
+                      className="w-full px-1 py-1.5 min-w-[50px] text-xs border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-right font-mono" 
                     />
                   </td>
-                  <td className="p-1.5 border-l border-slate-200">
+                  <td className="p-1.5 border-r border-slate-200">
                     <input 
                       type="date" 
                       value={item.exmd || ''} 
                       onChange={(e) => handleItemChange(index, "exmd", e.target.value)} 
-                      className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                      className="w-full px-1 py-1.5 text-xs font-mono border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
                     />
                   </td>
                   <td className="p-1.5 text-center border-r border-slate-200">
                     <button 
                       type="button" 
                       onClick={() => removeItemRow(index)}
-                      className={`text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 ${items.length === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      className={`text-red-500 hover:text-red-700 p-1.5 rounded hover:bg-red-50 ${items.length === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
                       disabled={items.length === 1}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                   </td>
-                  <td className="p-1.5 border-l-4 border-l-blue-400 bg-blue-50">
+                  <td className="p-1.5 border-l-2 border-r border-sky-300 bg-sky-50">
                     <input 
                       type="date" 
                       value={item.etd || ''} 
                       onChange={(e) => handleItemChange(index, "etd", e.target.value)} 
-                      className="w-full px-1 py-1.5 text-xs font-mono border border-blue-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                      className="w-full px-1 py-1.5 text-xs font-mono border border-sky-200 rounded focus:ring-1 focus:ring-sky-500 focus:border-sky-500" 
                     />
                   </td>
-                  <td className="p-1.5 border-l border-blue-200 bg-blue-50 text-center">
+                  <td className="p-1.5 border-r border-sky-200 bg-sky-50 text-center">
                     <select 
                       value={item.fds || 'WAIT'} 
                       onChange={(e) => handleItemChange(index, "fds", e.target.value)}
                       className={`w-full px-1 py-1 rounded text-xs font-bold border ${
                         item.fds === 'YES' ? 'bg-green-100 text-green-700 border-green-300' :
                         item.fds === 'NO' ? 'bg-slate-100 text-slate-500 border-slate-300' :
-                        'bg-red-100 text-red-700 border-red-300'
+                        'bg-rose-100 text-rose-700 border-rose-300'
                       }`}
                     >
                       <option value="YES">YES</option>
@@ -1000,14 +998,14 @@ export default function OrderEntryForm({ companies, representatives, initialData
                       <option value="NO">NO</option>
                     </select>
                   </td>
-                  <td className="p-1.5 border-l border-blue-200 bg-blue-50 text-center">
+                  <td className="p-1.5 border-r border-sky-200 bg-sky-50 text-center">
                     <select 
                       value={item.cs || 'WAIT'} 
                       onChange={(e) => handleItemChange(index, "cs", e.target.value)}
                       className={`w-full px-1 py-1 rounded text-xs font-bold border ${
                         item.cs === 'YES' ? 'bg-green-100 text-green-700 border-green-300' :
                         item.cs === 'NO' ? 'bg-slate-100 text-slate-500 border-slate-300' :
-                        'bg-red-100 text-red-700 border-red-300'
+                        'bg-rose-100 text-rose-700 border-rose-300'
                       }`}
                     >
                       <option value="YES">YES</option>
@@ -1015,84 +1013,84 @@ export default function OrderEntryForm({ companies, representatives, initialData
                       <option value="NO">NO</option>
                     </select>
                   </td>
-                  <td className="p-1.5 border-l border-blue-200 bg-blue-50">
+                  <td className="p-1.5 border-r border-sky-200 bg-sky-50">
                     <input 
                       type="date" 
                       disabled={item.cs === 'NO'}
                       value={item.csSentDate || ''} 
                       onChange={(e) => handleItemChange(index, "csSentDate", e.target.value)} 
-                      className="w-full px-1 py-1.5 text-xs font-mono border border-blue-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
+                      className="w-full px-1 py-1.5 text-xs font-mono border border-sky-200 rounded focus:ring-1 focus:ring-sky-500 focus:border-sky-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
                     />
                   </td>
-                  <td className="p-1.5 border-l border-blue-200 bg-blue-50">
+                  <td className="p-1.5 border-r border-sky-200 bg-sky-50">
                     <input 
                       type="date" 
                       disabled={item.cs === 'NO'}
                       value={item.csApprovalDate || ''} 
                       onChange={(e) => handleItemChange(index, "csApprovalDate", e.target.value)} 
-                      className="w-full px-1 py-1.5 text-xs font-mono border border-blue-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
+                      className="w-full px-1 py-1.5 text-xs font-mono border border-sky-200 rounded focus:ring-1 focus:ring-sky-500 focus:border-sky-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
                     />
                   </td>
-                  <td className="p-1.5 border-l border-blue-200 bg-blue-50">
+                  <td className="p-1.5 border-r border-sky-200 bg-sky-50">
                     <input 
                       type="date" 
                       disabled={item.ldRequest === 'NO'}
                       value={item.ldSentDate || ''} 
                       onChange={(e) => handleItemChange(index, "ldSentDate", e.target.value)} 
-                      className="w-full px-1 py-1.5 text-xs font-mono border border-blue-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
+                      className="w-full px-1 py-1.5 text-xs font-mono border border-sky-200 rounded focus:ring-1 focus:ring-sky-500 focus:border-sky-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
                     />
                   </td>
-                  <td className="p-1.5 border-l border-blue-200 bg-blue-50">
+                  <td className="p-1.5 border-r border-sky-200 bg-sky-50">
                     <input 
                       type="date" 
                       disabled={item.ldRequest === 'NO'}
                       value={item.ldApprovalDate || ''} 
                       onChange={(e) => handleItemChange(index, "ldApprovalDate", e.target.value)} 
-                      className="w-full px-1 py-1.5 text-xs font-mono border border-blue-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
+                      className="w-full px-1 py-1.5 text-xs font-mono border border-sky-200 rounded focus:ring-1 focus:ring-sky-500 focus:border-sky-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
                     />
                   </td>
-                  <td className="p-1.5 border-l border-blue-200 bg-blue-50">
+                  <td className="p-1.5 border-r border-sky-200 bg-sky-50">
                     <input 
                       type="date" 
                       disabled={Number(item.bq) === 0 || !item.bq}
                       value={item.bsSentDate || ''} 
                       onChange={(e) => handleItemChange(index, "bsSentDate", e.target.value)} 
-                      className="w-full px-1 py-1.5 text-xs font-mono border border-blue-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
+                      className="w-full px-1 py-1.5 text-xs font-mono border border-sky-200 rounded focus:ring-1 focus:ring-sky-500 focus:border-sky-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
                     />
                   </td>
-                  <td className="p-1.5 border-l border-blue-200 bg-blue-50">
+                  <td className="p-1.5 border-r border-sky-200 bg-sky-50">
                     <input 
                       type="date" 
                       disabled={Number(item.bq) === 0 || !item.bq}
                       value={item.bsApprovalDate || ''} 
                       onChange={(e) => handleItemChange(index, "bsApprovalDate", e.target.value)} 
-                      className="w-full px-1 py-1.5 text-xs font-mono border border-blue-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
+                      className="w-full px-1 py-1.5 text-xs font-mono border border-sky-200 rounded focus:ring-1 focus:ring-sky-500 focus:border-sky-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
                     />
                   </td>
-                  <td className="p-1.5 border-l-4 border-green-500 bg-green-50 text-center">
+                  <td className="p-1.5 border-l-2 border-r border-green-300 bg-green-50 text-center">
                     <input 
                       type="checkbox" 
                       checked={item.mpa || false} 
                       onChange={(e) => handleItemChange(index, "mpa", e.target.checked as boolean)} 
-                      className="w-4 h-4 text-sky-600 rounded" 
+                      className="w-4 h-4 text-green-600 rounded focus:ring-green-500" 
                     />
                   </td>
-                  <td className="p-1.5 border-l border-green-200 bg-green-50 text-center">
+                  <td className="p-1.5 border-r border-green-200 bg-green-50 text-center">
                     <input 
                       type="checkbox" 
                       checked={item.dpa || false} 
                       onChange={(e) => handleItemChange(index, "dpa", e.target.checked as boolean)} 
-                      className="w-4 h-4 text-sky-600 rounded" 
+                      className="w-4 h-4 text-green-600 rounded focus:ring-green-500" 
                     />
                   </td>
-                  <td className="p-1.5 border-l border-green-200 bg-green-50 text-center">
+                  <td className="p-1.5 border-r border-green-200 bg-green-50 text-center">
                     <select 
                       value={item.rs || 'WAIT'} 
                       onChange={(e) => handleItemChange(index, "rs", e.target.value)}
                       className={`w-full px-1 py-1 rounded text-xs font-bold border ${
                         item.rs === 'YES' ? 'bg-green-100 text-green-700 border-green-300' :
                         item.rs === 'NO' ? 'bg-slate-100 text-slate-500 border-slate-300' :
-                        'bg-red-100 text-red-700 border-red-300'
+                        'bg-rose-100 text-rose-700 border-rose-300'
                       }`}
                     >
                       <option value="YES">YES</option>
@@ -1100,148 +1098,92 @@ export default function OrderEntryForm({ companies, representatives, initialData
                       <option value="NO">NO</option>
                     </select>
                   </td>
-                  <td className="p-1.5 border-l border-green-200 bg-green-50">
+                  <td className="p-1.5 border-r border-green-200 bg-green-50">
                     <input 
                       type="date" 
                       disabled={item.rs === 'NO'}
                       value={item.rsMs || ''} 
                       onChange={(e) => handleItemChange(index, "rsMs", e.target.value)} 
-                      className="w-full px-1 py-1.5 text-xs font-mono border border-sky-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
+                      className="w-full px-1 py-1.5 text-xs font-mono border border-green-200 rounded focus:ring-1 focus:ring-green-500 focus:border-green-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
                     />
                   </td>
-                  <td className="p-1.5 border-l border-green-200 bg-green-50">
+                  <td className="p-1.5 border-r border-green-200 bg-green-50">
                     <input 
                       type="date" 
                       disabled={!item.bsRequest}
                       value={item.bsMs || ''} 
                       onChange={(e) => handleItemChange(index, "bsMs", e.target.value)} 
-                      className="w-full px-1 py-1.5 text-xs font-mono border border-sky-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
+                      className="w-full px-1 py-1.5 text-xs font-mono border border-green-200 rounded focus:ring-1 focus:ring-green-500 focus:border-green-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
                     />
                   </td>
-                  <td className="p-1.5 border-l border-green-200 bg-green-50">
+                  <td className="p-1.5 border-r border-green-200 bg-green-50">
                     <input 
                       type="date" 
                       disabled={!item.ltRequest}
                       value={item.bltRd || ''} 
                       onChange={(e) => handleItemChange(index, "bltRd", e.target.value)} 
-                      className="w-full px-1 py-1.5 text-xs font-mono border border-sky-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
+                      className="w-full px-1 py-1.5 text-xs font-mono border border-green-200 rounded focus:ring-1 focus:ring-green-500 focus:border-green-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
                     />
                   </td>
-                  <td className="p-1.5 border-l border-green-200 bg-green-50">
+                  <td className="p-1.5 border-r border-green-200 bg-green-50">
                     <input 
                       type="date" 
                       disabled={!item.ltRequest}
                       value={item.bltMs || ''} 
                       onChange={(e) => handleItemChange(index, "bltMs", e.target.value)} 
-                      className="w-full px-1 py-1.5 text-xs font-mono border border-sky-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
+                      className="w-full px-1 py-1.5 text-xs font-mono border border-green-200 rounded focus:ring-1 focus:ring-green-500 focus:border-green-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
                     />
                   </td>
-                  <td className="p-1.5 border-l border-green-200 bg-green-50">
+                  <td className="p-1.5 border-r border-green-200 bg-green-50">
                     <input 
                       type="date" 
                       disabled={!item.ltRequest}
                       value={item.bltMa || ''} 
                       onChange={(e) => handleItemChange(index, "bltMa", e.target.value)} 
-                      className="w-full px-1 py-1.5 text-xs font-mono border border-sky-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
+                      className="w-full px-1 py-1.5 text-xs font-mono border border-green-200 rounded focus:ring-1 focus:ring-green-500 focus:border-green-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
                     />
                   </td>
-                  <td className="p-1.5 border-l border-green-200 bg-green-50">
+                  <td className="p-1.5 border-r border-green-200 bg-green-50">
                     <input 
                       type="date" 
                       disabled={!item.ltRequest}
                       value={item.ltAd || ''} 
                       onChange={(e) => handleItemChange(index, "ltAd", e.target.value)} 
-                      className="w-full px-1 py-1.5 text-xs font-mono border border-sky-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
+                      className="w-full px-1 py-1.5 text-xs font-mono border border-green-200 rounded focus:ring-1 focus:ring-green-500 focus:border-green-500 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200" 
                     />
                   </td>
-                  <td className="p-1.5 border-l border-green-200 bg-green-50">
+                  <td className="p-1.5 border-r border-green-200 bg-green-50">
                     <input 
                       type="date" 
                       value={item.bsad || ''} 
                       onChange={(e) => handleItemChange(index, "bsad", e.target.value)} 
-                      className="w-full px-1 py-1.5 text-xs font-mono border border-sky-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                      className="w-full px-1 py-1.5 text-xs font-mono border border-green-200 rounded focus:ring-1 focus:ring-green-500 focus:border-green-500" 
                     />
                   </td>
-                  <td className="p-1.5 border-l border-green-200 bg-green-50 text-center">
+                  <td className="p-1.5 border-r border-green-200 bg-green-50 text-center">
                     <input 
                       type="checkbox" 
                       checked={item.pl || false} 
                       onChange={(e) => handleItemChange(index, "pl", e.target.checked as boolean)} 
-                      className="w-4 h-4 text-sky-600 rounded" 
+                      className="w-4 h-4 text-green-600 rounded focus:ring-green-500" 
                     />
                   </td>
-                  <td className="p-1.5 border-l-4 border-red-500 bg-red-50">
+                  <td className="p-1.5 border-l-2 border-r border-rose-300 bg-rose-50">
                     <input 
                       type="text" 
-                      placeholder="URUN CINSI"
                       value={item.fabricType || ''} 
                       onChange={(e) => handleItemChange(index, "fabricType", e.target.value)} 
-                      className="w-full px-2 py-1.5 min-w-[120px] text-xs border border-red-200 rounded focus:ring-1 focus:ring-red-500 focus:border-red-500" 
+                      className="w-full px-2 py-1.5 text-xs border border-rose-200 rounded focus:ring-1 focus:ring-rose-500 focus:border-rose-500 outline-none uppercase font-semibold text-slate-700 bg-white" 
                     />
                   </td>
-                  <td className="p-1.5 border-l border-red-200 bg-red-50">
+                  <td className="p-1.5 border-r border-rose-200 bg-rose-50">
                     <input 
                       type="number" 
                       step="0.01"
-                      placeholder="US. MIKTAR"
+                      min="0"
                       value={item.apQuantity || ''} 
                       onChange={(e) => handleItemChange(index, "apQuantity", e.target.value)} 
-                      className="w-full px-2 py-1.5 min-w-[90px] text-xs border border-red-200 rounded focus:ring-1 focus:ring-red-500 focus:border-red-500 text-right font-mono" 
-                    />
-                  </td>
-                  <td className="p-1.5 border-l border-red-200 bg-red-50">
-                    <input 
-                      type="number" 
-                      step="0.01"
-                      placeholder="BURUT KG"
-                      value={item.totalGrossWeight || ''} 
-                      onChange={(e) => handleItemChange(index, "totalGrossWeight", e.target.value)} 
-                      className="w-full px-2 py-1.5 min-w-[90px] text-xs border border-red-200 rounded focus:ring-1 focus:ring-red-500 focus:border-red-500 text-right font-mono" 
-                    />
-                  </td>
-                  <td className="p-1.5 border-l border-red-200 bg-red-50">
-                    <input 
-                      type="number" 
-                      step="0.01"
-                      placeholder="NET KG"
-                      value={item.totalNetWeight || ''} 
-                      onChange={(e) => handleItemChange(index, "totalNetWeight", e.target.value)} 
-                      className="w-full px-2 py-1.5 min-w-[90px] text-xs border border-red-200 rounded focus:ring-1 focus:ring-red-500 focus:border-red-500 text-right font-mono" 
-                    />
-                  </td>
-                  <td className="p-1.5 border-l border-red-200 bg-red-50">
-                    <input 
-                      type="number" 
-                      placeholder="ÇUVAL"
-                      value={item.numberOfSacks || ''} 
-                      onChange={(e) => handleItemChange(index, "numberOfSacks", e.target.value)} 
-                      className="w-full px-2 py-1.5 min-w-[70px] text-xs border border-red-200 rounded focus:ring-1 focus:ring-red-500 focus:border-red-500 text-right font-mono" 
-                    />
-                  </td>
-                  <td className="p-1.5 border-l border-red-200 bg-red-50">
-                    <input 
-                      type="number" 
-                      placeholder="TOP"
-                      value={item.numberOfRolls || ''} 
-                      onChange={(e) => handleItemChange(index, "numberOfRolls", e.target.value)} 
-                      className="w-full px-2 py-1.5 min-w-[70px] text-xs border border-red-200 rounded focus:ring-1 focus:ring-red-500 focus:border-red-500 text-right font-mono" 
-                    />
-                  </td>
-                  <td className="p-1.5 border-l border-red-200 bg-red-50">
-                    <input 
-                      type="text" 
-                      placeholder="FATURA NO"
-                      value={item.invoiceNo || ''} 
-                      onChange={(e) => handleItemChange(index, "invoiceNo", e.target.value)} 
-                      className="w-full px-2 py-1.5 min-w-[100px] text-xs border border-red-200 rounded focus:ring-1 focus:ring-red-500 focus:border-red-500 uppercase" 
-                    />
-                  </td>
-                  <td className="p-1.5 border-l border-red-200 bg-red-50">
-                    <input 
-                      type="date" 
-                      value={item.invoiceDate || ''} 
-                      onChange={(e) => handleItemChange(index, "invoiceDate", e.target.value)} 
-                      className="w-full px-1 py-1.5 text-xs font-mono border border-red-200 rounded focus:ring-1 focus:ring-red-500 focus:border-red-500" 
+                      className="w-full px-2 py-1.5 text-sm border border-rose-200 rounded focus:ring-1 focus:ring-rose-500 focus:border-rose-500 text-right font-mono bg-white font-bold text-rose-700" 
                     />
                   </td>
                 </tr>
@@ -1256,16 +1198,104 @@ export default function OrderEntryForm({ companies, representatives, initialData
                    {orderTotal.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                  </td>
                   <td colSpan={7} className="bg-slate-200 border-l border-slate-300"></td>
-                  <td colSpan={9} className="bg-blue-100 border-l-4 border-blue-400"></td>
-                  <td colSpan={11} className="bg-green-100 border-l-4 border-green-500"></td>
-                  <td colSpan={8} className="bg-red-100 border-l-4 border-red-500"></td>
+                  <td colSpan={10} className="bg-blue-100 border-l-4 border-blue-400"></td>
+                  <td colSpan={10} className="bg-green-100 border-l-4 border-green-500"></td>
                </tr>
              </tfoot>
           </table>
         </div>
       </div>
 
-      <div className="flex justify-end pt-4 pb-12 border-t border-slate-200">
+      {/* FATURA BİLGİLERİ */}
+      <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm mt-8">
+        <h2 className="text-xl font-bold bg-slate-100 p-3 rounded-lg text-slate-700 mb-6 border border-slate-200 flex items-center justify-between">
+          <span>{formData.language === 'ENG' ? 'INVOICE INFORMATION' : 'FATURA BİLGİLERİ'}</span>
+          <span className="text-sm font-normal text-slate-500">(İsteğe Bağlı)</span>
+        </h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              {formData.language === 'ENG' ? 'INVOICE NO' : 'FATURA NO'}
+            </label>
+            <input 
+              type="text" 
+              name="invoiceNo"
+              value={formData.invoiceNo}
+              onChange={handleInputChange}
+              className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 uppercase font-mono"
+              placeholder="Örn: YUP-2026-001"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              {formData.language === 'ENG' ? 'INVOICE DATE' : 'FATURA TARİHİ'}
+            </label>
+            <input 
+              type="date" 
+              name="invoiceDate"
+              value={formData.invoiceDate}
+              onChange={handleInputChange}
+              className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 font-mono"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="bg-red-50 p-4 rounded-lg border border-red-100 shadow-inner">
+            <label className="block text-xs font-bold text-red-800 mb-2 uppercase tracking-wider">
+              {formData.language === 'ENG' ? 'TOTAL GROSS WEIGHT (KG)' : 'TOPLAM BRÜT KG'}
+            </label>
+            <input 
+              type="number" 
+              step="0.01"
+              name="grossKg"
+              value={formData.grossKg}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-red-300 rounded-md focus:ring-red-500 focus:border-red-500 text-right font-mono"
+            />
+          </div>
+          <div className="bg-red-50 p-4 rounded-lg border border-red-100 shadow-inner">
+            <label className="block text-xs font-bold text-red-800 mb-2 uppercase tracking-wider">
+              {formData.language === 'ENG' ? 'TOTAL NET WEIGHT (KG)' : 'TOPLAM NET KG'}
+            </label>
+            <input 
+              type="number" 
+              step="0.01"
+              name="netKg"
+              value={formData.netKg}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-red-300 rounded-md focus:ring-red-500 focus:border-red-500 text-right font-mono"
+            />
+          </div>
+          <div className="bg-red-50 p-4 rounded-lg border border-red-100 shadow-inner">
+            <label className="block text-xs font-bold text-red-800 mb-2 uppercase tracking-wider">
+              {formData.language === 'ENG' ? 'TOTAL SACKS' : 'TOPLAM ÇUVAL'}
+            </label>
+            <input 
+              type="number" 
+              name="sackCount"
+              value={formData.sackCount}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-red-300 rounded-md focus:ring-red-500 focus:border-red-500 text-right font-mono"
+            />
+          </div>
+          <div className="bg-red-50 p-4 rounded-lg border border-red-100 shadow-inner">
+            <label className="block text-xs font-bold text-red-800 mb-2 uppercase tracking-wider">
+              {formData.language === 'ENG' ? 'TOTAL ROLLS' : 'TOPLAM TOP'}
+            </label>
+            <input 
+              type="number" 
+              name="rollCount"
+              value={formData.rollCount}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-red-300 rounded-md focus:ring-red-500 focus:border-red-500 text-right font-mono"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-end pt-4 pb-12 mt-6 border-t border-slate-200">
         <button 
           type="button"
           onClick={() => router.back()}

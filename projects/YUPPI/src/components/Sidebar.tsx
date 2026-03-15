@@ -20,7 +20,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-slate-900 text-slate-300 min-h-screen flex flex-col">
+    <aside className="w-64 bg-slate-900 text-slate-300 min-h-screen flex flex-col print:hidden">
       <div className="h-16 flex items-center px-6 border-b border-slate-800">
         <h1 className="text-xl font-bold text-white tracking-wider">YUPPI ERP</h1>
       </div>

@@ -37,6 +37,7 @@ export async function PUT(
           paymentTerms: body.paymentTerms || null,
           transporter: body.transporter || null,
           currency: body.currency,
+          unit: body.unit || "MT",
           language: body.language || "TR",
           tolerance: body.tolerance || null,
           specialDocsRequest: body.specialDocsRequest || false,
@@ -92,12 +93,6 @@ export async function PUT(
               pl: item.pl || false,
               fabricType: item.fabricType || null,
               apQuantity: item.apQuantity ? Number(item.apQuantity) : null,
-              totalGrossWeight: item.totalGrossWeight ? Number(item.totalGrossWeight) : null,
-              totalNetWeight: item.totalNetWeight ? Number(item.totalNetWeight) : null,
-              numberOfSacks: item.numberOfSacks ? Number(item.numberOfSacks) : null,
-              numberOfRolls: item.numberOfRolls ? Number(item.numberOfRolls) : null,
-              invoiceNo: item.invoiceNo || null,
-              invoiceDate: item.invoiceDate ? new Date(item.invoiceDate) : null,
             }))
           },
           productionOrder: {
