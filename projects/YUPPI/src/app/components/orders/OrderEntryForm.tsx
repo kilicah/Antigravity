@@ -58,93 +58,6 @@ export default function OrderEntryForm({ companies, representatives, initialData
   });
 
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
-  const [isParsing, setIsParsing] = useState(false);
-
-  // File upload for AI PO parsing
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.type !== "application/pdf") {
-      alert("Lütfen sadece PDF formatında bir Sipariş Emri (PO) yükleyin.");
-      return;
-    }
-
-    setIsParsing(true);
-    const formDataObj = new FormData();
-    formDataObj.append('file', file);
-
-    try {
-      const res = await fetch('/api/parse-po', {
-        method: 'POST',
-        body: formDataObj,
-      });
-
-      const data = await res.json();
-      
-      if (!res.ok) {
-        alert(data.error || "Hata oluştu.");
-        return;
-      }
-      
-      if (data.warning) {
-        alert(data.warning);
-        return; // Early return since we didn't get elements in production yet
-      }
-
-      if (data.items && Array.isArray(data.items) && data.items.length > 0) {
-        // We will merge AI data with existing defaults
-        const mappedItems = data.items.map((aiItem: any) => ({
-             buyerModelName: aiItem.buyerModelName || "",
-             qualityName: aiItem.qualityName || "",
-             qualityCode: aiItem.qualityCode || "",
-             colorCode: aiItem.colorCode || "",
-             composition: aiItem.composition || "",
-             weight: aiItem.weight || "",
-             width: aiItem.width || "",
-             quantity: aiItem.quantity?.toString() || "",
-             unitPrice: aiItem.unitPrice?.toString() || "",
-             totalAmount: (Number(aiItem.quantity) || 0) * (Number(aiItem.unitPrice) || 0),
-             deliveryDate: "",
-             bsRequest: false,
-             ldRequest: "WAIT",
-             ppsRequest: false,
-             topsRequest: false,
-             srlRequest: false,
-             srlDetail: "",
-             fdRequest: false,
-             pshpRequest: false,
-             susRequest: false,
-             ltRequest: false,
-             ltDetail: "",
-             bdd: "",
-             bq: "",
-             exmd: "",
-             etd: "",
-             fds: "WAIT",
-             cs: "WAIT",
-             csSentDate: "",
-             csApprovalDate: "",
-             ldSentDate: "",
-             ldApprovalDate: "",
-             bsad: "",
-             pl: false,
-             fabricType: "",
-             apQuantity: ""
-        }));
-        setItems(mappedItems);
-        alert("Ürün kalemleri yapay zeka tarafından başarıyla dolduruldu!");
-      }
-
-    } catch (err) {
-      console.error(err);
-      alert("PO yüklenirken sistem hatası oluştu.");
-    } finally {
-      setIsParsing(false);
-      // Reset input
-      if (e.target) e.target.value = '';
-    }
-  };
 
 
   // Ensure dates from DB are properly formatted for inputs if editing
@@ -355,29 +268,8 @@ export default function OrderEntryForm({ companies, representatives, initialData
     <>
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* GENEL BİLGİLER */}
-      <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative">
-        {/* Magic PO Upload Button */}
-        <div className="absolute top-6 right-6">
-          <label className={`cursor-pointer group flex items-center justify-center space-x-2 px-4 py-2 border rounded-xl font-medium text-sm transition-all duration-300 shadow-sm ${isParsing ? 'bg-indigo-50 border-indigo-200 text-indigo-400 cursor-wait' : 'bg-gradient-to-r from-indigo-50 to-blue-50 border-indigo-200 text-indigo-700 hover:shadow-md hover:from-indigo-100 hover:to-blue-100 hover:-translate-y-0.5'}`}>
-             {isParsing ? (
-               <>
-                 <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                 </svg>
-                 <span>AI Okuyor...</span>
-               </>
-             ) : (
-               <>
-                 <svg className="w-5 h-5 text-indigo-600 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                 <span>PO Yükle - AI ile Oku (PDF)</span>
-               </>
-             )}
-            <input type="file" accept=".pdf" className="hidden" onChange={handleFileUpload} disabled={isParsing} />
-          </label>
-        </div>
-
-        <h2 className="text-xl font-bold bg-slate-100 p-3 rounded-lg text-slate-700 mb-6 border border-slate-200 w-fit pr-12">
+      <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+        <h2 className="text-xl font-bold bg-slate-100 p-3 rounded-lg text-slate-700 mb-6 border border-slate-200">
           {formData.language === 'ENG' ? 'ORDER GENERAL INFORMATION' : 'SIPARIS GENEL BILGILERI'}
         </h2>
         
