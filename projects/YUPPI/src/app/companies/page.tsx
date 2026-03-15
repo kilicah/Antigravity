@@ -41,21 +41,46 @@ export default async function CompaniesPage() {
                 <tr key={company.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                   <td className="py-3 px-4">
                     <div className="font-medium text-slate-900">{company.name}</div>
-                    <div className="flex gap-2 mt-1">
+                    <div className="flex flex-wrap gap-2 mt-1">
                       {company.isSeller && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-purple-100 text-purple-800 uppercase">
                           Satıcı
                         </span>
                       )}
                       {company.isBuyer && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                          Müşteri
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-blue-100 text-blue-800 uppercase">
+                          Alıcı
+                        </span>
+                      )}
+                      {company.isShipTo && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-indigo-100 text-indigo-800 uppercase">
+                          Sevk
+                        </span>
+                      )}
+                      {company.isBrand && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-emerald-100 text-emerald-800 uppercase">
+                          Marka
+                        </span>
+                      )}
+                      {company.isCustoms && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-amber-100 text-amber-800 uppercase">
+                          Gümrük
+                        </span>
+                      )}
+                      {company.isLogistics && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-cyan-100 text-cyan-800 uppercase">
+                          Lojistik
+                        </span>
+                      )}
+                      {company.isInsurance && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-rose-100 text-rose-800 uppercase">
+                          Sigorta
                         </span>
                       )}
                     </div>
                   </td>
                   <td className="py-3 px-4 text-slate-600 align-top">
-                    {company.taxOffice} / {company.taxNo}
+                    {company.taxOffice || "-"} / {company.taxNo || "-"}
                   </td>
                   <td className="py-3 px-4 text-slate-600">{company.registrationNo || "-"}</td>
                   <td className="py-3 px-4 text-slate-600">{company.phone || "-"}</td>

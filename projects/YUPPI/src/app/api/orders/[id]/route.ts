@@ -32,6 +32,8 @@ export async function PUT(
           buyerId: body.buyerId,
           shipToId: body.shipToId || null,
           brandId: body.brandId || null,
+          sellerRep: body.sellerRep || null,
+          buyerRep: body.buyerRep || null,
           deliveryTerms: body.deliveryTerms || null,
           deliveryDestination: body.deliveryDestination || null,
           paymentTerms: body.paymentTerms || null,

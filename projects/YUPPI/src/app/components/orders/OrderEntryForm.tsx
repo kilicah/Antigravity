@@ -12,7 +12,7 @@ const DELIVERY_TERMS_INFO: Record<string, { market: string, desc: string }> = {
   "CIF - SİGORTA & NAKLİYE DAHİL|CIF - COST, INSURANCE & FREIGHT": { market: "Dış Piyasa", desc: "Mal bedeli + Nakliye + Sigorta senin tarafında." }
 };
 
-export default function OrderEntryForm({ companies, representatives, initialData }: any) {
+export default function OrderEntryForm({ companies, initialData }: any) {
   const router = useRouter();
   
   const [formData, setFormData] = useState(initialData || {
@@ -22,8 +22,8 @@ export default function OrderEntryForm({ companies, representatives, initialData
     buyerId: "",
     shipToId: "",
     brandId: "",
-    sellerRepId: "",
-    buyerRepId: "",
+    sellerRep: "",
+    buyerRep: "",
     deliveryTerms: "",
     deliveryDestination: "",
     paymentTerms: "",
@@ -223,8 +223,8 @@ export default function OrderEntryForm({ companies, representatives, initialData
           buyerId: parseInt(formData.buyerId),
           shipToId: formData.shipToId ? parseInt(formData.shipToId) : null,
           brandId: formData.brandId ? parseInt(formData.brandId) : null,
-          sellerRepId: formData.sellerRepId ? parseInt(formData.sellerRepId) : null,
-          buyerRepId: formData.buyerRepId ? parseInt(formData.buyerRepId) : null,
+          sellerRep: formData.sellerRep || null,
+          buyerRep: formData.buyerRep || null,
           tolerance: formData.tolerance || null,
           items: items.map((item: any) => ({
              ...item,
@@ -332,8 +332,8 @@ export default function OrderEntryForm({ companies, representatives, initialData
                 >
                   <option value="">-- Firma Seç --</option>
                   {companies
-                    .filter((c: any) => c.name.toUpperCase().includes('USK'))
-                    .map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    .filter((c: any) => c.isSeller)
+                    .map((c: any) => <option key={c.id} value={c.id}>{formData.language === 'ENG' && c.nameEn ? c.nameEn : c.name}</option>)}
                 </select>
              </div>
              <div>
@@ -341,19 +341,22 @@ export default function OrderEntryForm({ companies, representatives, initialData
                   {formData.language === 'ENG' ? 'SELLER REPRESENTATIVE' : 'SATICI TEMSILCISI'}
                 </label>
                 <select 
-                  name="sellerRepId" 
-                  value={formData.sellerRepId}
+                  name="sellerRep" 
+                  value={formData.sellerRep}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white"
                 >
                   <option value="">-- Temsilci Seç --</option>
-                  {representatives
-                    .filter((r: any) => r.companyId.toString() === formData.sellerId.toString())
-                    .map((r: any) => (
-                    <option key={r.id} value={r.id}>
-                      {r.name.includes('|') ? r.name.split('|')[0] : r.name}
-                    </option>
-                  ))}
+                  {(() => {
+                    const comp = companies.find((c: any) => c.id.toString() === formData.sellerId?.toString());
+                    if (!comp || !comp.repsJson) return null;
+                    try {
+                      const reps = JSON.parse(comp.repsJson);
+                      return reps.map((r: any, idx: number) => (
+                        <option key={idx} value={r.name}>{r.name}</option>
+                      ));
+                    } catch(e) { return null; }
+                  })()}
                 </select>
              </div>
           </div>
@@ -373,7 +376,7 @@ export default function OrderEntryForm({ companies, representatives, initialData
                    <option value="">-- Firma Seç --</option>
                    {companies
                      .filter((c: any) => c.isBuyer)
-                     .map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)
+                     .map((c: any) => <option key={c.id} value={c.id}>{formData.language === 'ENG' && c.nameEn ? c.nameEn : c.name}</option>)
                    }
                 </select>
              </div>
@@ -382,19 +385,22 @@ export default function OrderEntryForm({ companies, representatives, initialData
                   {formData.language === 'ENG' ? 'BUYER REPRESENTATIVE' : 'ALICI TEMSILCISI'}
                 </label>
                 <select 
-                  name="buyerRepId" 
-                  value={formData.buyerRepId}
+                  name="buyerRep" 
+                  value={formData.buyerRep}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white"
                 >
                    <option value="">-- Temsilci Seç --</option>
-                  {representatives
-                    .filter((r: any) => r.companyId.toString() === formData.buyerId.toString())
-                    .map((r: any) => (
-                    <option key={r.id} value={r.id}>
-                      {r.name.includes('|') ? r.name.split('|')[0] : r.name}
-                    </option>
-                  ))}
+                  {(() => {
+                    const comp = companies.find((c: any) => c.id.toString() === formData.buyerId?.toString());
+                    if (!comp || !comp.repsJson) return null;
+                    try {
+                      const reps = JSON.parse(comp.repsJson);
+                      return reps.map((r: any, idx: number) => (
+                        <option key={idx} value={r.name}>{r.name}</option>
+                      ));
+                    } catch(e) { return null; }
+                  })()}
                 </select>
              </div>
           </div>
@@ -412,8 +418,8 @@ export default function OrderEntryForm({ companies, representatives, initialData
                 >
                   <option value="">-- (Alıcı Firma İle Aynı) --</option>
                   {companies
-                    .filter((c: any) => c.isBuyer || c.isLogistics)
-                    .map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)
+                    .filter((c: any) => c.isShipTo || c.isBuyer || c.isLogistics)
+                    .map((c: any) => <option key={c.id} value={c.id}>{formData.language === 'ENG' && c.nameEn ? c.nameEn : c.name}</option>)
                   }
                 </select>
              </div>
@@ -430,7 +436,7 @@ export default function OrderEntryForm({ companies, representatives, initialData
                   <option value="">-- Marka Seç --</option>
                   {companies
                     .filter((c: any) => c.isBrand)
-                    .map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)
+                    .map((c: any) => <option key={c.id} value={c.id}>{formData.language === 'ENG' && c.nameEn ? c.nameEn : c.name}</option>)
                   }
                 </select>
              </div>

@@ -112,6 +112,12 @@ export default function SalesContractDocument({
 
   return (
     <div className="w-full">
+      <style dangerouslySetInnerHTML={{__html: `
+        @media print {
+          @page { size: A4 landscape; margin: 0; }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 10mm; }
+        }
+      `}} />
       {/* BAŞLIK & BUTONLAR */}
       <div className="flex justify-between items-center print:hidden mb-6">
         <div>
@@ -262,7 +268,7 @@ export default function SalesContractDocument({
               src={order.seller.name.toUpperCase().includes('MENSUCAT') ? '/images/Defenni-M-Mavi.jpg' : '/images/Defenni-T-Mavi.jpg'} 
               onError={(e) => { e.currentTarget.src = order.seller.name.toUpperCase().includes('MENSUCAT') ? '/images/Defenni-M.jpg' : '/images/Defenni-T.jpg'; }}
               alt="Company Stamp" 
-              className="w-[210px] h-[90px] object-contain" 
+              className="w-[200px] h-[85px] object-contain" 
             />
           </div>
           <div className="w-1/2 p-3 flex flex-col items-start relative z-10">
@@ -271,7 +277,7 @@ export default function SalesContractDocument({
               <img 
                 src={order.seller.name.toUpperCase().includes('MENSUCAT') ? '/images/USKM-Kase-Imza.png' : '/images/USKT-Kase-Imza.png'} 
                 alt="Seller Signature" 
-                className="w-[170px] h-[60px] object-contain mt-1" 
+                className="w-[180px] h-[65px] object-contain mt-1" 
               />
             )}
           </div>
@@ -286,7 +292,7 @@ export default function SalesContractDocument({
 
       <div className="pagebreak print:break-before-page border border-transparent w-full p-4 print:p-0 min-h-[1050px] font-['Arial_Narrow',_'Arial_Narrow_MT',_Arial,_sans-serif]">
         {renderHeader()}
-        <div className="border border-t-0 border-slate-800 p-8 text-[11px] leading-relaxed text-justify bg-white space-y-2 pb-20">
+        <div className="border border-t-0 border-slate-800 p-6 text-[11px] leading-snug text-justify bg-white space-y-1 pb-10">
           <h3 className="font-bold text-[13px] text-center mb-6 uppercase tracking-widest">{isEng ? 'CONTRACT GENERAL CONDITIONS' : 'SÖZLEŞME GENEL ŞARTLARI'}</h3>
           {termsToUse.map((term, i) => (
              <div key={i}>{term}</div>
@@ -299,7 +305,7 @@ export default function SalesContractDocument({
               src={order.seller.name.toUpperCase().includes('MENSUCAT') ? '/images/Defenni-M-Mavi.jpg' : '/images/Defenni-T-Mavi.jpg'} 
               onError={(e) => { e.currentTarget.src = order.seller.name.toUpperCase().includes('MENSUCAT') ? '/images/Defenni-M.jpg' : '/images/Defenni-T.jpg'; }}
               alt="Company Stamp" 
-              className="w-[210px] h-[90px] object-contain" 
+              className="w-[200px] h-[85px] object-contain" 
             />
           </div>
           <div className="w-1/2 p-3 flex flex-col items-start relative z-10">
@@ -308,7 +314,7 @@ export default function SalesContractDocument({
               <img 
                 src={order.seller.name.toUpperCase().includes('MENSUCAT') ? '/images/USKM-Kase-Imza.png' : '/images/USKT-Kase-Imza.png'} 
                 alt="Seller Signature" 
-                className="w-[170px] h-[60px] object-contain mt-1" 
+                className="w-[180px] h-[65px] object-contain mt-1" 
               />
             )}
           </div>

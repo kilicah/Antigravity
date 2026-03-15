@@ -16,8 +16,6 @@ export default async function InvoiceViewPage({
       buyer: true,
       shipTo: true,
       brand: true,
-      sellerRep: true,
-      buyerRep: true,
       items: true,
       invoice: true,
       productionOrder: true,
@@ -228,13 +226,7 @@ export default async function InvoiceViewPage({
                   <tr className="border-b border-slate-100">
                     <td className="py-2 text-slate-500 font-medium align-top">{isEng ? 'Seller Rep:' : 'Satıcı Temsilcisi:'}</td>
                     <td className="py-2 font-semibold">
-                      {order.sellerRep ? (
-                        <div>
-                          <div>{order.sellerRep.name.includes('|') ? order.sellerRep.name.split('|')[isEng ? 1 : 0] : order.sellerRep.name}</div>
-                          {order.sellerRep.email && <div className="text-xs font-normal text-slate-500 mt-0.5">{order.sellerRep.email}</div>}
-                          {order.sellerRep.phone && <div className="text-xs font-normal text-slate-500">{order.sellerRep.phone}</div>}
-                        </div>
-                      ) : "-"}
+                      {order.sellerRep || "-"}
                     </td>
                   </tr>
                </tbody>

@@ -16,8 +16,6 @@ export default async function OrderViewPage({
       buyer: true,
       shipTo: true,
       brand: true,
-      sellerRep: true,
-      buyerRep: true,
       items: true
     }
   });

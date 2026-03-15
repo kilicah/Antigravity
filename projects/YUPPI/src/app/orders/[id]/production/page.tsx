@@ -17,8 +17,6 @@ export default async function ProductionOrderViewPage({
       buyer: true,
       shipTo: true,
       brand: true,
-      sellerRep: true,
-      buyerRep: true,
       items: true,
       productionOrder: true
     }
@@ -211,13 +209,7 @@ export default async function ProductionOrderViewPage({
                   <tr className="border-b border-slate-100">
                     <td className="py-2 text-slate-500 font-medium align-top">{isEng ? 'Seller Rep:' : 'Satıcı Temsilcisi:'}</td>
                     <td className="py-2 font-medium">
-                      {order.sellerRep ? (
-                        <div>
-                          <div>{order.sellerRep.name.includes('|') ? order.sellerRep.name.split('|')[isEng ? 1 : 0] : order.sellerRep.name}</div>
-                          {order.sellerRep.email && <div className="text-xs font-normal text-slate-500 mt-0.5">{order.sellerRep.email}</div>}
-                          {order.sellerRep.phone && <div className="text-xs font-normal text-slate-500">{order.sellerRep.phone}</div>}
-                        </div>
-                      ) : "-"}
+                      {order.sellerRep || "-"}
                     </td>
                   </tr>
                </tbody>
@@ -255,7 +247,7 @@ export default async function ProductionOrderViewPage({
             </div>
             <div>
               <div className="font-bold text-sm mb-16 uppercase">{isEng ? 'ORDER PLACED BY' : 'SİPARİŞİ GİREN'}</div>
-              <div className="border-t border-slate-400 mx-10 pt-2 text-xs text-slate-500">{order.sellerRep?.name || (isEng ? 'Signature / Date' : 'İmza / Tarih')}</div>
+              <div className="border-t border-slate-400 mx-10 pt-2 text-xs text-slate-500">{order.sellerRep || (isEng ? 'Signature / Date' : 'İmza / Tarih')}</div>
             </div>
         </div>
 

@@ -33,28 +33,18 @@ model Company {
   isLogistics     Boolean                 @default(false)
   isCustoms       Boolean                 @default(false)
   isBrand         Boolean                 @default(false)
+  isShipTo        Boolean                 @default(false)
+  isInsurance     Boolean                 @default(false)
+  
+  repsJson        String                  @default("[]")
+
   sellerOrders    Order[]                 @relation("SellerContracts")
   buyerOrders     Order[]                 @relation("BuyerContracts")
   shipToOrders    Order[]                 @relation("ShipToContracts")
   brandOrders     Order[]                 @relation("BrandContracts")
   bankInfos       BankInfo[]
-  representatives CompanyRepresentative[]
   createdAt       DateTime                @default(now())
   updatedAt       DateTime                @updatedAt
-}
-
-model CompanyRepresentative {
-  id           Int      @id @default(autoincrement())
-  companyId    Int
-  company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  name         String
-  title        String? // Görevi
-  phone        String?
-  email        String?
-  sellerOrders Order[]  @relation("SellerReps")
-  buyerOrders  Order[]  @relation("BuyerReps")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
 }
 
 model BankInfo {
@@ -93,15 +83,14 @@ model Order {
   buyerId     Int
   shipToId    Int?
   brandId     Int?
-  sellerRepId Int?
-  buyerRepId  Int?
+  
+  sellerRep   String?
+  buyerRep    String?
 
   seller    Company                @relation("SellerContracts", fields: [sellerId], references: [id])
   buyer     Company                @relation("BuyerContracts", fields: [buyerId], references: [id])
   shipTo    Company?               @relation("ShipToContracts", fields: [shipToId], references: [id])
   brand     Company?               @relation("BrandContracts", fields: [brandId], references: [id])
-  sellerRep CompanyRepresentative? @relation("SellerReps", fields: [sellerRepId], references: [id])
-  buyerRep  CompanyRepresentative? @relation("BuyerReps", fields: [buyerRepId], references: [id])
 
   // Terms
   deliveryTerms       String?

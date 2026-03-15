@@ -16,7 +16,6 @@ export default function Sidebar() {
     { name: "Firmalar", href: "/companies", icon: "🏢" },
     { name: "Banka Hesapları", href: "/bank-infos", icon: "🏦" },
     { name: "Markalar", href: "/brands", icon: "📌" },
-    { name: "Temsilciler", href: "/representatives", icon: "👥" },
   ];
 
   return (

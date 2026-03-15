@@ -4,10 +4,7 @@ import Link from "next/link"; // Added import for Link component
 
 export default async function NewOrderPage() {
   // Fetch initial data needed for the form
-  const [companies, representatives] = await Promise.all([
-    prisma.company.findMany({ orderBy: { name: "asc" } }),
-    prisma.companyRepresentative.findMany({ orderBy: { name: "asc" } })
-  ]);
+  const companies = await prisma.company.findMany({ orderBy: { name: "asc" } });
 
   return (
     <div className="space-y-6">
@@ -20,7 +17,6 @@ export default async function NewOrderPage() {
       
       <OrderEntryForm 
         companies={companies} 
-        representatives={representatives} 
       />
     </div>
   );
