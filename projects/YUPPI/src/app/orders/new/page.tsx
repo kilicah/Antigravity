@@ -1,27 +1,25 @@
 import { prisma } from "@/lib/prisma";
 import OrderEntryForm from "@/app/components/orders/OrderEntryForm";
+import Link from "next/link"; // Added import for Link component
 
 export default async function NewOrderPage() {
-  const [companies, brands, representatives] = await Promise.all([
+  // Fetch initial data needed for the form
+  const [companies, representatives] = await Promise.all([
     prisma.company.findMany({ orderBy: { name: "asc" } }),
-    prisma.brand.findMany({ orderBy: { name: "asc" } }),
     prisma.companyRepresentative.findMany({ orderBy: { name: "asc" } })
   ]);
 
   return (
-    <div className="max-w-6xl mx-auto pb-12">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-600">
-          Yeni Sipariş (Sözleşme) Girişi
-        </h1>
-        <p className="text-slate-500 mt-2">
-          Sipariş genel bilgilerini ve sipariş edilen ürün kalemlerini aşağıdan sisteme girebilirsiniz.
-        </p>
+    <div className="space-y-6">
+      <div className="flex items-center space-x-4">
+        <Link href="/orders" className="text-slate-500 hover:text-slate-700">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        </Link>
+        <h1 className="text-2xl font-bold text-slate-800">Yeni Sipariş Girişi</h1>
       </div>
-
+      
       <OrderEntryForm 
         companies={companies} 
-        brands={brands} 
         representatives={representatives} 
       />
     </div>

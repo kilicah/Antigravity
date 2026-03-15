@@ -155,9 +155,9 @@ export default async function ProductionOrderViewPage({
                    <td className="p-2 border-r border-slate-300 align-top">
                      <div className="flex flex-col gap-1">
                        {item.bsRequest && <span className="inline-block bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 font-bold text-slate-700">B.S</span>}
-                       {item.ldRequest && (
+                       {item.ldRequest === 'YES' && (
                          <span className="inline-block bg-blue-50 border border-blue-200 rounded px-1.5 py-0.5 font-semibold text-blue-700">
-                           L/D {item.ldDetail ? `: ${item.ldDetail}` : ''}
+                           L/D
                          </span>
                        )}
                        {item.ppsRequest && <span className="inline-block bg-orange-50 border border-orange-200 rounded px-1.5 py-0.5 font-bold text-orange-700">PPS</span>}

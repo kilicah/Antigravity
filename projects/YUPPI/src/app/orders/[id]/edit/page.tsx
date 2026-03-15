@@ -19,9 +19,8 @@ export default async function EditOrderPage({
   if (!order) notFound();
 
   // Fetch dropdown data
-  const [companies, brands, representatives] = await Promise.all([
+  const [companies, representatives] = await Promise.all([
     prisma.company.findMany({ orderBy: { name: "asc" } }),
-    prisma.brand.findMany({ orderBy: { name: "asc" } }),
     prisma.companyRepresentative.findMany({ orderBy: { name: "asc" } })
   ]);
 
@@ -39,7 +38,6 @@ export default async function EditOrderPage({
       </div>
       <OrderEntryForm 
         companies={companies} 
-        brands={brands} 
         representatives={representatives} 
         initialData={order}
       />

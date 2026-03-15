@@ -2,14 +2,10 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 
 export default async function Dashboard() {
-  const [
-    orderCount,
-    companyCount,
-    brandCount
-  ] = await Promise.all([
+  // Toplam sayıları çek
+  const [orderCount, companyCount] = await Promise.all([
     prisma.order.count(),
-    prisma.company.count(),
-    prisma.brand.count()
+    prisma.company.count()
   ]);
 
   return (
@@ -42,29 +38,18 @@ export default async function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex items-center space-x-4">
-          <div className="p-4 bg-indigo-50 text-indigo-600 rounded-lg">
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-            </svg>
+        {/* Firmalar */}
+        <Link href="/companies" className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all group">
+          <div className="flex items-center space-x-4">
+            <div className="p-3 bg-emerald-50 text-emerald-600 rounded-lg group-hover:bg-emerald-100 transition-colors">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-slate-800">Firmalar</h2>
+              <p className="text-slate-500 text-sm mt-1">{companyCount} Kayıtlı Firma</p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-medium text-slate-500 uppercase tracking-wider">Kayıtlı Firmalar</p>
-            <p className="text-3xl font-bold text-slate-900">{companyCount}</p>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex items-center space-x-4">
-          <div className="p-4 bg-green-50 text-green-600 rounded-lg">
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-            </svg>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-slate-500 uppercase tracking-wider">Markalar</p>
-            <p className="text-3xl font-bold text-slate-900">{brandCount}</p>
-          </div>
-        </div>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
