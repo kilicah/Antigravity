@@ -32,8 +32,10 @@ export async function PUT(
           buyerId: body.buyerId,
           shipToId: body.shipToId || null,
           brandId: body.brandId || null,
+          agencyId: body.agencyId ? parseInt(body.agencyId) : null,
           sellerRep: body.sellerRep || null,
           buyerRep: body.buyerRep || null,
+          commission: body.commission || null,
           deliveryTerms: body.deliveryTerms || null,
           deliveryDestination: body.deliveryDestination || null,
           paymentTerms: body.paymentTerms || null,
@@ -124,6 +126,9 @@ export async function PUT(
                 netKg: body.invoice?.netKg || null,
                 rollCount: body.invoice?.rollCount || null,
                 sackCount: body.invoice?.sackCount || null,
+                customsCompanyId: body.invoice?.customsCompanyId ? parseInt(body.invoice.customsCompanyId) : null,
+                logisticsCompanyId: body.invoice?.logisticsCompanyId ? parseInt(body.invoice.logisticsCompanyId) : null,
+                insuranceCompanyId: body.invoice?.insuranceCompanyId ? parseInt(body.invoice.insuranceCompanyId) : null,
               },
               update: {
                 invoiceNo: body.invoice?.invoiceNo || null,
@@ -132,6 +137,9 @@ export async function PUT(
                 netKg: body.invoice?.netKg || null,
                 rollCount: body.invoice?.rollCount || null,
                 sackCount: body.invoice?.sackCount || null,
+                customsCompanyId: body.invoice?.customsCompanyId ? parseInt(body.invoice.customsCompanyId) : null,
+                logisticsCompanyId: body.invoice?.logisticsCompanyId ? parseInt(body.invoice.logisticsCompanyId) : null,
+                insuranceCompanyId: body.invoice?.insuranceCompanyId ? parseInt(body.invoice.insuranceCompanyId) : null,
               }
             }
           }

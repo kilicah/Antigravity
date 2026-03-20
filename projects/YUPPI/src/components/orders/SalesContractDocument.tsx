@@ -223,8 +223,8 @@ export default function SalesContractDocument({
               <div className="font-bold p-1.5 border-r border-slate-800 uppercase">{isEng ? 'PAYMENT TERMS' : 'ÖDEME ŞEKLİ'}</div>
               <div className="p-1.5 border-r border-slate-800 uppercase min-w-0 break-words">{displayPaymentTerms}</div>
               <div className="font-bold p-1.5 border-r border-slate-800 uppercase">{isEng ? 'SELLER REP.' : 'SATICI TEMSİLCİSİ'}</div>
-              <div className="p-1.5 border-r border-slate-800 text-center uppercase min-w-0 break-words">{order.sellerRep ? order.sellerRep.name.includes('|') ? order.sellerRep.name.split('|')[isEng ? 1 : 0] : order.sellerRep.name : "-"}</div>
-              <div className="p-1.5 text-center text-[11px] text-blue-600 border-r border-slate-800 underline min-w-0 break-all flex items-center justify-center">{order.sellerRep?.email || "-"}</div>
+              <div className="p-1.5 border-r border-slate-800 text-center uppercase min-w-0 break-words">{order.sellerRep ? (order.sellerRep.includes('|') ? (isEng ? (order.sellerRep.split('|')[1] || order.sellerRep.split('|')[0]) : order.sellerRep.split('|')[0]) : order.sellerRep) : "-"}</div>
+              <div className="p-1.5 text-center text-[11px] text-blue-600 border-r border-slate-800 underline min-w-0 break-all flex items-center justify-center">-</div>
            </div>
            <div className="grid grid-cols-[110px_420px_110px_200px_160px] border-b border-slate-800">
               <div className="font-bold p-1.5 border-r border-slate-800 uppercase">{isEng ? 'DELIVERY TERMS' : 'TESLİMAT ŞEKLİ'}</div>
@@ -233,8 +233,8 @@ export default function SalesContractDocument({
                  {order.deliveryDestination && <span className="ml-2 font-bold">— {order.deliveryDestination}</span>}
               </div>
               <div className="font-bold p-1.5 border-r border-slate-800 uppercase">{isEng ? 'BUYER REP.' : 'ALICI TEMSİLCİSİ'}</div>
-              <div className="p-1.5 border-r border-slate-800 text-center uppercase min-w-0 break-words">{order.buyerRep ? order.buyerRep.name.includes('|') ? order.buyerRep.name.split('|')[isEng ? 1 : 0] : order.buyerRep.name : "-"}</div>
-              <div className="p-1.5 text-center text-[11px] text-blue-600 border-r border-slate-800 underline min-w-0 break-all flex items-center justify-center">{order.buyerRep?.email || "-"}</div>
+              <div className="p-1.5 border-r border-slate-800 text-center uppercase min-w-0 break-words">{order.buyerRep ? (order.buyerRep.includes('|') ? (isEng ? (order.buyerRep.split('|')[1] || order.buyerRep.split('|')[0]) : order.buyerRep.split('|')[0]) : order.buyerRep) : "-"}</div>
+              <div className="p-1.5 text-center text-[11px] text-blue-600 border-r border-slate-800 underline min-w-0 break-all flex items-center justify-center">-</div>
            </div>
 
            {/* Bank Info Rows */}

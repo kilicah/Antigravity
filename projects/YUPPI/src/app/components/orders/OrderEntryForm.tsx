@@ -22,6 +22,8 @@ export default function OrderEntryForm({ companies, initialData }: any) {
     buyerId: "",
     shipToId: "",
     brandId: "",
+    agencyId: "",
+    commission: "",
     sellerRep: "",
     buyerRep: "",
     deliveryTerms: "",
@@ -55,6 +57,9 @@ export default function OrderEntryForm({ companies, initialData }: any) {
     netKg: "",
     rollCount: "",
     sackCount: "",
+    customsCompanyId: "",
+    logisticsCompanyId: "",
+    insuranceCompanyId: "",
   });
 
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
@@ -67,6 +72,8 @@ export default function OrderEntryForm({ companies, initialData }: any) {
         ...prev,
         // Parse Dates
         contractDate: initialData.contractDate ? new Date(initialData.contractDate).toISOString().split('T')[0] : prev.contractDate,
+        agencyId: initialData.agencyId?.toString() || "",
+        commission: initialData.commission || "",
         tolerance: initialData.tolerance || "5%",
         exMillDate: initialData.productionOrder?.exMillDate ? new Date(initialData.productionOrder.exMillDate).toISOString().split('T')[0] : prev.exMillDate,
         bulkDate: initialData.productionOrder?.bulkDate ? new Date(initialData.productionOrder.bulkDate).toISOString().split('T')[0] : prev.bulkDate,
@@ -86,6 +93,9 @@ export default function OrderEntryForm({ companies, initialData }: any) {
         netKg: initialData.invoice?.netKg?.toString() || "",
         rollCount: initialData.invoice?.rollCount?.toString() || "",
         sackCount: initialData.invoice?.sackCount?.toString() || "",
+        customsCompanyId: initialData.invoice?.customsCompanyId?.toString() || "",
+        logisticsCompanyId: initialData.invoice?.logisticsCompanyId?.toString() || "",
+        insuranceCompanyId: initialData.invoice?.insuranceCompanyId?.toString() || "",
       }));
     }
   }, [initialData]);
@@ -223,6 +233,8 @@ export default function OrderEntryForm({ companies, initialData }: any) {
           buyerId: parseInt(formData.buyerId),
           shipToId: formData.shipToId ? parseInt(formData.shipToId) : null,
           brandId: formData.brandId ? parseInt(formData.brandId) : null,
+          agencyId: formData.agencyId ? parseInt(formData.agencyId) : null,
+          commission: formData.commission || null,
           sellerRep: formData.sellerRep || null,
           buyerRep: formData.buyerRep || null,
           tolerance: formData.tolerance || null,
@@ -247,6 +259,9 @@ export default function OrderEntryForm({ companies, initialData }: any) {
              netKg: formData.netKg ? Number(formData.netKg) : null,
              rollCount: formData.rollCount ? parseInt(formData.rollCount) : null,
              sackCount: formData.sackCount ? parseInt(formData.sackCount) : null,
+             customsCompanyId: formData.customsCompanyId ? parseInt(formData.customsCompanyId) : null,
+             logisticsCompanyId: formData.logisticsCompanyId ? parseInt(formData.logisticsCompanyId) : null,
+             insuranceCompanyId: formData.insuranceCompanyId ? parseInt(formData.insuranceCompanyId) : null,
           }
         })
       });
@@ -352,9 +367,15 @@ export default function OrderEntryForm({ companies, initialData }: any) {
                     if (!comp || !comp.repsJson) return null;
                     try {
                       const reps = JSON.parse(comp.repsJson);
-                      return reps.map((r: any, idx: number) => (
-                        <option key={idx} value={r.name}>{r.name}</option>
-                      ));
+                      return reps.map((r: any, idx: number) => {
+                        const rawName = r.name || "";
+                        const nameTr = rawName.includes('|') ? rawName.split('|')[0] : rawName;
+                        const defaultEn = rawName.includes('|') ? rawName.split('|')[1] : "";
+                        const nameEn = r.nameEn || defaultEn || nameTr;
+                        const val = nameEn ? `${nameTr}|${nameEn}` : nameTr;
+                        const display = nameEn ? `${nameTr} / ${nameEn}` : nameTr;
+                        return <option key={idx} value={val}>{display}</option>;
+                      });
                     } catch(e) { return null; }
                   })()}
                 </select>
@@ -396,9 +417,15 @@ export default function OrderEntryForm({ companies, initialData }: any) {
                     if (!comp || !comp.repsJson) return null;
                     try {
                       const reps = JSON.parse(comp.repsJson);
-                      return reps.map((r: any, idx: number) => (
-                        <option key={idx} value={r.name}>{r.name}</option>
-                      ));
+                      return reps.map((r: any, idx: number) => {
+                        const rawName = r.name || "";
+                        const nameTr = rawName.includes('|') ? rawName.split('|')[0] : rawName;
+                        const defaultEn = rawName.includes('|') ? rawName.split('|')[1] : "";
+                        const nameEn = r.nameEn || defaultEn || nameTr;
+                        const val = nameEn ? `${nameTr}|${nameEn}` : nameTr;
+                        const display = nameEn ? `${nameTr} / ${nameEn}` : nameTr;
+                        return <option key={idx} value={val}>{display}</option>;
+                      });
                     } catch(e) { return null; }
                   })()}
                 </select>
@@ -440,6 +467,42 @@ export default function OrderEntryForm({ companies, initialData }: any) {
                   }
                 </select>
              </div>
+          </div>
+
+          <div className="space-y-4">
+             <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  {formData.language === 'ENG' ? 'RELATED AGENCY' : 'İLGİLİ ACENTA'}
+                </label>
+                <select 
+                  name="agencyId" 
+                  value={formData.agencyId}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white"
+                >
+                  <option value="">-- Acenta Seç --</option>
+                  {companies
+                    .filter((c: any) => c.isAgency)
+                    .map((c: any) => <option key={c.id} value={c.id}>{formData.language === 'ENG' && c.nameEn ? c.nameEn : c.name}</option>)
+                  }
+                </select>
+             </div>
+             
+             {formData.agencyId && (
+               <div className="animate-in fade-in duration-300">
+                  <label className="block text-sm font-medium text-slate-700 mb-1 text-fuchsia-700">
+                    {formData.language === 'ENG' ? 'SALES COMMISSION' : 'SATIŞ KOMİSYONU'}
+                  </label>
+                  <input 
+                    type="text" 
+                    name="commission"
+                    value={formData.commission}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-fuchsia-300 rounded-md focus:ring-fuchsia-500 focus:border-fuchsia-500 bg-fuchsia-50/30"
+                    placeholder={formData.language === 'ENG' ? 'e.g. 5% or 1000 USD' : 'Örn: %5 veya 1000 USD'}
+                  />
+               </div>
+             )}
           </div>
         </div>
         
@@ -597,20 +660,69 @@ export default function OrderEntryForm({ companies, initialData }: any) {
               )}
               
               {(formData.deliveryTerms?.startsWith("EXW") || formData.deliveryTerms?.startsWith("FOB") || formData.deliveryTerms?.startsWith("CPT") || formData.deliveryTerms?.startsWith("DAP") || formData.deliveryTerms?.startsWith("FCA") || formData.deliveryTerms?.startsWith("CIF")) && (
-                <div className="animate-in fade-in slide-in-from-top-1 bg-blue-50/50 p-3 rounded-md border border-blue-200">
-                  <label className="block text-xs font-semibold text-blue-800 mb-1.5 uppercase tracking-wide">
-                    {(formData.deliveryTerms?.startsWith("FCA") || formData.deliveryTerms?.startsWith("CIF")) ? "Yükleme Limanı" : "Varış Şehri"} <span className="text-red-500">*</span>
-                  </label>
-                  <input 
-                    type="text" 
-                    name="deliveryDestination" 
-                    value={formData.deliveryDestination}
-                    onChange={handleInputChange}
-                    required
-                    autoFocus
-                    className="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-slate-800 placeholder-slate-400 font-medium uppercase text-sm"
-                    placeholder={(formData.deliveryTerms?.startsWith("FCA") || formData.deliveryTerms?.startsWith("CIF")) ? "Örn: AMBARLI LİMANI, TR" : "Örn: LONDRA, UK"}
-                  />
+                <div className="animate-in fade-in slide-in-from-top-1 bg-blue-50/50 p-3 rounded-md border border-blue-200 space-y-3">
+                  {(() => {
+                    const shipCompanyId = formData.shipToId || formData.buyerId;
+                    const shipCompany = companies.find((c: any) => c.id.toString() === shipCompanyId?.toString());
+                    let addrs: any[] = [];
+                    try {
+                      if (shipCompany?.deliveryAddressesJson) {
+                        addrs = JSON.parse(shipCompany.deliveryAddressesJson);
+                      }
+                    } catch(e) {}
+                    
+                    if (addrs.length > 0) {
+                      return (
+                        <div>
+                          <label className="block text-xs font-semibold text-indigo-800 mb-1.5 uppercase tracking-wide">
+                            Kayıtlı Adreslerden Seç (Opsiyonel)
+                          </label>
+                          <select
+                            className="w-full px-3 py-2 border border-indigo-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-sm"
+                            onChange={(e) => {
+                              if (!e.target.value) return;
+                              const selected = addrs[parseInt(e.target.value)];
+                              if (selected) {
+                                let parts = [`${selected.title} - ${selected.address} ${selected.district}/${selected.city} ${selected.country}`];
+                                if (selected.zipCode) parts[0] += ` ${selected.zipCode}`;
+                                
+                                let contactParts = [];
+                                if (selected.contactPerson) contactParts.push(`YETKİLİ: ${selected.contactPerson}`);
+                                if (selected.contactPhone) contactParts.push(`TEL: ${selected.contactPhone}`);
+                                if (selected.contactEmail) contactParts.push(`E-POSTA: ${selected.contactEmail}`);
+                                
+                                if (contactParts.length > 0) parts.push(contactParts.join(" | "));
+                                
+                                const fullAddr = parts.join("\n").toUpperCase();
+                                setFormData({...formData, deliveryDestination: fullAddr});
+                              }
+                            }}
+                          >
+                            <option value="">-- Kayıtlı Depo/Adres Seç --</option>
+                            {addrs.map((a, idx) => (
+                              <option key={idx} value={idx}>{a.title} ({a.city})</option>
+                            ))}
+                          </select>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
+
+                  <div>
+                    <label className="block text-xs font-semibold text-blue-800 mb-1.5 uppercase tracking-wide">
+                      {(formData.deliveryTerms?.startsWith("FCA") || formData.deliveryTerms?.startsWith("CIF")) ? "Yükleme Limanı" : "Varış Şehri / Açık Adres"} <span className="text-red-500">*</span>
+                    </label>
+                    <textarea 
+                      name="deliveryDestination" 
+                      value={formData.deliveryDestination}
+                      onChange={handleInputChange}
+                      required
+                      rows={2}
+                      className="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-slate-800 placeholder-slate-400 font-medium uppercase text-sm"
+                      placeholder={(formData.deliveryTerms?.startsWith("FCA") || formData.deliveryTerms?.startsWith("CIF")) ? "Örn: AMBARLI LİMANI, TR" : "Örn: LONDRA, UK veya AÇIK ADRES"}
+                    />
+                  </div>
                 </div>
               )}
             </div>
@@ -1245,6 +1357,61 @@ export default function OrderEntryForm({ companies, initialData }: any) {
               onChange={handleInputChange}
               className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 font-mono"
             />
+          </div>
+        </div>
+
+        {/* YENİ EKLENEN FATURA FİRMALARI (GÜMRÜK, LOJİSTİK, SİGORTA) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 pb-6 border-b border-slate-200">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              {formData.language === 'ENG' ? 'CUSTOMS BROKER' : 'GÜMRÜKLEME FİRMASI'}
+            </label>
+            <select 
+              name="customsCompanyId" 
+              value={formData.customsCompanyId}
+              onChange={handleInputChange}
+              className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white"
+            >
+              <option value="">-- Firma Seç --</option>
+              {companies
+                .filter((c: any) => c.isCustoms)
+                .map((c: any) => <option key={c.id} value={c.id}>{formData.language === 'ENG' && c.nameEn ? c.nameEn : c.name}</option>)
+              }
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              {formData.language === 'ENG' ? 'LOGISTICS COMPANY' : 'LOJİSTİK FİRMASI'}
+            </label>
+            <select 
+              name="logisticsCompanyId" 
+              value={formData.logisticsCompanyId}
+              onChange={handleInputChange}
+              className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white"
+            >
+              <option value="">-- Firma Seç --</option>
+              {companies
+                .filter((c: any) => c.isLogistics)
+                .map((c: any) => <option key={c.id} value={c.id}>{formData.language === 'ENG' && c.nameEn ? c.nameEn : c.name}</option>)
+              }
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              {formData.language === 'ENG' ? 'INSURANCE COMPANY' : 'SİGORTA FİRMASI'}
+            </label>
+            <select 
+              name="insuranceCompanyId" 
+              value={formData.insuranceCompanyId}
+              onChange={handleInputChange}
+              className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white"
+            >
+              <option value="">-- Firma Seç --</option>
+              {companies
+                .filter((c: any) => c.isInsurance)
+                .map((c: any) => <option key={c.id} value={c.id}>{formData.language === 'ENG' && c.nameEn ? c.nameEn : c.name}</option>)
+              }
+            </select>
           </div>
         </div>
 
