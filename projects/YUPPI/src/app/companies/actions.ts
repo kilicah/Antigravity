@@ -151,9 +151,7 @@ export async function updateCompany(companyId: number, formData: FormData) {
   // Delivery Addresses
   const deliveryAddressesJson = (formData.get("deliveryAddressesJson") as string) || "[]";
 
-  await prisma.company.update({
-    where: { id: companyId },
-    data: {
+  const dataPayload = {
       name,
       nameEn: nameEn || null,
       address,
@@ -180,8 +178,18 @@ export async function updateCompany(companyId: number, formData: FormData) {
       isAgency,
       repsJson,
       deliveryAddressesJson,
-    },
-  });
+    };
+
+  try {
+    await prisma.company.update({
+      where: { id: companyId },
+      data: dataPayload,
+    });
+  } catch(error: any) {
+    console.error("PRISMA UPDATE ERROR DETAILS:", error.message);
+    console.error("FAILED PAYLOAD:", JSON.stringify(dataPayload, null, 2));
+    throw error;
+  }
 
   redirect("/companies");
 }

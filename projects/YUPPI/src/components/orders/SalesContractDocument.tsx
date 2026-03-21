@@ -58,11 +58,14 @@ export default function SalesContractDocument({
     "16) The contract is not considered valid, will not be processed, and shipment will not be made unless it is signed on the specified date together with the Annex-1 FDS form."
   ];
 
+  const sellerName = order.seller.name.toUpperCase();
+  const isUSKM = sellerName.includes("MENSUCAT") || sellerName.includes("USKM");
+  const isUSKT = sellerName.includes("TEKSTİL") || sellerName.includes("TEKSTIL") || sellerName.includes("USKT");
+
   const termsToUse = isEng ? engTerms : trTerms;
 
   const renderHeader = () => {
-    const isMensucat = order.seller.name.toUpperCase().includes('MENSUCAT');
-    const logoSrc = isMensucat ? '/images/Defenni-M.jpg' : '/images/Defenni-T.jpg';
+    const logoSrc = isUSKM ? '/images/Defenni-M-Mavi.jpg' : isUSKT ? '/images/Defenni-T-Mavi.jpg' : '/images/Defenni-T-Mavi.jpg';
 
     return (
       <div className="border border-slate-800 text-[11px] leading-tight grid grid-cols-[265px_265px_265px_1fr] w-full h-[120px] min-h-[120px] max-h-[120px] overflow-hidden">
@@ -164,7 +167,7 @@ export default function SalesContractDocument({
              <h2 className="text-[25px] font-bold text-blue-600 tracking-widest uppercase mb-1">{isEng ? 'SALES CONTRACT' : 'SATIŞ SÖZLEŞMESİ'}</h2>
            </div>
            <div className="h-[60px] min-h-[60px] max-h-[60px] px-2 flex flex-col justify-center text-center font-normal">
-             <div className="font-bold text-[13px] uppercase">{isEng ? 'BUYER PO NO' : 'ALICI S. NO'}</div>
+             <div className="font-bold text-[13px] uppercase">{isEng ? "BUYER'S P.O. NO" : "ALICI SİPARİŞ NO"}</div>
              <div className="text-[11px] mt-0.5">{order.buyerPoNo || "-"}</div>
            </div>
         </div>
@@ -174,10 +177,10 @@ export default function SalesContractDocument({
           <thead>
             <tr className="border-b border-slate-800 font-bold text-[11px] text-center leading-snug">
                <th className="p-1.5 border-r border-slate-800 align-middle w-[110px] min-w-[110px] max-w-[110px]">{isEng ? 'BUYER MODEL NAME' : 'ALICI MODEL ADI'}</th>
-               <th className="p-1.5 border-r border-slate-800 align-middle w-[115px] min-w-[115px] max-w-[115px]">{isEng ? 'QUALITY NAME' : 'KALİTE İSMİ'}</th>
-               <th className="p-1.5 border-r border-slate-800 align-middle w-[80px] min-w-[80px] max-w-[80px]">{isEng ? 'QUALITY CODE' : 'KALİTE KODU'}</th>
-               <th className="p-1.5 border-r border-slate-800 align-middle w-[110px] min-w-[110px] max-w-[110px]">{isEng ? 'BUYER QUALITY & COLOR CODE' : 'ALICI KALİTE VE RENK KODU'}</th>
-               <th className="p-1.5 border-r border-slate-800 align-middle w-[115px] min-w-[115px] max-w-[115px]">{isEng ? 'QUALITY COMPOSITION' : 'KALİTE KOMPOZİSYONU'}</th>
+               <th className="p-1.5 border-r border-slate-800 align-middle w-[115px] min-w-[115px] max-w-[115px]">{isEng ? 'ARTICLE NAME' : 'KALİTE İSMİ'}</th>
+               <th className="p-1.5 border-r border-slate-800 align-middle w-[80px] min-w-[80px] max-w-[80px]">{isEng ? 'ARTICLE CODE' : 'KALİTE KODU'}</th>
+               <th className="p-1.5 border-r border-slate-800 align-middle w-[110px] min-w-[110px] max-w-[110px]">{isEng ? 'ARTICLE & COLOR CODE' : 'KALİTE VE RENK KODU'}</th>
+               <th className="p-1.5 border-r border-slate-800 align-middle w-[115px] min-w-[115px] max-w-[115px]">{isEng ? 'ARTICLE COMPOSITION' : 'KALİTE KOMPOSİZYONU'}</th>
                <th className="p-1.5 border-r border-slate-800 align-middle w-[60px] min-w-[60px] max-w-[60px]">{isEng ? 'WEIGHT' : 'GRAMAJ'}<br/>(+/- 5%)</th>
                <th className="p-1.5 border-r border-slate-800 align-middle w-[50px] min-w-[50px] max-w-[50px]">{isEng ? 'WIDTH' : 'EN'} (+/- 3%)</th>
                <th className="p-1.5 border-r border-slate-800 align-middle w-[105px] min-w-[105px] max-w-[105px]">{isEng ? 'EX-MILL' : 'FABRİKA ÇIKIŞ'}<br/>{isEng ? 'DATE' : 'TARİHİ'}</th>
@@ -241,7 +244,7 @@ export default function SalesContractDocument({
            <div className="grid grid-cols-[110px_195px_110px_115px_110px_105px_255px]">
               <div className="font-bold p-1.5 border-r border-b border-slate-800 uppercase">{isEng ? 'BANK NAME' : 'BANKA ADI'}</div>
               <div className="p-1.5 border-r border-b border-slate-800 uppercase min-w-0 break-words">{bankInfo?.bankName || "-"}</div>
-              <div className="font-bold p-1.5 border-r border-b border-slate-800 uppercase">{isEng ? 'BRANCH NAME & CODE' : 'ŞUBE ADI & KODU'}</div>
+              <div className="font-bold p-1.5 border-r border-b border-slate-800 uppercase">{isEng ? 'BCH NAME & NO' : 'ŞUBE ADI & KODU'}</div>
               <div className="p-1.5 border-r border-b border-slate-800 uppercase text-center min-w-0 break-words">{bankInfo?.branch || "-"}</div>
               <div className="font-bold p-1.5 border-r border-b border-slate-800 uppercase text-center bg-white">{isEng ? 'SWIFT CODE' : 'SWIFT KODU'}</div>
               <div className="p-1.5 uppercase border-r border-b border-slate-800 text-center font-normal min-w-0 break-all flex items-center justify-center">{bankInfo?.swift || "-"}</div>
@@ -265,8 +268,8 @@ export default function SalesContractDocument({
         <div className="flex justify-between items-start text-[11px] text-center border-x border-b border-slate-800 relative h-[90px] min-h-[90px] max-h-[90px] overflow-hidden bg-white">
           <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
             <img 
-              src={order.seller.name.toUpperCase().includes('MENSUCAT') ? '/images/Defenni-M-Mavi.jpg' : '/images/Defenni-T-Mavi.jpg'} 
-              onError={(e) => { e.currentTarget.src = order.seller.name.toUpperCase().includes('MENSUCAT') ? '/images/Defenni-M.jpg' : '/images/Defenni-T.jpg'; }}
+              src={isUSKM ? '/images/Defenni-M-Mavi.jpg' : isUSKT ? '/images/Defenni-T-Mavi.jpg' : '/images/Defenni-T-Mavi.jpg'} 
+              onError={(e) => { e.currentTarget.src = isUSKM ? '/images/Defenni-M.jpg' : '/images/Defenni-T.jpg'; }}
               alt="Company Stamp" 
               className="w-[200px] h-[85px] object-contain" 
             />
@@ -275,7 +278,7 @@ export default function SalesContractDocument({
             <div className="font-bold text-[11px] underline text-left">{isEng ? 'AUTHORIZED SIGNATURE & STAMP' : 'YETKİLİ İMZA VE KAŞE'}</div>
             {isSigned && (
               <img 
-                src={order.seller.name.toUpperCase().includes('MENSUCAT') ? '/images/USKM-Kase-Imza.png' : '/images/USKT-Kase-Imza.png'} 
+                src={isUSKM ? '/images/USKM-Kase-Imza.png' : isUSKT ? '/images/USKT-Kase-Imza.png' : '/images/USKT-Kase-Imza.png'} 
                 alt="Seller Signature" 
                 className="w-[180px] h-[65px] object-contain mt-1" 
               />
@@ -302,8 +305,8 @@ export default function SalesContractDocument({
         <div className="flex justify-between items-start text-[11px] text-center border-x border-b border-slate-800 bg-white shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.1)] relative z-10 w-full mt-[-10px] h-[90px] min-h-[90px] max-h-[90px] overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
             <img 
-              src={order.seller.name.toUpperCase().includes('MENSUCAT') ? '/images/Defenni-M-Mavi.jpg' : '/images/Defenni-T-Mavi.jpg'} 
-              onError={(e) => { e.currentTarget.src = order.seller.name.toUpperCase().includes('MENSUCAT') ? '/images/Defenni-M.jpg' : '/images/Defenni-T.jpg'; }}
+              src={isUSKM ? '/images/Defenni-M-Mavi.jpg' : isUSKT ? '/images/Defenni-T-Mavi.jpg' : '/images/Defenni-T-Mavi.jpg'} 
+              onError={(e) => { e.currentTarget.src = isUSKM ? '/images/Defenni-M.jpg' : '/images/Defenni-T.jpg'; }}
               alt="Company Stamp" 
               className="w-[200px] h-[85px] object-contain" 
             />
@@ -312,7 +315,7 @@ export default function SalesContractDocument({
             <div className="font-bold text-[11px] underline text-left">{isEng ? 'AUTHORIZED SIGNATURE & STAMP' : 'YETKİLİ İMZA VE KAŞE'}</div>
             {isSigned && (
               <img 
-                src={order.seller.name.toUpperCase().includes('MENSUCAT') ? '/images/USKM-Kase-Imza.png' : '/images/USKT-Kase-Imza.png'} 
+                src={isUSKM ? '/images/USKM-Kase-Imza.png' : isUSKT ? '/images/USKT-Kase-Imza.png' : '/images/USKT-Kase-Imza.png'} 
                 alt="Seller Signature" 
                 className="w-[180px] h-[65px] object-contain mt-1" 
               />
