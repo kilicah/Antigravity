@@ -148,14 +148,15 @@ model OrderItem {
   // Specific Item Requests
   bsRequest   Boolean @default(false)
   ldRequest   String? @default("WAIT") // YES, WAIT, NO
+  ldDetail    String?
   ppsRequest  Boolean @default(false)
   topsRequest Boolean @default(false)
-  srlRequest  Boolean @default(false)
+  srlRequest  String? @default("WAIT") // YES, WAIT, NO
   srlDetail   String?
   fdRequest   Boolean @default(false)
   pshpRequest Boolean @default(false)
   susRequest  Boolean @default(false)
-  ltRequest   Boolean @default(false)
+  ltRequest   String? @default("WAIT") // YES, WAIT, NO
   ltDetail    String?
 
   // Production Tracking per Item

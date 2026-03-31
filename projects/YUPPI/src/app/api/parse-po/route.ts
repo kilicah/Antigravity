@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const pdfParse = require("pdf-parse");
-
 // We extract text from the PDF, and then ask Gemini to shape it.
 export async function POST(req: NextRequest) {
+  // Require dynamically to avoid Next.js build-time DOMMatrix polyfill errors
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const pdfParse = require("pdf-parse");
+
   try {
     const data = await req.formData();
     const file: File | null = data.get('file') as unknown as File;

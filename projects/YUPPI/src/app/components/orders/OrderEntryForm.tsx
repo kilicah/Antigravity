@@ -67,8 +67,8 @@ export default function OrderEntryForm({ companies, initialData }: any) {
     if (!initialData) return defaultFormState;
     const sanitized: any = { ...initialData };
     for (const key in defaultFormState) {
-      if (sanitized[key] === null) {
-        sanitized[key] = "";
+      if (sanitized[key] === null || sanitized[key] === undefined) {
+        sanitized[key] = defaultFormState[key as keyof typeof defaultFormState];
       }
     }
     return sanitized;
@@ -126,14 +126,15 @@ export default function OrderEntryForm({ companies, initialData }: any) {
     deliveryDate: "",
     bsRequest: false,
     ldRequest: "WAIT",
+    ldDetail: "",
     ppsRequest: false,
     topsRequest: false,
-    srlRequest: false,
+    srlRequest: "WAIT",
     srlDetail: "",
     fdRequest: false,
     pshpRequest: false,
     susRequest: false,
-    ltRequest: false,
+    ltRequest: "WAIT",
     ltDetail: "",
     bdd: "",
     bq: "",
@@ -155,15 +156,27 @@ export default function OrderEntryForm({ companies, initialData }: any) {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
 
+    // Her metin alanı için otomatik büyük harf (Türkçe kurallarına göre)
+    let finalValue = value;
+    if (typeof value === 'string' && type !== 'date' && type !== 'number' && name !== 'language' && name !== 'currency' && name !== 'unit') {
+      finalValue = value.toLocaleUpperCase('tr-TR');
+    }
+
     setFormData((prev: any) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : finalValue
     }));
   };
 
   const handleItemChange = (index: number, field: string, value: string | number | boolean) => {
     const newItems = [...items];
-    newItems[index] = { ...newItems[index], [field]: value };
+    
+    let finalValue = value;
+    if (typeof value === 'string' && !['quantity', 'unitPrice', 'weight', 'width', 'apQuantity'].includes(field)) {
+      finalValue = value.toLocaleUpperCase('tr-TR');
+    }
+    
+    newItems[index] = { ...newItems[index], [field]: finalValue };
     
     // Auto calculate total amount
     if (field === 'quantity' || field === 'unitPrice') {
@@ -193,12 +206,12 @@ export default function OrderEntryForm({ companies, initialData }: any) {
       ldDetail: "",
       ppsRequest: false,
       topsRequest: false,
-      srlRequest: false,
+      srlRequest: 'WAIT',
       srlDetail: "",
       fdRequest: false,
       pshpRequest: false,
       susRequest: false,
-      ltRequest: false,
+      ltRequest: 'WAIT',
       ltDetail: "",
       bdd: "",
       bq: "",
@@ -788,7 +801,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
 
           <div className="mt-4">
             <label className="block text-sm font-bold text-slate-700 mb-2">
-              {formData.language === 'ENG' ? 'SPECIAL PACKING INSTRUCTIONS' : 'OZEL PAKETLEME TALIMATI'}
+              {formData.language === 'ENG' ? 'SPECIAL NOTES' : 'ÖZEL NOTLAR'}
             </label>
             <textarea 
               name="packingInstructions" 
@@ -796,7 +809,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
               onChange={handleInputChange}
               rows={2}
               className="w-full px-4 py-2 text-sm border border-slate-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none placeholder-slate-400"
-              placeholder="Örn: Naylon poşet içine, her 50 adette bir ayraç konacak..."
+              placeholder="Üretim, sevkiyat veya işlemler için özel notlarınızı girebilirsiniz..."
             />
           </div>
         </div>
@@ -996,12 +1009,16 @@ export default function OrderEntryForm({ companies, initialData }: any) {
                         <input type="checkbox" checked={item.bsRequest || false} onChange={(e) => handleItemChange(index, "bsRequest", e.target.checked as boolean)} className="rounded text-blue-600" />
                         <span title="Buyer's Sample" className="cursor-help border-b border-dotted border-slate-400">B.S</span>
                       </label>
-                      <div className="flex flex-col gap-1 items-start mt-1 mb-1 border-t border-slate-200 pt-1 pb-1">
+                      <label className="flex items-center gap-1 cursor-pointer border-t border-slate-200 pt-1">
+                        <input type="checkbox" checked={item.ppsRequest || false} onChange={(e) => handleItemChange(index, "ppsRequest", e.target.checked as boolean)} className="rounded text-blue-600" />
+                        <span title="Pre-Production Sample" className="cursor-help border-b border-dotted border-slate-400">PPS</span>
+                      </label>
+                      <div className="flex flex-row gap-2 justify-between items-center mt-1 mb-0 border-t border-slate-200 pt-1 pb-1">
                         <span title="Lab Dip" className="cursor-help border-b border-dotted border-slate-400 font-medium text-blue-800">L/D</span>
                         <select 
                           value={item.ldRequest || 'WAIT'} 
                           onChange={(e) => handleItemChange(index, "ldRequest", e.target.value)}
-                          className={`w-full px-1 py-1 rounded text-xs font-bold border ${
+                          className={`w-[65px] px-1 py-1 rounded text-[11px] font-bold border ${
                             item.ldRequest === 'YES' ? 'bg-green-100 text-green-700 border-green-300' :
                             item.ldRequest === 'NO' ? 'bg-slate-100 text-slate-500 border-slate-300' :
                             'bg-red-100 text-red-700 border-red-300'
@@ -1012,10 +1029,9 @@ export default function OrderEntryForm({ companies, initialData }: any) {
                           <option value="NO">NO</option>
                         </select>
                       </div>
-                      <label className="flex items-center gap-1 cursor-pointer">
-                        <input type="checkbox" checked={item.ppsRequest || false} onChange={(e) => handleItemChange(index, "ppsRequest", e.target.checked as boolean)} className="rounded text-blue-600" />
-                        <span title="Pre-Production Sample" className="cursor-help border-b border-dotted border-slate-400">PPS</span>
-                      </label>
+                      {item.ldRequest === 'YES' && (
+                        <input type="text" value={item.ldDetail || ''} onChange={(e) => handleItemChange(index, "ldDetail", e.target.value)} placeholder="L/D Açıklama..." className="w-full px-1 py-1 border border-slate-300 rounded text-xs mb-1" />
+                      )}
                     </div>
                   </td>
                   <td className="p-1.5 border-l border-slate-200 align-top min-w-[140px]">
@@ -1024,17 +1040,29 @@ export default function OrderEntryForm({ companies, initialData }: any) {
                         <input type="checkbox" checked={item.topsRequest || false} onChange={(e) => handleItemChange(index, "topsRequest", e.target.checked as boolean)} className="rounded text-blue-600" />
                         <span title="Top of Production Sample" className="cursor-help border-b border-dotted border-slate-400">TOPS</span>
                       </label>
-                      <label className="flex items-center gap-1 cursor-pointer">
-                        <input type="checkbox" checked={item.srlRequest || false} onChange={(e) => handleItemChange(index, "srlRequest", e.target.checked as boolean)} className="rounded text-blue-600" />
-                        <span title="Specific Roll Label" className="cursor-help border-b border-dotted border-slate-400">SRL</span>
-                      </label>
-                      {item.srlRequest && (
-                        <input type="text" value={item.srlDetail || ''} onChange={(e) => handleItemChange(index, "srlDetail", e.target.value)} placeholder="SRL Açıklama..." className="w-full px-1 py-1 border border-slate-300 rounded text-xs" />
-                      )}
-                      <label className="flex items-center gap-1 cursor-pointer">
+                      <label className="flex items-center gap-1 cursor-pointer border-t border-slate-200 pt-1">
                         <input type="checkbox" checked={item.fdRequest || false} onChange={(e) => handleItemChange(index, "fdRequest", e.target.checked as boolean)} className="rounded text-blue-600" />
                         <span title="Fabric Direction" className="cursor-help border-b border-dotted border-slate-400">FD</span>
                       </label>
+                      <div className="flex flex-row gap-2 justify-between items-center mt-1 mb-0 border-t border-slate-200 pt-1 pb-1">
+                        <span title="Specific Roll Label" className="cursor-help border-b border-dotted border-slate-400 font-medium text-blue-800">SRL</span>
+                        <select 
+                          value={item.srlRequest || 'WAIT'} 
+                          onChange={(e) => handleItemChange(index, "srlRequest", e.target.value)}
+                          className={`w-[65px] px-1 py-1 rounded text-[11px] font-bold border ${
+                            item.srlRequest === 'YES' ? 'bg-green-100 text-green-700 border-green-300' :
+                            item.srlRequest === 'NO' ? 'bg-slate-100 text-slate-500 border-slate-300' :
+                            'bg-red-100 text-red-700 border-red-300'
+                          }`}
+                        >
+                          <option value="YES">YES</option>
+                          <option value="WAIT">WAIT</option>
+                          <option value="NO">NO</option>
+                        </select>
+                      </div>
+                      {item.srlRequest === 'YES' && (
+                        <input type="text" value={item.srlDetail || ''} onChange={(e) => handleItemChange(index, "srlDetail", e.target.value)} placeholder="SRL Açıklama..." className="w-full px-1 py-1 border border-slate-300 rounded text-xs mb-1" />
+                      )}
                     </div>
                   </td>
                   <td className="p-1.5 border-l border-slate-200 align-top min-w-[140px]">
@@ -1043,16 +1071,28 @@ export default function OrderEntryForm({ companies, initialData }: any) {
                         <input type="checkbox" checked={item.pshpRequest || false} onChange={(e) => handleItemChange(index, "pshpRequest", e.target.checked as boolean)} className="rounded text-blue-600" />
                         <span title="Partial Shipment" className="cursor-help border-b border-dotted border-slate-400">PSHP</span>
                       </label>
-                      <label className="flex items-center gap-1 cursor-pointer">
+                      <label className="flex items-center gap-1 cursor-pointer border-t border-slate-200 pt-1">
                         <input type="checkbox" checked={item.susRequest || false} onChange={(e) => handleItemChange(index, "susRequest", e.target.checked as boolean)} className="rounded text-blue-600" />
                         <span title="Sustainability" className="cursor-help border-b border-dotted border-slate-400">SUS</span>
                       </label>
-                      <label className="flex items-center gap-1 cursor-pointer">
-                        <input type="checkbox" checked={item.ltRequest || false} onChange={(e) => handleItemChange(index, "ltRequest", e.target.checked as boolean)} className="rounded text-blue-600" />
-                        <span title="Labrotory Test" className="cursor-help border-b border-dotted border-slate-400">LT</span>
-                      </label>
-                      {item.ltRequest && (
-                        <input type="text" value={item.ltDetail || ''} onChange={(e) => handleItemChange(index, "ltDetail", e.target.value)} placeholder="LT Açıklama..." className="w-full px-1 py-1 border border-slate-300 rounded text-xs" />
+                      <div className="flex flex-row gap-2 justify-between items-center mt-1 mb-0 border-t border-slate-200 pt-1 pb-1">
+                        <span title="Laboratory Test" className="cursor-help border-b border-dotted border-slate-400 font-medium text-blue-800">LT</span>
+                        <select 
+                          value={item.ltRequest || 'WAIT'} 
+                          onChange={(e) => handleItemChange(index, "ltRequest", e.target.value)}
+                          className={`w-[65px] px-1 py-1 rounded text-[11px] font-bold border ${
+                            item.ltRequest === 'YES' ? 'bg-green-100 text-green-700 border-green-300' :
+                            item.ltRequest === 'NO' ? 'bg-slate-100 text-slate-500 border-slate-300' :
+                            'bg-red-100 text-red-700 border-red-300'
+                          }`}
+                        >
+                          <option value="YES">YES</option>
+                          <option value="WAIT">WAIT</option>
+                          <option value="NO">NO</option>
+                        </select>
+                      </div>
+                      {item.ltRequest === 'YES' && (
+                        <input type="text" value={item.ltDetail || ''} onChange={(e) => handleItemChange(index, "ltDetail", e.target.value)} placeholder="LT Açıklama..." className="w-full px-1 py-1 border border-slate-300 rounded text-xs mb-1" />
                       )}
                     </div>
                   </td>

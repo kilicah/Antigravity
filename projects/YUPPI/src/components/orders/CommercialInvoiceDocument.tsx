@@ -64,12 +64,12 @@ export default function CommercialInvoiceDocument({ order, bankInfo }: { order: 
   const deliveryDest = order.deliveryDestination ? `${deliveryTerms} ${order.deliveryDestination}` : deliveryTerms;
 
   return (
-    <div className="w-full flex flex-col items-center">
+    <div className="w-full flex flex-col items-center print:p-[10mm]">
       <style>{`
         @media print {
           @page {
             size: A4 portrait;
-            margin: 10mm;
+            margin: 0;
           }
           body {
             -webkit-print-color-adjust: exact;
@@ -223,7 +223,7 @@ export default function CommercialInvoiceDocument({ order, bankInfo }: { order: 
               {/* PO Alanı (50px) */}
               <div className="h-[50px] flex flex-col justify-center px-4 leading-snug">
                   <div className="font-bold uppercase text-[11px] mb-0.5">{t.customerPo}</div>
-                  <div className="font-bold text-[12px]">{order.buyerPoNo || "-"}</div>
+                  <div className="font-bold text-[12px] uppercase">{order.buyerPoNo || "-"}</div>
               </div>
           </div>
         </div>

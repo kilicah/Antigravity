@@ -12,7 +12,9 @@ export default async function EditOrderPage({
   const order = await prisma.order.findUnique({
     where: { id },
     include: {
-      items: true
+      items: true,
+      productionOrder: true,
+      invoice: true
     }
   });
 

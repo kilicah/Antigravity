@@ -130,7 +130,7 @@ export default function SalesContractDocument({
     <div className="w-full">
       <style dangerouslySetInnerHTML={{__html: `
         @media print {
-          @page { size: A4 landscape; margin: 10mm; }
+          @page { size: A4 landscape; margin: 0; }
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
       `}} />
@@ -184,7 +184,7 @@ export default function SalesContractDocument({
         </div>
       </div>
 
-      <div className="w-full overflow-x-auto print:overflow-visible">
+      <div className="w-full overflow-x-auto print:overflow-visible print:px-[10mm] print:py-[10mm]">
         <div className="mx-auto w-[1002px] min-w-[1002px] max-w-[1002px] space-y-4 print:space-y-0 text-black">
         {/* YAZDIRILABİLİR SÖZLEŞME ALANI (SAYFA 1) */}
         <div className="bg-white print:p-0 font-['Arial_Narrow',_'Arial_Narrow_MT',_Arial,_sans-serif] text-[11px] relative overflow-hidden min-h-[1050px] print:min-h-0 print:h-auto">
@@ -192,15 +192,16 @@ export default function SalesContractDocument({
 
         {/* Sub-header block (SATIŞ SÖZLEŞMESİ) */}
         <div className="border-x border-b border-slate-800 grid grid-cols-[205px_590px_1fr] w-full bg-white items-stretch">
-           <div className="font-bold text-[11px] px-2 py-4 border-r border-slate-800 flex items-center justify-center text-center uppercase leading-tight">
-             
+           <div className="font-bold text-[11px] px-2 py-2 border-r border-slate-800 flex flex-col items-center justify-center text-center uppercase leading-tight">
+             <span>{isEng ? 'ALL GOODS ARE OF TURKISH ORIGIN.' : 'TÜM MALLAR TÜRK MENŞELİDİR.'}</span>
+             <span className="mt-1">{isEng ? 'OUR TEXTILE PRODUCTS AZO FREE.' : 'TEKSTİL ÜRÜNLERİMİZ AZO İÇERMEZ.'}</span>
            </div>
            <div className="p-2 flex items-center justify-center text-center border-r border-slate-800">
              <h2 className="text-[25px] font-bold text-blue-600 tracking-widest uppercase mb-1">{isEng ? 'SALES CONTRACT' : 'SATIŞ SÖZLEŞMESİ'}</h2>
            </div>
            <div className="h-[60px] min-h-[60px] max-h-[60px] px-2 flex flex-col justify-center text-center font-normal">
              <div className="font-bold text-[13px] uppercase">{isEng ? "BUYER'S P.O. NO" : "ALICI SİPARİŞ NO"}</div>
-             <div className="text-[11px] mt-0.5">{order.buyerPoNo || "-"}</div>
+             <div className="text-[11px] mt-0.5 uppercase">{order.buyerPoNo || "-"}</div>
            </div>
         </div>
 
@@ -214,10 +215,10 @@ export default function SalesContractDocument({
                <th className="p-1.5 border-r border-slate-800 align-middle w-[110px] min-w-[110px] max-w-[110px]">{isEng ? 'ARTICLE & COLOR CODE' : 'KALİTE VE RENK KODU'}</th>
                <th className="p-1.5 border-r border-slate-800 align-middle w-[115px] min-w-[115px] max-w-[115px]">{isEng ? 'ARTICLE COMPOSITION' : 'KALİTE KOMPOSİZYONU'}</th>
                <th className="p-1.5 border-r border-slate-800 align-middle w-[60px] min-w-[60px] max-w-[60px]">{isEng ? 'WEIGHT' : 'GRAMAJ'}<br/>(+/- 5%)</th>
-               <th className="p-1.5 border-r border-slate-800 align-middle w-[50px] min-w-[50px] max-w-[50px]">{isEng ? 'WIDTH' : 'EN'} (+/- 3%)</th>
+               <th className="p-1.5 border-r border-slate-800 align-middle w-[50px] min-w-[50px] max-w-[50px]">{isEng ? 'WIDTH' : 'EN'}<br/>(+/- 3%)</th>
                <th className="p-1.5 border-r border-slate-800 align-middle w-[105px] min-w-[105px] max-w-[105px]">{isEng ? 'EX-MILL' : 'FABRİKA ÇIKIŞ'}<br/>{isEng ? 'DATE' : 'TARİHİ'}</th>
                <th className="py-1.5 pl-1.5 pr-[8px] border-r border-slate-800 align-middle w-[95px] min-w-[95px] max-w-[95px] text-right whitespace-nowrap">{isEng ? 'QUANTITY' : 'MİKTAR'} <span className="font-bold text-[11px]">MT</span></th>
-               <th className="p-1.5 border-r border-slate-800 align-middle w-[60px] min-w-[60px] max-w-[60px] text-right whitespace-nowrap">{isEng ? 'UNIT' : 'BİRİM'}<br/>{isEng ? 'PRICE' : 'FİYAT'} <span className="font-bold text-[11px]">{order.currency}</span></th>
+               <th className="p-1.5 border-r border-slate-800 align-middle w-[60px] min-w-[60px] max-w-[60px] text-center whitespace-nowrap">{isEng ? 'UNIT' : 'BİRİM'}<br/>{isEng ? 'PRICE' : 'FİYAT'} <span className="font-bold text-[11px]">{order.currency}</span></th>
                <th className="p-1.5 align-middle text-right w-auto whitespace-nowrap">{isEng ? 'TOTAL AMOUNT' : 'TOPLAM TUTAR'}</th>
             </tr>
           </thead>
@@ -239,7 +240,7 @@ export default function SalesContractDocument({
             ))}
              <tr className="border-t border-slate-800 text-[11px]">
                 <td colSpan={6} className="p-2 border-r border-slate-800 align-middle w-[590px] min-w-[590px] max-w-[590px]">
-                   {isEng ? 'QUANTITY TOLERANCE:' : 'METRAJ TOLERANSI:'} {order.tolerance || "-"}%
+                   {isEng ? 'QUANTITY TOLERANCE' : 'METRAJ TOLERANSI'} %{order.tolerance?.replace('%', '') || "-"}
                 </td>
                 <td colSpan={2} className="p-2 text-center align-middle border-r border-slate-800 whitespace-nowrap w-[155px] min-w-[155px] max-w-[155px] text-[12px] font-bold">{isEng ? 'GRAND TOTALS' : 'GENEL TOPLAMLAR'}</td>
                 <td className="py-2 pl-2 pr-[10px] text-right border-r border-slate-800 w-[95px] min-w-[95px] max-w-[95px] text-[12px] font-bold">
@@ -259,9 +260,9 @@ export default function SalesContractDocument({
               <div className="p-1.5 border-r border-slate-800 uppercase min-w-0 break-words">{displayPaymentTerms}</div>
               <div className="font-bold p-1.5 border-r border-slate-800 uppercase">{isEng ? 'SELLER REP.' : 'SATICI TEMSİLCİSİ'}</div>
               <div className="p-1.5 border-r border-slate-800 text-center uppercase min-w-0 break-words">{order.sellerRep ? (order.sellerRep.includes('|') ? (isEng ? (order.sellerRep.split('|')[1] || order.sellerRep.split('|')[0]) : order.sellerRep.split('|')[0]) : order.sellerRep) : "-"}</div>
-              <div className="p-1.5 text-center text-[11px] text-blue-600 border-r border-slate-800 underline min-w-0 break-all flex items-center justify-center">-</div>
+              <div className="p-1.5 text-center text-[11px] text-blue-600 underline min-w-0 break-all flex items-center justify-center">-</div>
            </div>
-           <div className="grid grid-cols-[110px_420px_110px_200px_160px] border-b border-slate-800">
+           <div className="grid grid-cols-[110px_420px_110px_200px_1fr] border-b border-slate-800">
               <div className="font-bold p-1.5 border-r border-slate-800 uppercase">{isEng ? 'DELIVERY TERMS' : 'TESLİMAT ŞEKLİ'}</div>
               <div className="p-1.5 border-r border-slate-800 uppercase min-w-0 break-words">
                  {displayDeliveryTerms} 
@@ -269,19 +270,19 @@ export default function SalesContractDocument({
               </div>
               <div className="font-bold p-1.5 border-r border-slate-800 uppercase">{isEng ? 'BUYER REP.' : 'ALICI TEMSİLCİSİ'}</div>
               <div className="p-1.5 border-r border-slate-800 text-center uppercase min-w-0 break-words">{order.buyerRep ? (order.buyerRep.includes('|') ? (isEng ? (order.buyerRep.split('|')[1] || order.buyerRep.split('|')[0]) : order.buyerRep.split('|')[0]) : order.buyerRep) : "-"}</div>
-              <div className="p-1.5 text-center text-[11px] text-blue-600 border-r border-slate-800 underline min-w-0 break-all flex items-center justify-center">-</div>
+              <div className="p-1.5 text-center text-[11px] text-blue-600 underline min-w-0 break-all flex items-center justify-center">-</div>
            </div>
 
            {/* Bank Info Rows */}
-           <div className="grid grid-cols-[110px_195px_110px_115px_110px_105px_255px]">
+           <div className="grid grid-cols-[110px_195px_110px_115px_110px_105px_1fr]">
               <div className="font-bold p-1.5 border-r border-b border-slate-800 uppercase">{isEng ? 'BANK NAME' : 'BANKA ADI'}</div>
               <div className="p-1.5 border-r border-b border-slate-800 uppercase min-w-0 break-words">{bankInfo?.bankName || "-"}</div>
               <div className="font-bold p-1.5 border-r border-b border-slate-800 uppercase">{isEng ? 'BCH NAME & NO' : 'ŞUBE ADI & KODU'}</div>
               <div className="p-1.5 border-r border-b border-slate-800 uppercase text-center min-w-0 break-words">{bankInfo?.branch || "-"}</div>
               <div className="font-bold p-1.5 border-r border-b border-slate-800 uppercase text-center bg-white">{isEng ? 'SWIFT CODE' : 'SWIFT KODU'}</div>
               <div className="p-1.5 uppercase border-r border-b border-slate-800 text-center font-normal min-w-0 break-all flex items-center justify-center">{bankInfo?.swift || "-"}</div>
-              <div className="p-1.5 flex items-center justify-center text-center font-bold text-[11px] uppercase">
-                 {isEng ? 'ALL GOODS ARE OF TURKISH ORIGIN.' : 'TÜM MALLAR TÜRK MENŞELİDİR.'}
+              <div className="p-1.5 flex flex-col items-center justify-center text-center font-bold text-[11px] uppercase">
+                 {order.brand ? (isEng ? 'ORDER BRAND' : 'SİPARİŞ MARKASI') : ''}
               </div>
            </div>
            <div className="grid grid-cols-[110px_195px_110px_225px_105px_1fr]">
@@ -290,8 +291,8 @@ export default function SalesContractDocument({
               <div className="font-bold p-1.5 border-r border-slate-800 uppercase">{isEng ? 'IBAN NO' : 'IBAN NO'}</div>
               <div className="p-1.5 border-r border-slate-800 tracking-wider uppercase min-w-0 break-all">{bankInfo?.iban || "-"}</div>
               <div className="font-bold p-1.5 border-r border-slate-800 text-center items-center flex justify-center text-[11px] italic">{order.currency}</div>
-              <div className="p-1.5 flex items-center justify-center text-center font-bold text-[11px] uppercase">
-                 {isEng ? 'OUR TEXTILE PRODUCTS NO AZO.' : 'TEKSTİL ÜRÜNLERİMİZ AZO İÇERMEZ.'}
+              <div className="p-1.5 flex items-center justify-center text-center font-bold text-[12px] uppercase">
+                 {order.brand?.name || ''}
               </div>
            </div>
         </div>
@@ -325,10 +326,10 @@ export default function SalesContractDocument({
 
       </div>
 
-      <div className="pagebreak print:break-before-page border border-transparent w-full p-4 print:p-0 min-h-[1050px] font-['Arial_Narrow',_'Arial_Narrow_MT',_Arial,_sans-serif]">
+      <div className="pagebreak print:break-before-page border border-transparent w-[1002px] print:w-full print:p-0 min-h-0 font-['Arial_Narrow',_'Arial_Narrow_MT',_Arial,_sans-serif] mt-12 print:mt-[10mm]">
         {renderHeader()}
-        <div className="border border-t-0 border-slate-800 p-6 text-[11px] leading-snug text-justify bg-white space-y-1 pb-10">
-          <h3 className="font-bold text-[13px] text-center mb-6 uppercase tracking-widest">{isEng ? 'CONTRACT GENERAL CONDITIONS' : 'SÖZLEŞME GENEL ŞARTLARI'}</h3>
+        <div className="border border-t-0 border-slate-800 p-4 text-[11px] leading-tight text-justify bg-white space-y-0.5 pb-4">
+          <h3 className="font-bold text-[12px] text-center mb-2 uppercase tracking-widest">{isEng ? 'CONTRACT GENERAL CONDITIONS' : 'SÖZLEŞME GENEL ŞARTLARI'}</h3>
           {termsToUse.map((term, i) => (
              <div key={i}>{term}</div>
           ))}
