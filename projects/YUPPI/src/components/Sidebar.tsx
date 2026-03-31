@@ -59,7 +59,7 @@ export default function Sidebar() {
       
       <div className="p-6 border-t border-slate-800/80 text-xs text-slate-500 flex items-center justify-between">
         <span className="font-medium">USK Global</span>
-        <span className="bg-slate-800 px-2 py-1 rounded-md text-[10px] uppercase tracking-wider">v1.02</span>
+        <span className="bg-slate-800 px-2 py-1 rounded-md text-[10px] uppercase tracking-wider">v1.06</span>
       </div>
     </aside>
   );

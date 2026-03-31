@@ -15,7 +15,7 @@ const DELIVERY_TERMS_INFO: Record<string, { market: string, desc: string }> = {
 export default function OrderEntryForm({ companies, initialData }: any) {
   const router = useRouter();
   
-  const [formData, setFormData] = useState(initialData || {
+  const defaultFormState = {
     contractDate: new Date().toISOString().split('T')[0],
     buyerPoNo: "",
     sellerId: "",
@@ -60,6 +60,18 @@ export default function OrderEntryForm({ companies, initialData }: any) {
     customsCompanyId: "",
     logisticsCompanyId: "",
     insuranceCompanyId: "",
+  };
+
+  // Safely initialize form data, replacing nulls with empty strings to prevent React input errors
+  const [formData, setFormData] = useState(() => {
+    if (!initialData) return defaultFormState;
+    const sanitized: any = { ...initialData };
+    for (const key in defaultFormState) {
+      if (sanitized[key] === null) {
+        sanitized[key] = "";
+      }
+    }
+    return sanitized;
   });
 
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
@@ -315,21 +327,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
               placeholder="Eğer Varsa"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              {formData.language === 'ENG' ? 'CONTRACT LANGUAGE' : 'SOZLESME DILI'} <span className="text-red-500">*</span>
-            </label>
-            <select 
-              name="language" 
-              required
-              value={formData.language}
-              onChange={handleInputChange}
-              className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white"
-            >
-              <option value="TR">Türkçe</option>
-              <option value="ENG">İngilizce (English)</option>
-            </select>
-          </div>
+
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">

@@ -7,12 +7,25 @@ import PrintButton from "@/components/PrintButton";
 
 export default function SalesContractDocument({
   order,
-  bankInfo,
-  isEng,
-  displayPaymentTerms,
-  displayDeliveryTerms
-}: any) {
+  bankInfo
+}: {
+  order: any,
+  bankInfo: any
+}) {
+  const [isEng, setIsEng] = useState(order.language === "ENG");
   const [isSigned, setIsSigned] = useState(false);
+
+  let displayPaymentTerms = order.paymentTerms || "-";
+  if (order.paymentTerms && order.paymentTerms.includes('|')) {
+     const parts = order.paymentTerms.split('|');
+     displayPaymentTerms = isEng ? parts[1].trim() : parts[0].trim();
+  }
+
+  let displayDeliveryTerms = order.deliveryTerms || "-";
+  if (order.deliveryTerms && order.deliveryTerms.includes('|')) {
+     const parts = order.deliveryTerms.split('|');
+     displayDeliveryTerms = isEng ? (parts[1] || parts[0]).trim() : parts[0].trim();
+  }
 
   const totalQuantity = order.items.reduce((sum: number, item: any) => sum + item.quantity, 0);
   const totalAmount = order.items.reduce((sum: number, item: any) => sum + item.totalAmount, 0);
@@ -117,8 +130,8 @@ export default function SalesContractDocument({
     <div className="w-full">
       <style dangerouslySetInnerHTML={{__html: `
         @media print {
-          @page { size: A4 landscape; margin: 0; }
-          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 10mm; }
+          @page { size: A4 landscape; margin: 10mm; }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
       `}} />
       {/* BAŞLIK & BUTONLAR */}
@@ -135,12 +148,31 @@ export default function SalesContractDocument({
             &larr; Geri Dön
           </Link>
           <Link 
+            href={`/orders/${order.id}/tracking`}
+            className="px-4 py-2 text-indigo-700 bg-indigo-50 border border-indigo-200 shadow-sm rounded hover:bg-indigo-100 transition-colors flex items-center gap-2 font-bold"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            Sipariş Takip Tablosu
+          </Link>
+          <Link 
             href={`/orders/${order.id}/edit`}
             className="px-4 py-2 text-blue-600 bg-white border border-blue-300 shadow-sm rounded hover:bg-blue-50 transition-colors flex items-center gap-2"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
             Düzenle
           </Link>
+          <button
+            onClick={() => setIsEng(false)}
+            className={`px-4 py-2 font-bold rounded shadow-sm border ${!isEng ? 'bg-indigo-600 text-white border-indigo-700' : 'bg-white text-slate-600 hover:bg-slate-50 border-slate-300'}`}
+          >
+            🇹🇷 TÜRKÇE
+          </button>
+          <button
+            onClick={() => setIsEng(true)}
+            className={`px-4 py-2 font-bold rounded shadow-sm border ${isEng ? 'bg-indigo-600 text-white border-indigo-700' : 'bg-white text-slate-600 hover:bg-slate-50 border-slate-300'}`}
+          >
+            🇬🇧 ENGLISH
+          </button>
           <button 
             onClick={() => setIsSigned(!isSigned)}
             className="px-4 py-2 text-white bg-emerald-600 shadow-sm rounded hover:bg-emerald-700 transition-colors flex items-center gap-2"
@@ -191,21 +223,21 @@ export default function SalesContractDocument({
           </thead>
           <tbody>
             {order.items.map((item: any) => (
-              <tr key={item.id} className="border-b border-slate-300">
-                 <td className="p-1.5 border-r border-slate-800 uppercase">{item.buyerModelName || "-"}</td>
-                 <td className="p-1.5 border-r border-slate-800 uppercase">{item.qualityName || "-"}</td>
-                 <td className="p-1.5 border-r border-slate-800 uppercase">{item.qualityCode || "-"}</td>
-                 <td className="p-1.5 border-r border-slate-800 uppercase leading-snug">{item.colorCode || "-"}</td>
-                 <td className="p-1.5 border-r border-slate-800 uppercase leading-snug">{item.composition || "-"}</td>
-                 <td className="p-1.5 border-r border-slate-800 uppercase text-center">{item.weight ? `${item.weight} GR/M²` : "-"}</td>
-                 <td className="p-1.5 border-r border-slate-800 uppercase text-center">{item.width ? `${item.width} CM` : "-"}</td>
-                 <td className="p-1.5 border-r border-slate-800 text-center uppercase">{item.deliveryDate || "-"}</td>
-                 <td className="py-1.5 pl-1.5 pr-[8px] border-r border-slate-800 text-right"><span className="text-[11px]">{item.quantity.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span> <span className="text-[11px] ml-1">MT</span></td>
-                 <td className="p-1.5 border-r border-slate-800 text-right"><span className="text-[11px]">{item.unitPrice.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span> <span className="text-[11px] ml-1">{order.currency}</span></td>
-                 <td className="p-1.5 text-right text-[11px]">{item.totalAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} {order.currency}</td>
+              <tr key={item.id} className="align-top">
+                 <td className="p-1.5 uppercase">{item.buyerModelName || "-"}</td>
+                 <td className="p-1.5 uppercase">{item.qualityName || "-"}</td>
+                 <td className="p-1.5 uppercase">{item.qualityCode || "-"}</td>
+                 <td className="p-1.5 uppercase leading-snug">{item.colorCode || "-"}</td>
+                 <td className="p-1.5 uppercase leading-snug">{item.composition || "-"}</td>
+                 <td className="p-1.5 uppercase text-center">{item.weight ? `${item.weight} GR/M²` : "-"}</td>
+                 <td className="p-1.5 uppercase text-center">{item.width ? `${item.width} CM` : "-"}</td>
+                 <td className="p-1.5 text-center uppercase">{item.deliveryDate || "-"}</td>
+                 <td className="py-1.5 pl-1.5 pr-[8px] text-right"><span className="text-[11px]">{item.quantity.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span> <span className="text-[11px] ml-1">MT</span></td>
+                 <td className="p-1.5 text-right"><span className="text-[11px]">{item.unitPrice.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span> <span className="text-[11px] ml-1">{order.currency}</span></td>
+                 <td className="p-1.5 text-right text-[11px] pr-2">{item.totalAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} {order.currency}</td>
               </tr>
             ))}
-             <tr className="border-b border-t border-slate-800 text-[11px]">
+             <tr className="border-t border-slate-800 text-[11px]">
                 <td colSpan={6} className="p-2 border-r border-slate-800 align-middle w-[590px] min-w-[590px] max-w-[590px]">
                    {isEng ? 'QUANTITY TOLERANCE:' : 'METRAJ TOLERANSI:'} {order.tolerance || "-"}%
                 </td>

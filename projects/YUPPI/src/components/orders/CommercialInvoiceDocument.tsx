@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { numberToWords } from "@/utils/numberToWords";
 
 export default function CommercialInvoiceDocument({ order, bankInfo }: { order: any; bankInfo: any }) {
@@ -77,7 +78,23 @@ export default function CommercialInvoiceDocument({ order, bankInfo }: { order: 
         }
       `}</style>
       {/* Dil Seçimi Butonları (Sadece Ekranda Görünür, Yazdırmada Gizlenir) */}
-      <div className="flex justify-center mb-6 space-x-2 print:hidden w-full max-w-[1002px]">
+      <div className="flex justify-between items-center mb-6 print:hidden w-full max-w-[1002px]">
+        <div className="space-x-4 flex items-center">
+          <Link 
+            href={`/orders/${order.id}`}
+            className="px-4 py-2 text-slate-600 bg-white border border-slate-300 rounded hover:bg-slate-50 transition-colors"
+          >
+            &larr; Siparişe Dön
+          </Link>
+          <Link 
+            href={`/orders/${order.id}/tracking`}
+            className="px-4 py-2 text-indigo-700 bg-indigo-50 border border-indigo-200 shadow-sm rounded hover:bg-indigo-100 transition-colors flex items-center gap-2 font-bold"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            Sipariş Takip Tablosu
+          </Link>
+        </div>
+        <div className="flex items-center space-x-2">
         <button
           onClick={() => setIsEng(false)}
           className={`px-4 py-2 font-bold rounded shadow-sm border ${!isEng ? 'bg-indigo-600 text-white border-indigo-700' : 'bg-white text-slate-600 hover:bg-slate-50 border-slate-300'}`}
@@ -90,12 +107,20 @@ export default function CommercialInvoiceDocument({ order, bankInfo }: { order: 
         >
           🇬🇧 ENGLISH
         </button>
-        <button
+          <button
           onClick={() => setIsSigned(!isSigned)}
           className={`px-4 py-2 font-bold rounded shadow-sm border ${isSigned ? 'bg-green-600 text-white border-green-700' : 'bg-white text-green-600 hover:bg-green-50 border-green-300'}`}
         >
           ✍️ {isSigned ? 'İMZAYI KALDIR' : 'İMZALA'}
         </button>
+        <button
+            onClick={() => window.print()}
+            className="px-4 py-2 text-white bg-slate-800 shadow-sm rounded hover:bg-slate-700 transition-colors flex items-center gap-2 font-bold ml-4"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            Yazdır / PDF Al
+          </button>
+        </div>
       </div>
 
       <div className="w-[1002px] print:w-full bg-white text-black font-['Arial',_'Helvetica',_sans-serif] text-[12px] leading-tight border-2 border-black relative">

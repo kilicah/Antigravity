@@ -36,33 +36,11 @@ export default async function OrderViewPage({
     }
   });
 
-  const isEng = order.language === "ENG";
-
-  // Parse mapped bilingual terms (e.g. "HAVALE / EFT|BANK TRANSFER / WIRE TRANSFER")
-  let displayPaymentTerms = order.paymentTerms || "-";
-  if (order.paymentTerms && order.paymentTerms.includes('|')) {
-     const parts = order.paymentTerms.split('|');
-     displayPaymentTerms = isEng ? parts[1].trim() : parts[0].trim();
-  }
-
-  // Teslim Şekli Ayrıştırma
-  let displayDeliveryTerms = order.deliveryTerms || "-";
-  if (order.deliveryTerms && order.deliveryTerms.includes('|')) {
-     const parts = order.deliveryTerms.split('|');
-     displayDeliveryTerms = isEng ? (parts[1] || parts[0]).trim() : parts[0].trim();
-  }
-
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      
-
-
       <SalesContractDocument 
         order={order}
         bankInfo={bankInfo}
-        isEng={isEng}
-        displayPaymentTerms={displayPaymentTerms}
-        displayDeliveryTerms={displayDeliveryTerms}
       />
     </div>
   );
