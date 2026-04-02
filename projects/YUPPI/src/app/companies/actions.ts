@@ -4,6 +4,10 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 
 export async function createCompany(formData: FormData) {
+  // Universal
+  const codeRaw = formData.get("code") as string;
+  const code = codeRaw ? codeRaw.toUpperCase().substring(0, 10) : null;
+
   // Turkish Fields
   const name = (formData.get("name") as string)?.toLocaleUpperCase("tr-TR");
   const address = (formData.get("address") as string)?.toLocaleUpperCase("tr-TR");
@@ -62,6 +66,7 @@ export async function createCompany(formData: FormData) {
 
   await prisma.company.create({
     data: {
+      code,
       name,
       nameEn: nameEn || null,
       address,
@@ -95,6 +100,10 @@ export async function createCompany(formData: FormData) {
 }
 
 export async function updateCompany(companyId: number, formData: FormData) {
+  // Universal
+  const codeRaw = formData.get("code") as string;
+  const code = codeRaw ? codeRaw.toUpperCase().substring(0, 10) : null;
+
   // Turkish Fields
   const name = (formData.get("name") as string)?.toLocaleUpperCase("tr-TR");
   const address = (formData.get("address") as string)?.toLocaleUpperCase("tr-TR");
@@ -152,6 +161,7 @@ export async function updateCompany(companyId: number, formData: FormData) {
   const deliveryAddressesJson = (formData.get("deliveryAddressesJson") as string) || "[]";
 
   const dataPayload = {
+      code,
       name,
       nameEn: nameEn || null,
       address,

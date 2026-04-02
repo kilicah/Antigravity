@@ -107,9 +107,15 @@ export default function CompanyFormClient({ initialData }: { initialData?: any }
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-slate-800 border-b border-slate-200 pb-2">Türkçe Bilgiler</h2>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Firma Adı <span className="text-red-500">*</span></label>
-              <input type="text" name="name" defaultValue={initialData?.name} required className="w-full px-4 py-2 border border-slate-300 rounded-md uppercase" placeholder="YSK PAZARLAMA A.Ş." />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">Firma Kodu</label>
+                <input type="text" name="code" defaultValue={initialData?.code || ""} maxLength={10} className="w-full px-4 py-2 border border-slate-300 rounded-md uppercase" placeholder="KOD (Max 10)" />
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-slate-700 mb-1">Firma Adı <span className="text-red-500">*</span></label>
+                <input type="text" name="name" defaultValue={initialData?.name} required className="w-full px-4 py-2 border border-slate-300 rounded-md uppercase" placeholder="YSK PAZARLAMA A.Ş." />
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Adres</label>

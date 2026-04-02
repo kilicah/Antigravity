@@ -12,6 +12,7 @@ datasource db {
 
 model Company {
   id              Int                     @id @default(autoincrement())
+  code            String?
   name            String
   nameEn          String?
   address         String?
