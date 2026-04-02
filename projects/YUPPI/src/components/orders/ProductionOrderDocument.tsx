@@ -115,63 +115,155 @@ export default function ProductionOrderDocument({ order }: { order: any }) {
         </div>
       </div>
 
-      <div className="w-[1002px] print:w-full bg-white text-black font-['Arial_Narrow',_'Arial_Narrow_MT',_Arial,_sans-serif] text-[11px] leading-tight border-2 border-black relative">
+      <div className="w-[1002px] print:w-full bg-white text-black font-['Arial_Narrow',_'Arial_Narrow_MT',_Arial,_sans-serif] text-[11px] leading-tight border border-transparent min-h-0 relative">
         
         {/* MATCHED SÖZLEŞME HEADER START */}
-        <div className="border-b-2 border-black text-[11px] leading-tight grid grid-cols-[265px_265px_265px_1fr] w-full h-[120px] min-h-[120px] max-h-[120px] overflow-hidden">
+        <div className="border border-slate-800 text-[11px] leading-tight grid grid-cols-[265px_265px_265px_1fr] w-full h-[120px] min-h-[120px] max-h-[120px] overflow-hidden">
           {/* SATICI FİRMA */}
-          <div className="border-r-2 border-black p-2 flex flex-col justify-start">
-              <div className="font-bold text-[13px] mb-1 underline underline-offset-2">{isEng ? 'SELLER' : 'SATICI FİRMA'}</div>
-              <div className="font-bold text-[11px] uppercase mb-1">{order.seller.name}</div>
-              <div className="uppercase text-[11px]">{order.seller.address}</div>
-              <div className="uppercase text-[11px]">TÜRKİYE &nbsp;&nbsp;&nbsp; {isEng ? 'TRD. REG. NO.' : 'TİC. SİC. NO.'} {order.seller.registrationNo || "-"}</div>
-              <div className="uppercase text-[11px]">{order.seller.taxOffice} VD. {order.seller.taxNo}</div>
-              <div className="uppercase text-[11px]">TEL. {order.seller.phone || "-"}</div>
+          <div className="border-r border-slate-800 p-2 flex flex-col justify-start">
+              <div className="font-bold text-[12px] mb-1 underline underline-offset-2">{isEng ? 'SELLER' : 'SATICI FİRMA'}</div>
+              <div className="font-bold text-[11px] uppercase mb-1">{isEng && order.seller.nameEn ? order.seller.nameEn : order.seller.name}</div>
+              <div className="uppercase text-[11px] break-words whitespace-pre-wrap">{isEng && order.seller.addressEn ? order.seller.addressEn : order.seller.address}</div>
+              <div className="uppercase text-[11px]">
+               {(() => {
+                 const d = isEng && order.seller.districtEn ? order.seller.districtEn : order.seller.district;
+                 const c = isEng && order.seller.cityEn ? order.seller.cityEn : order.seller.city;
+                 const cntry = isEng && order.seller.countryEn ? order.seller.countryEn : order.seller.country;
+                 const zip = order.seller.zipCode;
+                 const locArr = [d, c, cntry].filter(Boolean);
+                 const locStr = locArr.join(', ');
+                 return (locStr || zip) ? `${locStr}${locStr && zip ? ' ' : ''}${zip || ''}` : '';
+               })()}
+              </div>
+              <div className="uppercase text-[11px] mt-1">
+                 {isEng ? (
+                   order.seller.taxNo && `VAT NO. ${order.seller.taxNo} ${order.seller.taxOfficeEn || order.seller.taxOffice || ""}`.trim()
+                 ) : (
+                   order.seller.taxNo && `${order.seller.taxOffice ? order.seller.taxOffice + " VD." : ""} ${order.seller.taxNo}`.trim()
+                 )}
+              </div>
+              <div className="uppercase text-[11px]">
+                 {isEng ? (
+                   [
+                     order.seller.phone && `P. ${order.seller.phone}`,
+                     order.seller.registrationNo && `TRD. REG.NO. ${order.seller.registrationNo}`
+                   ].filter(Boolean).join(' / ')
+                 ) : (
+                   [
+                     order.seller.phone && `T. ${order.seller.phone}`,
+                     order.seller.registrationNo && `TİC. SİC. NO ${order.seller.registrationNo}`
+                   ].filter(Boolean).join(' / ')
+                 )}
+              </div>
           </div>
           
           {/* ALICI FİRMA */}
-          <div className="border-r-2 border-black p-2 flex flex-col justify-start">
-              <div className="font-bold text-[13px] mb-1 underline underline-offset-2">{isEng ? 'BUYER' : 'ALICI FİRMA'}</div>
-              <div className="font-bold text-[11px] uppercase mb-1">{order.buyer.name}</div>
-              <div className="uppercase text-[11px]">{order.buyer.address}</div>
-              <div className="uppercase text-[11px]">TÜRKİYE</div>
-              <div className="uppercase text-[11px]">{order.buyer.taxOffice} VD. {order.buyer.taxNo}</div>
-              <div className="uppercase text-[11px]">{order.buyer.phone ? `TEL. ${order.buyer.phone}` : ''}</div>
+          <div className="border-r border-slate-800 p-2 flex flex-col justify-start">
+              <div className="font-bold text-[12px] mb-1 underline underline-offset-2">{isEng ? 'BUYER' : 'ALICI FİRMA'}</div>
+              <div className="font-bold text-[11px] uppercase mb-1">{isEng && order.buyer.nameEn ? order.buyer.nameEn : order.buyer.name}</div>
+              <div className="uppercase text-[11px] break-words whitespace-pre-wrap">{isEng && order.buyer.addressEn ? order.buyer.addressEn : order.buyer.address}</div>
+              <div className="uppercase text-[11px]">
+               {(() => {
+                 const d = isEng && order.buyer.districtEn ? order.buyer.districtEn : order.buyer.district;
+                 const c = isEng && order.buyer.cityEn ? order.buyer.cityEn : order.buyer.city;
+                 const cntry = isEng && order.buyer.countryEn ? order.buyer.countryEn : order.buyer.country;
+                 const zip = order.buyer.zipCode;
+                 const locArr = [d, c, cntry].filter(Boolean);
+                 const locStr = locArr.join(', ');
+                 return (locStr || zip) ? `${locStr}${locStr && zip ? ' ' : ''}${zip || ''}` : '';
+               })()}
+              </div>
+              <div className="uppercase text-[11px] mt-1">
+                 {isEng ? (
+                   order.buyer.taxNo && `VAT NO. ${order.buyer.taxNo} ${order.buyer.taxOfficeEn || order.buyer.taxOffice || ""}`.trim()
+                 ) : (
+                   order.buyer.taxNo && `${order.buyer.taxOffice ? order.buyer.taxOffice + " VD." : ""} ${order.buyer.taxNo}`.trim()
+                 )}
+              </div>
+              <div className="uppercase text-[11px]">
+                 {isEng ? (
+                   [
+                     order.buyer.phone && `P. ${order.buyer.phone}`,
+                     order.buyer.registrationNo && `TRD. REG.NO. ${order.buyer.registrationNo}`
+                   ].filter(Boolean).join(' / ')
+                 ) : (
+                   [
+                     order.buyer.phone && `T. ${order.buyer.phone}`,
+                     order.buyer.registrationNo && `TİC. SİC. NO ${order.buyer.registrationNo}`
+                   ].filter(Boolean).join(' / ')
+                 )}
+              </div>
           </div>
 
           {/* SEVK ADRESİ */}
-          <div className="border-r-2 border-black p-2 flex flex-col justify-start">
-              <div className="font-bold text-[13px] mb-1 underline underline-offset-2">{isEng ? 'SHIP TO / CONSIGNEE' : 'SEVK ADRESİ / ALICI'}</div>
-              <div className="font-bold text-[11px] uppercase mb-1">{order.shipTo?.name || order.buyer.name}</div>
-              <div className="uppercase text-[11px]">{order.shipTo?.address || order.buyer.address}</div>
-              <div className="uppercase text-[11px]">TÜRKİYE &nbsp;&nbsp;&nbsp; VAT. {order.shipTo?.taxNo || order.buyer.taxNo}</div>
-              <div className="uppercase text-[11px]">{order.shipTo?.phone ? `TEL. ${order.shipTo.phone}` : ''}</div>
+          <div className="border-r border-slate-800 p-2 flex flex-col justify-start">
+              <div className="font-bold text-[12px] mb-1 underline underline-offset-2">{isEng ? 'SHIP TO / CONSIGNEE' : 'SEVK ADRESİ / ALICI'}</div>
+              <div className="font-bold text-[11px] uppercase mb-1">{order.shipTo ? (isEng && order.shipTo.nameEn ? order.shipTo.nameEn : order.shipTo.name) : (isEng && order.buyer.nameEn ? order.buyer.nameEn : order.buyer.name)}</div>
+              <div className="uppercase text-[11px] break-words whitespace-pre-wrap">{order.shipTo ? (isEng && order.shipTo.addressEn ? order.shipTo.addressEn : order.shipTo.address) : (isEng && order.buyer.addressEn ? order.buyer.addressEn : order.buyer.address)}</div>
+              <div className="uppercase text-[11px]">
+               {(() => {
+                 const target = order.shipTo || order.buyer;
+                 const d = isEng && target.districtEn ? target.districtEn : target.district;
+                 const c = isEng && target.cityEn ? target.cityEn : target.city;
+                 const cntry = isEng && target.countryEn ? target.countryEn : target.country;
+                 const zip = target.zipCode;
+                 const locArr = [d, c, cntry].filter(Boolean);
+                 const locStr = locArr.join(', ');
+                 return (locStr || zip) ? `${locStr}${locStr && zip ? ' ' : ''}${zip || ''}` : '';
+               })()}
+              </div>
+              <div className="uppercase text-[11px] mt-1">
+                 {(() => {
+                   const target = order.shipTo || order.buyer;
+                   if (isEng) {
+                     return target.taxNo && `VAT NO. ${target.taxNo} ${target.taxOfficeEn || target.taxOffice || ""}`.trim();
+                   } else {
+                     return target.taxNo && `${target.taxOffice ? target.taxOffice + " VD." : ""} ${target.taxNo}`.trim();
+                   }
+                 })()}
+              </div>
+              <div className="uppercase text-[11px]">
+                 {(() => {
+                   const target = order.shipTo || order.buyer;
+                   if (isEng) {
+                     return [
+                       target.phone && `P. ${target.phone}`,
+                       target.registrationNo && `TRD. REG.NO. ${target.registrationNo}`
+                     ].filter(Boolean).join(' / ');
+                   } else {
+                     return [
+                       target.phone && `T. ${target.phone}`,
+                       target.registrationNo && `TİC. SİC. NO ${target.registrationNo}`
+                     ].filter(Boolean).join(' / ');
+                   }
+                 })()}
+              </div>
           </div>
 
           {/* SÖZLEŞME VE TARİH */}
           <div className="flex flex-col text-center h-full">
               <div className="w-full h-[60px] min-h-[60px] max-h-[60px] flex flex-col justify-center px-2">
-                  <div className="font-bold text-[13px]">{isEng ? 'CONTRACT NO' : 'SÖZLEŞME NO'}</div>
+                  <div className="font-bold text-[12px]">{isEng ? 'CONTRACT NO' : 'SÖZLEŞME NO'}</div>
                   <div className="text-[11px] tracking-widest mt-0.5">{order.contractNo}</div>
               </div>
-              <div className="w-full h-[60px] min-h-[60px] max-h-[60px] border-t-2 border-black flex flex-col justify-center px-2">
-                  <div className="font-bold text-[13px]">{isEng ? 'CONTRACT DATE' : 'SÖZLEŞME TARİHİ'}</div>
+              <div className="w-full h-[60px] min-h-[60px] max-h-[60px] border-t border-slate-800 flex flex-col justify-center px-2">
+                  <div className="font-bold text-[12px]">{isEng ? 'CONTRACT DATE' : 'SÖZLEŞME TARİHİ'}</div>
                   <div className="text-[11px] tracking-widest mt-0.5">{order.contractDate ? new Date(order.contractDate).toLocaleDateString(isEng ? 'en-GB' : 'tr-TR') : "-"}</div>
               </div>
           </div>
         </div>
 
         {/* SUB-HEADER BLOCK */}
-        <div className="border-b-2 border-black grid grid-cols-[205px_590px_1fr] w-full bg-white items-stretch">
-           <div className="font-bold text-[11px] px-2 py-2 border-r-2 border-black flex flex-col items-center justify-center text-center uppercase leading-tight">
-              <div>{isEng ? 'ORDER BRAND' : 'SİPARİŞ MARKASI'}</div>
-              <div className="text-[13px] tracking-wide text-black mt-1">{order.brand?.name || (isEng ? "N/A" : "-")}</div>
+        <div className="border-x border-b border-slate-800 grid grid-cols-[205px_590px_1fr] w-full bg-white items-stretch">
+           <div className="p-2 border-r border-slate-800 flex flex-col items-center justify-center text-center leading-tight">
+              <div className="font-bold text-[12px] uppercase">{isEng ? 'ORDER BRAND' : 'SİPARİŞ MARKASI'}</div>
+              <div className="font-bold text-[11px] mt-1 uppercase text-black break-words whitespace-pre-wrap">{order.brand?.name || (isEng ? "N/A" : "-")}</div>
            </div>
-           <div className="p-2 flex items-center justify-center text-center border-r-2 border-black bg-white">
+           <div className="p-2 flex items-center justify-center text-center border-r border-slate-800 bg-white">
              <h2 className="text-[25px] font-bold text-green-600 tracking-widest uppercase mb-1">{isEng ? 'PRODUCTION ORDER' : 'ÜRETİM SİPARİŞİ'}</h2>
            </div>
            <div className="h-[60px] min-h-[60px] max-h-[60px] px-2 flex flex-col justify-center text-center font-normal bg-white">
-             <div className="font-bold text-[13px] uppercase">{isEng ? "BUYER'S P.O. NO" : "ALICI SİPARİŞ NO"}</div>
+             <div className="font-bold text-[12px] uppercase">{isEng ? "BUYER'S P.O. NO" : "ALICI SİPARİŞ NO"}</div>
              <div className="text-[11px] mt-0.5 uppercase">{order.buyerPoNo || "-"}</div>
            </div>
         </div>
@@ -179,28 +271,28 @@ export default function ProductionOrderDocument({ order }: { order: any }) {
 
         {/* ROW 3: ITEMS TABLE (20 Columns) */}
         <div className="w-full">
-          <table className="w-full text-center border-collapse">
+          <table className="w-full text-center border-collapse border-b border-x border-slate-800">
             <thead>
-              <tr className="border-b-2 border-black font-bold uppercase text-[10px] leading-tight bg-white">
-                <th className="py-2 px-0.5 border-r border-black w-[95px]">{t.modelName}</th>
-                <th className="py-2 px-0.5 border-r border-black w-[110px]">{t.qualityName}</th>
-                <th className="py-2 px-0.5 border-r border-black w-[70px]">{t.qualityCode}</th>
-                <th className="py-2 px-0.5 border-r border-black w-[80px]">{t.buyerColorCode}</th>
-                <th className="py-2 px-0.5 border-r border-black w-[110px]">{t.composition}</th>
-                <th className="py-2 px-0.5 border-r border-black w-[45px]">{t.weight}</th>
-                <th className="py-2 px-0.5 border-r border-black w-[35px]">{t.width}</th>
-                <th className="py-2 px-0.5 border-r border-black w-[20px]">B.S</th>
-                <th className="py-2 px-0.5 border-r border-black w-[24px]">L/D</th>
-                <th className="py-2 px-0.5 border-r border-black w-[24px]">PPS</th>
-                <th className="py-2 px-0.5 border-r border-black w-[26px]">TOPS</th>
-                <th className="py-2 px-0.5 border-r border-black w-[24px]">SRL</th>
-                <th className="py-2 px-0.5 border-r border-black w-[20px]">FD</th>
-                <th className="py-2 px-0.5 border-r border-black w-[30px]">PSHP</th>
-                <th className="py-2 px-0.5 border-r border-black w-[24px]">SUS</th>
-                <th className="py-2 px-0.5 border-r border-black w-[20px]">LT</th>
-                <th className="py-2 px-0.5 border-r border-black w-[55px]">B/S DD</th>
-                <th className="py-2 px-0.5 border-r border-black w-[34px]">B/S Q</th>
-                <th className="py-2 px-0.5 border-r border-black w-[55px]">ExMD</th>
+              <tr className="border-b border-slate-800 font-bold uppercase text-[10px] leading-tight bg-white">
+                <th className="py-2 px-0.5 border-r border-slate-800 w-[95px]">{t.modelName}</th>
+                <th className="py-2 px-0.5 border-r border-slate-800 w-[110px]">{t.qualityName}</th>
+                <th className="py-2 px-0.5 border-r border-slate-800 w-[70px]">{t.qualityCode}</th>
+                <th className="py-2 px-0.5 border-r border-slate-800 w-[80px]">{t.buyerColorCode}</th>
+                <th className="py-2 px-0.5 border-r border-slate-800 w-[110px]">{t.composition}</th>
+                <th className="py-2 px-0.5 border-r border-slate-800 w-[45px]">{t.weight}</th>
+                <th className="py-2 px-0.5 border-r border-slate-800 w-[35px]">{t.width}</th>
+                <th className="py-2 px-0.5 border-r border-slate-800 w-[20px]">B.S</th>
+                <th className="py-2 px-0.5 border-r border-slate-800 w-[24px]">L/D</th>
+                <th className="py-2 px-0.5 border-r border-slate-800 w-[24px]">PPS</th>
+                <th className="py-2 px-0.5 border-r border-slate-800 w-[26px]">TOPS</th>
+                <th className="py-2 px-0.5 border-r border-slate-800 w-[24px]">SRL</th>
+                <th className="py-2 px-0.5 border-r border-slate-800 w-[20px]">FD</th>
+                <th className="py-2 px-0.5 border-r border-slate-800 w-[30px]">PSHP</th>
+                <th className="py-2 px-0.5 border-r border-slate-800 w-[24px]">SUS</th>
+                <th className="py-2 px-0.5 border-r border-slate-800 w-[20px]">LT</th>
+                <th className="py-2 px-0.5 border-r border-slate-800 w-[55px]">B/S DD</th>
+                <th className="py-2 px-0.5 border-r border-slate-800 w-[34px]">B/S Q</th>
+                <th className="py-2 px-0.5 border-r border-slate-800 w-[55px]">ExMD</th>
                 <th className="py-2 px-1 text-right w-[60px]">{t.quantity}</th>
               </tr>
             </thead>
@@ -242,36 +334,28 @@ export default function ProductionOrderDocument({ order }: { order: any }) {
           </table>
 
           {/* TOTAL ROW */}
-          <div className="border-t-2 border-b-2 border-black w-full flex text-[13px] bg-white">
-             <div className="w-[752px] p-2 font-bold uppercase border-r-2 border-black flex justify-between items-center text-slate-800 bg-white">
-                <div className="text-[11px] text-black">
-                   {t.orderTolerance} <span className="font-extrabold text-[13px] text-black">%{order.tolerance?.replace('%', '') || "-"}</span>
+          <div className="w-full flex text-[11px] bg-white border-x border-b border-slate-800">
+             <div className="flex-1 p-1 flex justify-between items-center text-slate-800 bg-white">
+                <div className="uppercase pl-0.5">
+                   {t.orderTolerance} <span className="font-extrabold text-black">%{order.tolerance?.replace('%', '') || "-"}</span>
                 </div>
-                <div className="text-black">{t.totalQuantity}</div>
+                <div className="text-[12px] font-bold text-center pr-2 uppercase">{t.totalQuantity}</div>
              </div>
-             <div className="w-[250px] p-2 text-right font-bold text-[15px] uppercase flex justify-end items-center pr-2">
-                {totalQuantity.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {order.unit}
+             <div className="w-[200px] py-1 pl-1 pr-[10px] border-l border-slate-800 text-right font-bold text-[12px] uppercase flex justify-end items-center">
+                {totalQuantity.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} <span className="text-[12px] font-bold ml-1">{order.unit}</span>
              </div>
           </div>
         </div>
 
         {/* BOTTOM SECTION: GENERAL & MANUAL NOTES */}
-        <div className="grid grid-cols-[1fr_300px] min-h-[140px] relative">
+        <div className="grid grid-cols-[1fr_300px] min-h-[140px] relative border-x border-b border-slate-800">
           
           {/* Left: Manual Special Remarks Area */}
-          <div className="p-3 pb-8 relative flex flex-col justify-start overflow-hidden border-r-2 border-black">
-             <div className="mb-2">
-               <span className="font-bold underline uppercase text-slate-800">{t.manualNotes}</span>
-               {order.productionOrder?.packingInstructions && (
-                 <span className="ml-2 whitespace-pre-wrap text-[11px] font-normal text-slate-800">
-                   {order.productionOrder.packingInstructions}
-                 </span>
-               )}
-             </div>
+          <div className="p-1 relative flex flex-col justify-start overflow-hidden border-r border-slate-800">
 
-             <div className="text-[10px] space-y-3 mt-1 flex flex-col font-mono text-slate-500">
+             <div className="space-y-1 mt-1 flex flex-col font-mono text-slate-500">
                  {order.items.map((item: any, i: number) => (
-                    <div key={item.id} className="flex flex-col gap-1 mb-1">
+                    <div key={item.id} className="flex flex-col mb-1">
                        {/* Ürün İsmi Başlığı */}
                        <div className="font-bold text-slate-900 text-[11px] underline underline-offset-2 break-words whitespace-normal">
                          {item.qualityName || item.buyerModelName || `ITEM ${i+1}`}
@@ -279,17 +363,17 @@ export default function ProductionOrderDocument({ order }: { order: any }) {
                        
                        {/* LD / SRL / LT Detayları */}
                        <div className="flex gap-6 w-full mt-0">
-                           <div className="border-b-2 border-dotted border-emerald-700 flex-1 flex flex-col pb-1 min-h-[30px]">
-                               <span className="font-bold text-slate-700 uppercase mb-0.5">{t.ldDetay}</span>
-                               <span className="text-slate-900 font-medium text-[10px] break-words whitespace-normal leading-tight">{item.ldDetail}</span>
+                           <div className="border-b-2 border-dotted border-emerald-700 flex-1 flex flex-col pb-0.5">
+                               <span className="font-bold text-[11px] text-slate-800 uppercase mb-0.5">{t.ldDetay}</span>
+                               <span className="text-[11px] font-normal text-slate-900 break-words whitespace-normal leading-tight">{item.ldDetail}</span>
                            </div>
-                           <div className="border-b-2 border-dotted border-emerald-700 flex-1 flex flex-col pb-1 min-h-[30px]">
-                               <span className="font-bold text-slate-700 uppercase mb-0.5">{t.srlDetay}</span>
-                               <span className="text-slate-900 font-medium text-[10px] break-words whitespace-normal leading-tight">{item.srlDetail}</span>
+                           <div className="border-b-2 border-dotted border-emerald-700 flex-1 flex flex-col pb-0.5">
+                               <span className="font-bold text-[11px] text-slate-800 uppercase mb-0.5">{t.srlDetay}</span>
+                               <span className="text-[11px] font-normal text-slate-900 break-words whitespace-normal leading-tight">{item.srlDetail}</span>
                            </div>
-                           <div className="border-b-2 border-dotted border-emerald-700 flex-1 flex flex-col pb-1 min-h-[30px]">
-                               <span className="font-bold text-slate-700 uppercase mb-0.5">{t.ltDetay}</span>
-                               <span className="text-slate-900 font-medium text-[10px] break-words whitespace-normal leading-tight">{item.ltDetail}</span>
+                           <div className="border-b-2 border-dotted border-emerald-700 flex-1 flex flex-col pb-0.5">
+                               <span className="font-bold text-[11px] text-slate-800 uppercase mb-0.5">{t.ltDetay}</span>
+                               <span className="text-[11px] font-normal text-slate-900 break-words whitespace-normal leading-tight">{item.ltDetail}</span>
                            </div>
                        </div>
                     </div>
@@ -298,12 +382,12 @@ export default function ProductionOrderDocument({ order }: { order: any }) {
           </div>
 
           {/* Right: General Parameters */}
-          <div className="p-4 space-y-6 bg-white">
+          <div className="p-1 space-y-1 bg-white">
              
              {/* SİPARİŞ TOLERANSI TOTAL SATIRINA TAŞINDI */}
 
-             <div className="mb-4">
-                 <span className="font-bold text-slate-800 underline uppercase">{isEng ? 'SPECIAL LOADING REQ.' : 'ÖZEL YÜKLEME TALEBİ'}</span>
+             <div>
+                 <span className="font-bold text-[12px] text-slate-800 uppercase">{isEng ? 'SPECIAL LOADING REQ.' : 'ÖZEL YÜKLEME TALEBİ'}</span>
                  {order.specialLoadingRequest && order.specialLoadingDetail && (
                    <span className="ml-2 text-[11px] font-normal text-slate-800 uppercase break-words">
                      {order.specialLoadingDetail}
@@ -312,10 +396,19 @@ export default function ProductionOrderDocument({ order }: { order: any }) {
              </div>
 
              <div>
-                 <span className="font-bold text-slate-800 underline uppercase">{t.transportInfo}</span>
+                 <span className="font-bold text-[12px] text-slate-800 uppercase">{t.transportInfo}</span>
                  <span className="ml-2 text-[11px] font-normal text-slate-800 uppercase break-words leading-snug">
                    {order.transporter || "-"}
                  </span>
+             </div>
+
+             <div>
+                 <span className="font-bold text-[12px] uppercase text-slate-800">{t.manualNotes}</span>
+                 {order.productionOrder?.packingInstructions && (
+                   <span className="ml-2 whitespace-pre-wrap text-[11px] font-normal text-slate-800">
+                     {order.productionOrder.packingInstructions}
+                   </span>
+                 )}
              </div>
           </div>
           
