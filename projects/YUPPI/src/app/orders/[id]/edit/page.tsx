@@ -7,14 +7,17 @@ export default async function EditOrderPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const id = parseInt((await params).id, 10);
+  const idStr = (await params).id;
+  if (!idStr || idStr === 'undefined') notFound();
+  
+  const id = parseInt(idStr, 10);
+  if (isNaN(id)) notFound();
   
   const order = await prisma.order.findUnique({
     where: { id },
     include: {
       items: true,
-      productionOrder: true,
-      invoice: true
+      productionOrder: true
     }
   });
 

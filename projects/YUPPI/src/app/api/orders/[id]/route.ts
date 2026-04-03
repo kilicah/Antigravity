@@ -118,32 +118,6 @@ export async function PUT(
               }
             }
           },
-          invoice: {
-            upsert: {
-              create: {
-                invoiceNo: body.invoice?.invoiceNo || null,
-                invoiceDate: body.invoice?.invoiceDate ? new Date(body.invoice.invoiceDate) : null,
-                grossKg: body.invoice?.grossKg || null,
-                netKg: body.invoice?.netKg || null,
-                rollCount: body.invoice?.rollCount || null,
-                sackCount: body.invoice?.sackCount || null,
-                customsCompanyId: body.invoice?.customsCompanyId ? parseInt(body.invoice.customsCompanyId) : null,
-                logisticsCompanyId: body.invoice?.logisticsCompanyId ? parseInt(body.invoice.logisticsCompanyId) : null,
-                insuranceCompanyId: body.invoice?.insuranceCompanyId ? parseInt(body.invoice.insuranceCompanyId) : null,
-              },
-              update: {
-                invoiceNo: body.invoice?.invoiceNo || null,
-                invoiceDate: body.invoice?.invoiceDate ? new Date(body.invoice.invoiceDate) : null,
-                grossKg: body.invoice?.grossKg || null,
-                netKg: body.invoice?.netKg || null,
-                rollCount: body.invoice?.rollCount || null,
-                sackCount: body.invoice?.sackCount || null,
-                customsCompanyId: body.invoice?.customsCompanyId ? parseInt(body.invoice.customsCompanyId) : null,
-                logisticsCompanyId: body.invoice?.logisticsCompanyId ? parseInt(body.invoice.logisticsCompanyId) : null,
-                insuranceCompanyId: body.invoice?.insuranceCompanyId ? parseInt(body.invoice.insuranceCompanyId) : null,
-              }
-            }
-          }
         },
         include: {
           items: true,

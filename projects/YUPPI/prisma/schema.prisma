@@ -37,7 +37,7 @@ model Company {
   isShipTo        Boolean                 @default(false)
   isInsurance     Boolean                 @default(false)
   isAgency        Boolean                 @default(false)
-  
+
   repsJson        String                  @default("[]")
   deliveryAddressesJson String            @default("[]")
 
@@ -46,10 +46,11 @@ model Company {
   shipToOrders    Order[]                 @relation("ShipToContracts")
   brandOrders     Order[]                 @relation("BrandContracts")
   agencyOrders    Order[]                 @relation("AgencyContracts")
-  
+
   invoiceCustoms  Invoice[]               @relation("InvoiceCustoms")
   invoiceLogistics Invoice[]              @relation("InvoiceLogistics")
   invoiceInsurance Invoice[]              @relation("InvoiceInsurance")
+  buyerInvoices   Invoice[]               @relation("BuyerInvoices")
 
   bankInfos       BankInfo[]
   createdAt       DateTime                @default(now())
@@ -93,7 +94,7 @@ model Order {
   shipToId    Int?
   brandId     Int?
   agencyId    Int?
-  
+
   sellerRep   String?
   buyerRep    String?
   commission  String?
@@ -125,7 +126,6 @@ model Order {
   // Extensions
   items           OrderItem[]
   productionOrder ProductionOrder?
-  invoice         Invoice?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -193,7 +193,8 @@ model OrderItem {
   fabricType String?
   apQuantity Float?
 
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  invoiceItems InvoiceItem[]
 }
 
 model ProductionOrder {
@@ -212,9 +213,9 @@ model ProductionOrder {
 
 model Invoice {
   id          Int       @id @default(autoincrement())
-  orderId     Int       @unique
   invoiceNo   String?
   invoiceDate DateTime?
+  buyerId     Int?
   grossKg     Float?
   netKg       Float?
   rollCount   Int?
@@ -224,11 +225,62 @@ model Invoice {
   logisticsCompanyId Int?
   insuranceCompanyId Int?
 
-  order            Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  buyer            Company? @relation("BuyerInvoices", fields: [buyerId], references: [id])
   customsCompany   Company? @relation("InvoiceCustoms", fields: [customsCompanyId], references: [id])
   logisticsCompany Company? @relation("InvoiceLogistics", fields: [logisticsCompanyId], references: [id])
   insuranceCompany Company? @relation("InvoiceInsurance", fields: [insuranceCompanyId], references: [id])
-  
+
+  items            InvoiceItem[]
+  packingList      PackingList?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model InvoiceItem {
+  id             Int       @id @default(autoincrement())
+  invoiceId      Int
+  orderItemId    Int
+  quantity       Float
+  unitPrice      Float
+  totalAmount    Float
+
+  invoice        Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  orderItem      OrderItem @relation(fields: [orderItemId], references: [id])
+  rolls          Roll[]
+}
+
+model PackingList {
+  id           Int      @id @default(autoincrement())
+  invoiceId    Int      @unique
+  invoice      Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  documentUrl  String?
+  totalRolls   Int?
+  totalSacks   Int?
+  grossWeight  Float?
+  netWeight    Float?
+
+  rolls        Roll[]
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Roll {
+  id             Int          @id @default(autoincrement())
+  packingListId  Int
+  packingList    PackingList  @relation(fields: [packingListId], references: [id], onDelete: Cascade)
+  
+  invoiceItemId  Int?
+  invoiceItem    InvoiceItem? @relation(fields: [invoiceItemId], references: [id])
+  
+  rollNo         String?   
+  barcode        String?   
+  quantity       Float     
+  grossKg        Float?
+  netKg          Float?
+  lotNo          String?   
+  
+  createdAt      DateTime @default(now())
 }
