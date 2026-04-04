@@ -19,7 +19,7 @@ export default async function PackingListPrintPage({ params }: { params: Promise
       items: {
         include: {
           orderItem: {
-             include: { order: { include: { seller: true } } }
+             include: { order: { include: { seller: true, shipTo: true } } }
           }
         }
       }
@@ -36,7 +36,7 @@ export default async function PackingListPrintPage({ params }: { params: Promise
   let productText = "-";
   if (invoice.items.length > 0) {
       const parts = invoice.items.map(i => {
-         const oi = i.orderItem;
+         const oi: any = i.orderItem;
          return `${oi.productName || ''} / ${oi.color || ''} / ${oi.composition || ''} / ${oi.width || ''}CM`.replace(/\s+\/\s+/g, ' / ').replace(/^\s*\/\s*/, '').trim();
       });
       productText = Array.from(new Set(parts)).join(" & ");
@@ -139,7 +139,7 @@ export default async function PackingListPrintPage({ params }: { params: Promise
                  return (locStr || zip) ? `\n${locStr}${locStr && zip ? ' ' : ''}${zip || ''}` : '';
                })()}
             </div>
-            {firstOrder?.shipTo?.contactName && <div>CONTACT PERSON. {firstOrder.shipTo.contactName}</div>}
+            {(firstOrder?.shipTo as any)?.contactName && <div>CONTACT PERSON. {(firstOrder.shipTo as any).contactName}</div>}
           </div>
 
           {/* 3. INVOICE INFO (200px) */}

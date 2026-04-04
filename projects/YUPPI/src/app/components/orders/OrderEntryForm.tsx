@@ -306,16 +306,16 @@ export default function OrderEntryForm({ companies, initialData }: any) {
 
   return (
     <>
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-8 max-w-6xl mx-auto">
       {/* GENEL BİLGİLER */}
       <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
         <h2 className="text-xl font-bold bg-slate-100 p-3 rounded-lg text-slate-700 mb-6 border border-slate-200">
           {formData.language === 'ENG' ? 'ORDER GENERAL INFORMATION' : 'SIPARIS GENEL BILGILERI'}
         </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">
               {formData.language === 'ENG' ? 'DATE' : 'TARIH'} <span className="text-red-500">*</span>
             </label>
             <input 
@@ -324,11 +324,11 @@ export default function OrderEntryForm({ companies, initialData }: any) {
               required
               value={formData.contractDate}
               onChange={handleInputChange}
-              className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2.5 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-base"
             />
           </div>
            <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">
               {formData.language === 'ENG' ? 'BUYER PO NO' : 'ALICI PO NO'}
             </label>
             <input 
@@ -336,7 +336,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
               name="buyerPoNo" 
               value={formData.buyerPoNo}
               onChange={handleInputChange}
-              className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 uppercase"
+              className="w-full px-4 py-2.5 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 uppercase text-base"
               placeholder="Eğer Varsa"
             />
           </div>
@@ -346,7 +346,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div className="space-y-4">
              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">
                   {formData.language === 'ENG' ? 'SELLER' : 'SATICI'} <span className="text-red-500">*</span>
                 </label>
                  <select 
@@ -354,7 +354,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
                   required
                   value={formData.sellerId}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white"
+                  className="w-full px-4 py-2.5 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white text-base"
                 >
                   <option value="">-- Firma Seç --</option>
                   {companies
@@ -363,14 +363,14 @@ export default function OrderEntryForm({ companies, initialData }: any) {
                 </select>
              </div>
              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">
                   {formData.language === 'ENG' ? 'SELLER REPRESENTATIVE' : 'SATICI TEMSILCISI'}
                 </label>
                 <select 
                   name="sellerRep" 
                   value={formData.sellerRep}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white"
+                  className="w-full px-4 py-2.5 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white text-base"
                 >
                   <option value="">-- Temsilci Seç --</option>
                   {(() => {
@@ -384,7 +384,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
                         const defaultEn = rawName.includes('|') ? rawName.split('|')[1] : "";
                         const nameEn = r.nameEn || defaultEn || nameTr;
                         const val = nameEn ? `${nameTr}|${nameEn}` : nameTr;
-                        const display = nameEn ? `${nameTr} / ${nameEn}` : nameTr;
+                        const display = (formData.language === 'ENG' && nameEn) ? nameEn : nameTr;
                         return <option key={idx} value={val}>{display}</option>;
                       });
                     } catch(e) { return null; }
@@ -395,7 +395,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
           
           <div className="space-y-4">
              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">
                   {formData.language === 'ENG' ? 'BUYER' : 'ALICI'} <span className="text-red-500">*</span>
                 </label>
                 <select 
@@ -403,7 +403,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
                   required
                   value={formData.buyerId}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white"
+                  className="w-full px-4 py-2.5 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white text-base"
                 >
                    <option value="">-- Firma Seç --</option>
                    {companies
@@ -413,14 +413,14 @@ export default function OrderEntryForm({ companies, initialData }: any) {
                 </select>
              </div>
              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">
                   {formData.language === 'ENG' ? 'BUYER REPRESENTATIVE' : 'ALICI TEMSILCISI'}
                 </label>
                 <select 
                   name="buyerRep" 
                   value={formData.buyerRep}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white"
+                  className="w-full px-4 py-2.5 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white text-base"
                 >
                    <option value="">-- Temsilci Seç --</option>
                   {(() => {
@@ -434,7 +434,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
                         const defaultEn = rawName.includes('|') ? rawName.split('|')[1] : "";
                         const nameEn = r.nameEn || defaultEn || nameTr;
                         const val = nameEn ? `${nameTr}|${nameEn}` : nameTr;
-                        const display = nameEn ? `${nameTr} / ${nameEn}` : nameTr;
+                        const display = (formData.language === 'ENG' && nameEn) ? nameEn : nameTr;
                         return <option key={idx} value={val}>{display}</option>;
                       });
                     } catch(e) { return null; }
@@ -445,14 +445,14 @@ export default function OrderEntryForm({ companies, initialData }: any) {
 
           <div className="space-y-4">
              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">
                   {formData.language === 'ENG' ? 'SHIP TO' : 'SEVK ADRESI'}
                 </label>
                 <select 
                   name="shipToId" 
                   value={formData.shipToId}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white"
+                  className="w-full px-4 py-2.5 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white text-base"
                 >
                   <option value="">-- (Alıcı Firma İle Aynı) --</option>
                   {companies
@@ -462,14 +462,14 @@ export default function OrderEntryForm({ companies, initialData }: any) {
                 </select>
              </div>
              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">
                   {formData.language === 'ENG' ? 'RELATED BRAND' : 'ILGILI MARKA'}
                 </label>
                 <select 
                   name="brandId" 
                   value={formData.brandId}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white"
+                  className="w-full px-4 py-2.5 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white text-base"
                 >
                   <option value="">-- Marka Seç --</option>
                   {companies
@@ -482,14 +482,14 @@ export default function OrderEntryForm({ companies, initialData }: any) {
 
           <div className="space-y-4">
              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">
                   {formData.language === 'ENG' ? 'RELATED AGENCY' : 'İLGİLİ ACENTA'}
                 </label>
                 <select 
                   name="agencyId" 
                   value={formData.agencyId}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white"
+                  className="w-full px-4 py-2.5 border border-slate-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white text-base"
                 >
                   <option value="">-- Acenta Seç --</option>
                   {companies
@@ -501,7 +501,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
              
              {formData.agencyId && (
                <div className="animate-in fade-in duration-300">
-                  <label className="block text-sm font-medium text-slate-700 mb-1 text-fuchsia-700">
+                  <label className="block text-[11px] uppercase font-bold text-fuchsia-700 tracking-wider mb-1.5">
                     {formData.language === 'ENG' ? 'SALES COMMISSION' : 'SATIŞ KOMİSYONU'}
                   </label>
                   <input 
@@ -509,7 +509,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
                     name="commission"
                     value={formData.commission}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-fuchsia-300 rounded-md focus:ring-fuchsia-500 focus:border-fuchsia-500 bg-fuchsia-50/30"
+                    className="w-full px-4 py-2.5 border border-fuchsia-300 rounded-md focus:ring-fuchsia-500 focus:border-fuchsia-500 bg-fuchsia-50/30 text-base"
                     placeholder={formData.language === 'ENG' ? 'e.g. 5% or 1000 USD' : 'Örn: %5 veya 1000 USD'}
                   />
                </div>
@@ -519,7 +519,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
         
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 pt-6 border-t border-slate-200 mt-6">
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">
               BİRİM <span className="text-red-500">*</span>
             </label>
             <select 
@@ -536,7 +536,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
             </select>
           </div>
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">
               {formData.language === 'ENG' ? 'CURRENCY' : 'PARA BIRIMI'} <span className="text-red-500">*</span>
             </label>
             <select 
@@ -553,7 +553,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
             </select>
           </div>
           <div className="md:col-span-6">
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">
               {formData.language === 'ENG' ? 'PAYMENT TERMS' : 'ODEME SEKLI'}
             </label>
             <select
@@ -629,7 +629,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
             </select>
           </div>
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">
               {formData.language === 'ENG' ? 'TOLERANCE' : 'TOLERANS'}
             </label>
             <select
@@ -647,7 +647,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">
               {formData.language === 'ENG' ? 'DELIVERY TERMS' : 'TESLIM SEKLI'}
             </label>
             <div className="space-y-3">
@@ -739,7 +739,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">
               {formData.language === 'ENG' ? 'TRANSPORTER' : 'NAKLIYECI'}
             </label>
             <input 
@@ -808,7 +808,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
               value={formData.packingInstructions}
               onChange={handleInputChange}
               rows={2}
-              className="w-full px-4 py-2 text-sm border border-slate-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none placeholder-slate-400"
+              className="w-full px-4 py-2.5 text-base border border-slate-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none placeholder-slate-400"
               placeholder="Üretim, sevkiyat veya işlemler için özel notlarınızı girebilirsiniz..."
             />
           </div>
@@ -876,32 +876,147 @@ export default function OrderEntryForm({ companies, initialData }: any) {
                 <th className="p-3 font-semibold w-36 min-w-[140px] border-r border-slate-700 text-center text-blue-300">
                   {formData.language === 'ENG' ? 'REQUEST-3' : 'ISTEK-3'}
                 </th>
-                <th className="p-3 font-semibold w-32 border-r border-slate-700 text-center cursor-help" title="Bulk Sample Delivery Date">B/S-DD</th>
-                <th className="p-3 font-semibold w-[90px] border-r border-slate-700 text-right cursor-help text-emerald-300" title="Bulk Sample Quantity">B/S-Q</th>
-                <th className="p-3 font-semibold w-32 border-r border-slate-700 text-center cursor-help" title="Ex-Mill Date">ExMD</th>
+                <th className="p-3 font-semibold w-32 border-r border-slate-700 text-center ">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">BULK SAMPLE DELIVERY DATE</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">B/S-DD</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold w-[90px] border-r border-slate-700 text-right text-emerald-300">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">BULK SAMPLE QUANTITY</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">B/S-Q</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold w-32 border-r border-slate-700 text-center ">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">EX-MILL DATE</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">ExMD</span>
+                  </div>
+                </th>
                 <th className="p-3 font-semibold w-12 text-center border-r border-slate-700 text-red-400">
                   {formData.language === 'ENG' ? 'DEL' : 'SIL'}
                 </th>
-                <th className="p-3 font-semibold min-w-[130px] border-l-2 border-r border-sky-600 bg-sky-900/50 text-sky-300 text-center" title="Estimated Date of Departure">ETD</th>
-                <th className="p-3 font-semibold min-w-[90px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center" title="FDS Form Sent?">FDS</th>
-                <th className="p-3 font-semibold min-w-[90px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center" title="Counter Sample Apply?">C/S</th>
-                <th className="p-3 font-semibold min-w-[130px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center" title="Counter Sample Sent Date">C/S-SD</th>
-                <th className="p-3 font-semibold min-w-[130px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center" title="Counter Sample Approval Date">C/S-AD</th>
-                <th className="p-3 font-semibold min-w-[130px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center" title="Lab Dip Sent Date">L/D-SD</th>
-                <th className="p-3 font-semibold min-w-[130px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center" title="Lab Dip Sample Approval Date">L/D-AD</th>
-                <th className="p-3 font-semibold min-w-[130px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center" title="Bulk Sent Date">B/S-SD</th>
-                <th className="p-3 font-semibold min-w-[130px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center" title="Bulk Approval Date">B/S-AD</th>
-                <th className="p-3 font-semibold min-w-[90px] border-l-2 border-r border-green-600 bg-green-900/50 text-green-400 text-center" title="Mill Production Approval">M.PA</th>
-                <th className="p-3 font-semibold min-w-[90px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Designer Production Approval">D.PA</th>
-                <th className="p-3 font-semibold min-w-[90px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Reference Sample">R/S</th>
-                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Reference Sample Sent Mill">R/S-MS</th>
-                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Buyer's Reference Sample Sent Mill">B.S-MS</th>
-                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Buyer's Laboratory Test Received Date">B.LT-RD</th>
-                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Buyer's Laboratory Test Mill Sent">B.LT-MS</th>
-                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Buyer's Laboratory Test Mill Approved">B.LT-MA</th>
-                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Laboratory Test Approved">LT-AD</th>
-                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Buyer's Shipment Approval Date">B.SAD</th>
-                <th className="p-3 font-semibold min-w-[70px] border-r border-green-800 bg-green-900/50 text-green-400 text-center" title="Packing List">PL</th>
+                <th className="p-3 font-semibold min-w-[130px] border-l-2 border-r border-sky-600 bg-sky-900/50 text-sky-300 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">ESTIMATED DATE OF DEPARTURE</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">ETD</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold min-w-[90px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">FDS FORM SENT?</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">FDS</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold min-w-[90px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">COUNTER SAMPLE APPLY?</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">C/S</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">COUNTER SAMPLE SENT DATE</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">C/S-SD</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">COUNTER SAMPLE APPROVAL DATE</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">C/S-AD</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">LAB DIP SENT DATE</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">L/D-SD</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">LAB DIP SAMPLE APPROVAL DATE</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">L/D-AD</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">BULK SENT DATE</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">B/S-SD</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-sky-800 bg-sky-900/50 text-sky-300 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">BULK APPROVAL DATE</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">B/S-AD</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold min-w-[90px] border-l-2 border-r border-green-600 bg-green-900/50 text-green-400 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">MILL PRODUCTION APPROVAL</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">M.PA</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold min-w-[90px] border-r border-green-800 bg-green-900/50 text-green-400 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">DESIGNER PRODUCTION APPROVAL</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">D.PA</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold min-w-[90px] border-r border-green-800 bg-green-900/50 text-green-400 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">REFERENCE SAMPLE</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">R/S</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">REFERENCE SAMPLE SENT MILL</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">R/S-MS</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">BUYER'S REFERENCE SAMPLE SENT MILL</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">B.S-MS</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">BUYER'S LABORATORY TEST RECEIVED DATE</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">B.LT-RD</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">BUYER'S LABORATORY TEST MILL SENT</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">B.LT-MS</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">BUYER'S LABORATORY TEST MILL APPROVED</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">B.LT-MA</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">LABORATORY TEST APPROVED</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">LT-AD</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold min-w-[130px] border-r border-green-800 bg-green-900/50 text-green-400 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">BUYER'S SHIPMENT APPROVAL DATE</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">B.SAD</span>
+                  </div>
+                </th>
+                <th className="p-3 font-semibold min-w-[70px] border-r border-green-800 bg-green-900/50 text-green-400 text-center">
+                  <div className="flex flex-col items-center justify-between h-full space-y-1">
+                    <span className="text-[9px] font-bold opacity-100 tracking-wider whitespace-normal leading-tight h-8 flex items-center text-center justify-center w-full px-1">PACKING LIST</span>
+                    <span className="font-bold border-t border-white/10 pt-1 w-full text-center">PL</span>
+                  </div>
+                </th>
                 <th className="p-3 font-semibold min-w-[140px] border-l-2 border-r border-rose-600 bg-rose-900/50 text-rose-300 text-center" title="Fabric Type">
                   {formData.language === 'ENG' ? 'FABRIC TYPE' : 'URUN CINSI'}
                 </th>
@@ -1395,7 +1510,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
             <div className="flex gap-4 w-full">
                <button 
                 onClick={cancelDelete}
-                className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition-colors border border-slate-300"
+                className="flex-1 px-4 py-2.5.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition-colors border border-slate-300 text-base"
                >
                  NEIN (Vazgeç)
                </button>

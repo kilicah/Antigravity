@@ -18,7 +18,6 @@ export default async function InvoiceViewPage({
       shipTo: true,
       brand: true,
       items: true,
-      invoice: true,
       productionOrder: true,
     }
   });

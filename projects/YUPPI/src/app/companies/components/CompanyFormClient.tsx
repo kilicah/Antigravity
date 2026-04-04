@@ -109,35 +109,35 @@ export default function CompanyFormClient({ initialData }: { initialData?: any }
             <h2 className="text-lg font-bold text-slate-800 border-b border-slate-200 pb-2">Türkçe Bilgiler</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="md:col-span-1">
-                <label className="block text-sm font-medium text-slate-700 mb-1">Firma Kodu</label>
-                <input type="text" name="code" defaultValue={initialData?.code || ""} maxLength={10} className="w-full px-4 py-2 border border-slate-300 rounded-md uppercase" placeholder="KOD (Max 10)" />
+                <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">Firma Kodu</label>
+                <input type="text" name="code" defaultValue={initialData?.code || ""} maxLength={10} className="w-full px-4 py-2.5 border border-slate-300 rounded-md uppercase text-base" placeholder="KOD (Max 10)" />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-slate-700 mb-1">Firma Adı <span className="text-red-500">*</span></label>
-                <input type="text" name="name" defaultValue={initialData?.name} required className="w-full px-4 py-2 border border-slate-300 rounded-md uppercase" placeholder="YSK PAZARLAMA A.Ş." />
+                <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">Firma Adı <span className="text-red-500">*</span></label>
+                <input type="text" name="name" defaultValue={initialData?.name} required className="w-full px-4 py-2.5 border border-slate-300 rounded-md uppercase text-base" placeholder="YSK PAZARLAMA A.Ş." />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Adres</label>
-              <textarea name="address" defaultValue={initialData?.address || ""} rows={2} className="w-full px-4 py-2 border border-slate-300 rounded-md uppercase" placeholder="ADRES DETAYLARI"></textarea>
+              <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">Adres</label>
+              <textarea name="address" defaultValue={initialData?.address || ""} rows={2} className="w-full px-4 py-2.5 border border-slate-300 rounded-md uppercase text-base" placeholder="ADRES DETAYLARI"></textarea>
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">İlçe</label>
-                <input type="text" name="district" defaultValue={initialData?.district || ""} className="w-full px-3 py-2 border border-slate-300 rounded-md uppercase" />
+                <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">İlçe</label>
+                <input type="text" name="district" defaultValue={initialData?.district || ""} className="w-full px-3 py-2.5 border border-slate-300 rounded-md uppercase text-base" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">İl</label>
-                <input type="text" name="city" defaultValue={initialData?.city || ""} className="w-full px-3 py-2 border border-slate-300 rounded-md uppercase" />
+                <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">İl</label>
+                <input type="text" name="city" defaultValue={initialData?.city || ""} className="w-full px-3 py-2.5 border border-slate-300 rounded-md uppercase text-base" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Ülke</label>
-                <input type="text" name="country" defaultValue={initialData?.country || ""} className="w-full px-3 py-2 border border-slate-300 rounded-md uppercase" />
+                <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">Ülke</label>
+                <input type="text" name="country" defaultValue={initialData?.country || ""} className="w-full px-3 py-2.5 border border-slate-300 rounded-md uppercase text-base" />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Vergi Dairesi</label>
-              <input type="text" name="taxOffice" defaultValue={initialData?.taxOffice || ""} className="w-full px-4 py-2 border border-slate-300 rounded-md uppercase" />
+              <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">Vergi Dairesi</label>
+              <input type="text" name="taxOffice" defaultValue={initialData?.taxOffice || ""} className="w-full px-4 py-2.5 border border-slate-300 rounded-md uppercase text-base" />
             </div>
           </div>
 
@@ -153,30 +153,30 @@ export default function CompanyFormClient({ initialData }: { initialData?: any }
               </button>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Company Name</label>
-              <input type="text" name="nameEn" defaultValue={initialData?.nameEn || ""} className="w-full px-4 py-2 border border-slate-300 rounded-md uppercase" placeholder="YSK MARKETING INC." />
+              <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">Company Name</label>
+              <input type="text" name="nameEn" defaultValue={initialData?.nameEn || ""} className="w-full px-4 py-2.5 border border-slate-300 rounded-md uppercase text-base" placeholder="YSK MARKETING INC." />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Address</label>
-              <textarea name="addressEn" defaultValue={initialData?.addressEn || ""} rows={2} className="w-full px-4 py-2 border border-slate-300 rounded-md uppercase" placeholder="ADDRESS DETAILS"></textarea>
+              <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">Address</label>
+              <textarea name="addressEn" defaultValue={initialData?.addressEn || ""} rows={2} className="w-full px-4 py-2.5 border border-slate-300 rounded-md uppercase text-base" placeholder="ADDRESS DETAILS"></textarea>
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">District</label>
-                <input type="text" name="districtEn" defaultValue={initialData?.districtEn || ""} className="w-full px-3 py-2 border border-slate-300 rounded-md uppercase" />
+                <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">District</label>
+                <input type="text" name="districtEn" defaultValue={initialData?.districtEn || ""} className="w-full px-3 py-2.5 border border-slate-300 rounded-md uppercase text-base" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">City</label>
-                <input type="text" name="cityEn" defaultValue={initialData?.cityEn || ""} className="w-full px-3 py-2 border border-slate-300 rounded-md uppercase" />
+                <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">City</label>
+                <input type="text" name="cityEn" defaultValue={initialData?.cityEn || ""} className="w-full px-3 py-2.5 border border-slate-300 rounded-md uppercase text-base" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Country</label>
-                <input type="text" name="countryEn" defaultValue={initialData?.countryEn || ""} className="w-full px-3 py-2 border border-slate-300 rounded-md uppercase" />
+                <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">Country</label>
+                <input type="text" name="countryEn" defaultValue={initialData?.countryEn || ""} className="w-full px-3 py-2.5 border border-slate-300 rounded-md uppercase text-base" />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Tax Office</label>
-              <input type="text" name="taxOfficeEn" defaultValue={initialData?.taxOfficeEn || ""} className="w-full px-4 py-2 border border-slate-300 rounded-md uppercase" />
+              <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">Tax Office</label>
+              <input type="text" name="taxOfficeEn" defaultValue={initialData?.taxOfficeEn || ""} className="w-full px-4 py-2.5 border border-slate-300 rounded-md uppercase text-base" />
             </div>
           </div>
         </div>
@@ -184,20 +184,20 @@ export default function CompanyFormClient({ initialData }: { initialData?: any }
         {/* Formalities */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 bg-white">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Vergi Num. / VAT No</label>
-              <input type="text" name="taxNo" defaultValue={initialData?.taxNo || ""} className="w-full px-4 py-2 border border-slate-300 rounded-md uppercase" />
+              <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">Vergi Num. / VAT No</label>
+              <input type="text" name="taxNo" defaultValue={initialData?.taxNo || ""} className="w-full px-4 py-2.5 border border-slate-300 rounded-md uppercase text-base" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Ticaret Sicil No</label>
-              <input type="text" name="registrationNo" defaultValue={initialData?.registrationNo || ""} className="w-full px-4 py-2 border border-slate-300 rounded-md uppercase" />
+              <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">Ticaret Sicil No</label>
+              <input type="text" name="registrationNo" defaultValue={initialData?.registrationNo || ""} className="w-full px-4 py-2.5 border border-slate-300 rounded-md uppercase text-base" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Posta Kodu / Zip</label>
-              <input type="text" name="zipCode" defaultValue={initialData?.zipCode || ""} className="w-full px-4 py-2 border border-slate-300 rounded-md uppercase" />
+              <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">Posta Kodu / Zip</label>
+              <input type="text" name="zipCode" defaultValue={initialData?.zipCode || ""} className="w-full px-4 py-2.5 border border-slate-300 rounded-md uppercase text-base" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Telefon / Phone</label>
-              <input type="tel" name="phone" defaultValue={initialData?.phone || ""} className="w-full px-4 py-2 border border-slate-300 rounded-md" placeholder="+90 555 123 4567" />
+              <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">Telefon / Phone</label>
+              <input type="tel" name="phone" defaultValue={initialData?.phone || ""} className="w-full px-4 py-2.5 border border-slate-300 rounded-md text-base" placeholder="+90 555 123 4567" />
             </div>
         </div>
 
@@ -221,42 +221,42 @@ export default function CompanyFormClient({ initialData }: { initialData?: any }
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="md:col-span-2">
                        <label className="block text-xs font-bold text-slate-600 mb-1 uppercase">Adres Başlığı (Örn: Çorlu Depo)</label>
-                       <input type="text" required value={addr.title} onChange={(e) => handleAddressChange(index, 'title', e.target.value)} className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-md uppercase" />
+                       <input type="text" required value={addr.title} onChange={(e) => handleAddressChange(index, 'title', e.target.value)} className="w-full px-3 py-1.5 text-base border border-slate-300 rounded-md uppercase py-2.5" />
                     </div>
                     <div className="md:col-span-2">
                        <label className="block text-xs font-bold text-slate-600 mb-1 uppercase">Açık Adres</label>
-                       <textarea required value={addr.address} onChange={(e) => handleAddressChange(index, 'address', e.target.value)} rows={2} className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-md uppercase"></textarea>
+                       <textarea required value={addr.address} onChange={(e) => handleAddressChange(index, 'address', e.target.value)} rows={2} className="w-full px-3 py-1.5 text-base border border-slate-300 rounded-md uppercase py-2.5"></textarea>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:col-span-2">
                       <div>
                         <label className="block text-xs font-bold text-slate-600 mb-1 uppercase">İlçe</label>
-                        <input type="text" value={addr.district} onChange={(e) => handleAddressChange(index, 'district', e.target.value)} className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-md uppercase" />
+                        <input type="text" value={addr.district} onChange={(e) => handleAddressChange(index, 'district', e.target.value)} className="w-full px-3 py-1.5 text-base border border-slate-300 rounded-md uppercase py-2.5" />
                       </div>
                       <div>
                         <label className="block text-xs font-bold text-slate-600 mb-1 uppercase">İl</label>
-                        <input type="text" value={addr.city} onChange={(e) => handleAddressChange(index, 'city', e.target.value)} className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-md uppercase" />
+                        <input type="text" value={addr.city} onChange={(e) => handleAddressChange(index, 'city', e.target.value)} className="w-full px-3 py-1.5 text-base border border-slate-300 rounded-md uppercase py-2.5" />
                       </div>
                       <div>
                         <label className="block text-xs font-bold text-slate-600 mb-1 uppercase">Ülke</label>
-                        <input type="text" value={addr.country} onChange={(e) => handleAddressChange(index, 'country', e.target.value)} className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-md uppercase" />
+                        <input type="text" value={addr.country} onChange={(e) => handleAddressChange(index, 'country', e.target.value)} className="w-full px-3 py-1.5 text-base border border-slate-300 rounded-md uppercase py-2.5" />
                       </div>
                       <div>
                         <label className="block text-xs font-bold text-slate-600 mb-1 uppercase">Posta Kodu</label>
-                        <input type="text" value={addr.zipCode || ""} onChange={(e) => handleAddressChange(index, 'zipCode', e.target.value)} className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-md uppercase" />
+                        <input type="text" value={addr.zipCode || ""} onChange={(e) => handleAddressChange(index, 'zipCode', e.target.value)} className="w-full px-3 py-1.5 text-base border border-slate-300 rounded-md uppercase py-2.5" />
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:col-span-2 pt-2 border-t border-indigo-200/50 mt-1">
                       <div>
                         <label className="block text-xs font-bold text-slate-600 mb-1 uppercase">İrtibat Kişisi (Yetkili)</label>
-                        <input type="text" value={addr.contactPerson || ""} onChange={(e) => handleAddressChange(index, 'contactPerson', e.target.value)} className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-md uppercase" placeholder="İsim Soyisim" />
+                        <input type="text" value={addr.contactPerson || ""} onChange={(e) => handleAddressChange(index, 'contactPerson', e.target.value)} className="w-full px-3 py-1.5 text-base border border-slate-300 rounded-md uppercase py-2.5" placeholder="İsim Soyisim" />
                       </div>
                       <div>
                         <label className="block text-xs font-bold text-slate-600 mb-1 uppercase">Telefon</label>
-                        <input type="tel" value={addr.contactPhone || ""} onChange={(e) => handleAddressChange(index, 'contactPhone', e.target.value)} className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-md uppercase" placeholder="Örn: 0555..." />
+                        <input type="tel" value={addr.contactPhone || ""} onChange={(e) => handleAddressChange(index, 'contactPhone', e.target.value)} className="w-full px-3 py-1.5 text-base border border-slate-300 rounded-md uppercase py-2.5" placeholder="Örn: 0555..." />
                       </div>
                       <div>
                         <label className="block text-xs font-bold text-slate-600 mb-1 uppercase">E-Posta</label>
-                        <input type="email" value={addr.contactEmail || ""} onChange={(e) => handleAddressChange(index, 'contactEmail', e.target.value)} className="w-full px-3 py-1.5 text-sm border border-slate-300 rounded-md lowercase" placeholder="mail@ornek.com" />
+                        <input type="email" value={addr.contactEmail || ""} onChange={(e) => handleAddressChange(index, 'contactEmail', e.target.value)} className="w-full px-3 py-1.5 text-base border border-slate-300 rounded-md lowercase py-2.5" placeholder="mail@ornek.com" />
                       </div>
                     </div>
                   </div>

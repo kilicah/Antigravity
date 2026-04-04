@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:test": "set DATABASE_URL=file:./test.db&& next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "studio:test": "set DATABASE_URL=file:./test.db&& prisma studio"
   },
   "dependencies": {
     "@google/genai": "^1.45.0",

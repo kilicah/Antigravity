@@ -146,7 +146,7 @@ export default async function BoLPrintPage({ params }: { params: Promise<{ id: s
                  return (locStr || zip) ? `\n${locStr}${locStr && zip ? ' ' : ''}${zip || ''}` : '';
                })()}
             </div>
-            {firstOrder?.shipTo?.contactName && <div>CONTACT PERSON. {firstOrder.shipTo.contactName}</div>}
+            {(firstOrder?.shipTo as any)?.contactName && <div>CONTACT PERSON. {(firstOrder.shipTo as any).contactName}</div>}
           </div>
 
           {/* 3. INVOICE INFO (200px) */}
