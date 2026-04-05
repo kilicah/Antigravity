@@ -24,7 +24,7 @@ export default async function EditOrderPage({
   if (!order) notFound();
 
   // Fetch dropdown data
-  const companies = await prisma.company.findMany({ orderBy: { name: "asc" } });
+  const companies = await prisma.company.findMany({ where: { isActive: true }, orderBy: { name: "asc" } });
 
   return (
     <div className="max-w-6xl mx-auto">

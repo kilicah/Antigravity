@@ -49,9 +49,9 @@ export default async function EditInvoicePage({
   });
 
   // 3. Lookups for dropdowns
-  const logisticsCompanies = await prisma.company.findMany({ where: { isLogistics: true } });
-  const customsCompanies = await prisma.company.findMany({ where: { isCustoms: true } });
-  const insuranceCompanies = await prisma.company.findMany({ where: { isInsurance: true } });
+  const logisticsCompanies = await prisma.company.findMany({ where: { isLogistics: true, isActive: true } });
+  const customsCompanies = await prisma.company.findMany({ where: { isCustoms: true, isActive: true } });
+  const insuranceCompanies = await prisma.company.findMany({ where: { isInsurance: true, isActive: true } });
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">

@@ -4,7 +4,7 @@ import Link from "next/link"; // Added import for Link component
 
 export default async function NewOrderPage() {
   // Fetch initial data needed for the form
-  const companies = await prisma.company.findMany({ orderBy: { name: "asc" } });
+  const companies = await prisma.company.findMany({ where: { isActive: true }, orderBy: { name: "asc" } });
 
   return (
     <div className="space-y-6">

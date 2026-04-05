@@ -7,6 +7,40 @@ import { useRouter } from "next/navigation";
 export default function OrderTableClient({ orders }: { orders: any[] }) {
   const router = useRouter();
   const [selectedOrderIds, setSelectedOrderIds] = useState<number[]>([]);
+  const [activeTab, setActiveTab] = useState<"active" | "passive">("active");
+
+  const filteredOrders = orders.filter(o => activeTab === "active" ? o.isActive !== false : o.isActive === false);
+
+  const handleDelete = async () => {
+    if (selectedOrderIds.length === 0) return alert("Sipariş seçin.");
+
+    if (activeTab === "active") {
+      if (!confirm("Seçili sipariş(ler)i pasife (arşive) almak istiyor musunuz?")) return;
+    } else {
+      const pwd = prompt("Siparişleri KALICI olarak silmek üzeresiniz! İşleme devam etmek için şifreyi girin:");
+      if (pwd !== "1996") {
+        alert("Hatalı şifre. Silme işlemi iptal edildi.");
+        return;
+      }
+    }
+
+    try {
+      for (const id of selectedOrderIds) {
+        const res = await fetch(`/api/orders/${id}${activeTab === "passive" ? "?hard=true" : ""}`, {
+          method: "DELETE"
+        });
+        if (!res.ok) {
+          const body = await res.json();
+          alert(`Hata (Sipariş #${id}): ` + body.error);
+        }
+      }
+      setSelectedOrderIds([]);
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
+      alert("Bir hata oluştu.");
+    }
+  };
 
   const handleCheckboxChange = (id: number) => {
     setSelectedOrderIds(prev => 
@@ -27,9 +61,25 @@ export default function OrderTableClient({ orders }: { orders: any[] }) {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full h-full flex flex-col">
+      {/* HEADER: Sticky */}
+      <div className="sticky top-0 z-20 bg-slate-50/95 backdrop-blur-md shadow-sm border-b border-slate-200 flex justify-between items-center pb-4 mb-6 pt-2">
+        <div>
+          <h1 className="text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">
+            Sipariş Yönetimi
+          </h1>
+          <p className="text-slate-500 mt-1">Tüm sözleşme ve sipariş işlemlerini takip edin.</p>
+        </div>
+        <Link 
+          href="/orders/new" 
+          className="group relative inline-flex items-center justify-center px-6 py-2.5 text-sm font-medium text-white transition-all duration-200 bg-slate-900 border border-transparent rounded-lg hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 shadow-[0_4px_14px_0_rgb(0,0,0,10%)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.23)] hover:-translate-y-0.5"
+        >
+          <span className="mr-2 text-lg leading-none">+</span> Yeni Sözleşme
+        </Link>
+      </div>
+
       {/* ACTION BAR */}
-      <div className="flex items-center gap-3 mb-4 bg-white/80 backdrop-blur-xl p-3 rounded-xl border border-slate-200/60 shadow-sm transition-all">
+      <div className="flex items-center gap-3 mb-4 bg-white/80 backdrop-blur-xl p-3 rounded-xl border border-slate-200/60 shadow-sm transition-all shrink-0">
         <span className="text-sm font-semibold text-slate-500 mr-2 uppercase tracking-wide">İşlemler:</span>
         <button
           onClick={() => handleAction("")}
@@ -86,10 +136,34 @@ export default function OrderTableClient({ orders }: { orders: any[] }) {
         >
           Düzenle
         </button>
+        <button
+          onClick={handleDelete}
+          disabled={selectedOrderIds.length === 0}
+          className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold transition-colors border ${
+            selectedOrderIds.length > 0
+              ? "bg-red-50 text-red-600 hover:bg-red-100 border-red-200 shadow-sm cursor-pointer" 
+              : "bg-slate-50 text-slate-400 border-slate-200 opacity-60 cursor-not-allowed"
+          }`}
+        >
+          {activeTab === "active" ? "Arşivle" : "Tamamen Sil"}
+        </button>
+
+        <div className="ml-auto flex shrink-0">
+          <button
+            onClick={() => { setActiveTab(activeTab === "active" ? "passive" : "active"); setSelectedOrderIds([]); }}
+            className={`px-4 py-2 rounded-md text-sm font-bold transition-all border shadow-sm ${
+              activeTab === "active"
+                ? "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
+                : "bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100"
+            }`}
+          >
+            {activeTab === "active" ? "Arşiv Siparişler 🗃️" : "Aktif Siparişler ✅"}
+          </button>
+        </div>
       </div>
 
-      <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-slate-200/60 flex-1 overflow-hidden flex flex-col">
+        <div className="overflow-auto flex-1">
           <table className="w-full text-left border-collapse whitespace-nowrap">
             <thead>
               <tr className="bg-slate-50/50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200/60">
@@ -102,7 +176,7 @@ export default function OrderTableClient({ orders }: { orders: any[] }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100/50">
-              {orders.length === 0 ? (
+              {filteredOrders.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-16 text-center text-slate-500 bg-slate-50/30">
                      <div className="flex flex-col items-center justify-center">
@@ -112,7 +186,7 @@ export default function OrderTableClient({ orders }: { orders: any[] }) {
                   </td>
                 </tr>
               ) : (
-                orders.map((order) => {
+                filteredOrders.map((order) => {
                   const totalAmount = order.items.reduce((sum: number, item: any) => sum + item.totalAmount, 0);
                   const totalQuantity = order.items.reduce((sum: number, item: any) => sum + item.quantity, 0);
                   const isSelected = selectedOrderIds.includes(order.id);

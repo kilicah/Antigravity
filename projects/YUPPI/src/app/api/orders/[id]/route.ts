@@ -134,3 +134,54 @@ export async function PUT(
     );
   }
 }
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const id = parseInt((await params).id, 10);
+    const searchParams = req.nextUrl.searchParams;
+    const isHardDelete = searchParams.get("hard") === "true";
+
+    if (isNaN(id)) {
+      return NextResponse.json({ error: "Geçersiz ID" }, { status: 400 });
+    }
+
+    if (isHardDelete) {
+      // Kalıcı silme (Önce itemleri, production orderleri, vb. silmeli)
+      // Prisma onCascade delete yoksa elle sileceğiz:
+      await prisma.$transaction(async (tx) => {
+        // İlgili productionOrder kaydını varsa sil
+        await tx.productionOrder.deleteMany({
+          where: { orderId: id }
+        });
+        
+        // Itemleri sil
+        await tx.orderItem.deleteMany({
+          where: { orderId: id }
+        });
+
+        // Siparişi kalıcı sil
+        await tx.order.delete({
+          where: { id }
+        });
+      });
+      return NextResponse.json({ message: "Sipariş kalıcı olarak silindi." }, { status: 200 });
+    } else {
+      // Soft-delete (Pasife Al)
+      // @ts-ignore: isActive generated yetmeyebilir
+      await prisma.order.update({
+        where: { id },
+        data: { isActive: false }
+      });
+      return NextResponse.json({ message: "Sipariş arşive (pasife) alındı." }, { status: 200 });
+    }
+  } catch (error: any) {
+    console.error("Order delete error:", error);
+    return NextResponse.json(
+      { error: "Sipariş silinirken bir hata oluştu." },
+      { status: 500 }
+    );
+  }
+}

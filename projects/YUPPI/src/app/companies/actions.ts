@@ -28,7 +28,8 @@ export async function createCompany(formData: FormData) {
   const zipCode = formData.get("zipCode") as string;
   const taxNo = formData.get("taxNo") as string;
   const registrationNo = (formData.get("registrationNo") as string)?.toLocaleUpperCase("tr-TR");
-  const phone = formData.get("phone") as string;
+  const phone = formData.getAll("phone").filter(Boolean).join(", ");
+  const email = (formData.get("email") as string)?.toLowerCase();
   
   // Roles
   const isSeller = formData.get("isSeller") === "on";
@@ -39,27 +40,10 @@ export async function createCompany(formData: FormData) {
   const isLogistics = formData.get("isLogistics") === "on";
   const isInsurance = formData.get("isInsurance") === "on";
   const isAgency = formData.get("isAgency") === "on";
+  const isActive = formData.get("isActive") === "on";
 
-  // Build 10 Representatives array
-  const representatives = [];
-  for (let i = 1; i <= 10; i++) {
-     const repName = (formData.get(`rep${i}_name`) as string)?.toLocaleUpperCase("tr-TR");
-     const repNameEn = (formData.get(`rep${i}_nameEn`) as string)?.toUpperCase();
-     const repTitle = (formData.get(`rep${i}_title`) as string)?.toLocaleUpperCase("tr-TR");
-     const repPhone = formData.get(`rep${i}_phone`) as string;
-     const repEmail = formData.get(`rep${i}_email`) as string;
-     
-     if (repName || repNameEn || repTitle || repPhone || repEmail) {
-       representatives.push({
-          name: repName || "",
-          nameEn: repNameEn || "",
-          title: repTitle || "",
-          phone: repPhone || "",
-          email: repEmail || "",
-       });
-     }
-  }
-  const repsJson = JSON.stringify(representatives);
+  // Representatives array
+  const repsJson = (formData.get("repsJson") as string) || "[]";
   
   // Delivery Addresses
   const deliveryAddressesJson = (formData.get("deliveryAddressesJson") as string) || "[]";
@@ -83,6 +67,8 @@ export async function createCompany(formData: FormData) {
       taxNo,
       registrationNo,
       phone,
+      // @ts-ignore
+      email: email || null,
       isSeller,
       isBuyer,
       isShipTo,
@@ -91,6 +77,7 @@ export async function createCompany(formData: FormData) {
       isLogistics,
       isInsurance,
       isAgency,
+      isActive,
       repsJson,
       deliveryAddressesJson,
     },
@@ -124,7 +111,8 @@ export async function updateCompany(companyId: number, formData: FormData) {
   const zipCode = formData.get("zipCode") as string;
   const taxNo = formData.get("taxNo") as string;
   const registrationNo = (formData.get("registrationNo") as string)?.toLocaleUpperCase("tr-TR");
-  const phone = formData.get("phone") as string;
+  const phone = formData.getAll("phone").filter(Boolean).join(", ");
+  const email = (formData.get("email") as string)?.toLowerCase();
   
   // Roles
   const isSeller = formData.get("isSeller") === "on";
@@ -135,27 +123,10 @@ export async function updateCompany(companyId: number, formData: FormData) {
   const isLogistics = formData.get("isLogistics") === "on";
   const isInsurance = formData.get("isInsurance") === "on";
   const isAgency = formData.get("isAgency") === "on";
+  const isActive = formData.get("isActive") === "on";
 
-  // Build 10 Representatives array
-  const representatives = [];
-  for (let i = 1; i <= 10; i++) {
-     const repName = (formData.get(`rep${i}_name`) as string)?.toLocaleUpperCase("tr-TR");
-     const repNameEn = (formData.get(`rep${i}_nameEn`) as string)?.toUpperCase();
-     const repTitle = (formData.get(`rep${i}_title`) as string)?.toLocaleUpperCase("tr-TR");
-     const repPhone = formData.get(`rep${i}_phone`) as string;
-     const repEmail = formData.get(`rep${i}_email`) as string;
-     
-     if (repName || repNameEn || repTitle || repPhone || repEmail) {
-       representatives.push({
-          name: repName || "",
-          nameEn: repNameEn || "",
-          title: repTitle || "",
-          phone: repPhone || "",
-          email: repEmail || "",
-       });
-     }
-  }
-  const repsJson = JSON.stringify(representatives);
+  // Representatives array
+  const repsJson = (formData.get("repsJson") as string) || "[]";
   
   // Delivery Addresses
   const deliveryAddressesJson = (formData.get("deliveryAddressesJson") as string) || "[]";
@@ -178,6 +149,8 @@ export async function updateCompany(companyId: number, formData: FormData) {
       taxNo,
       registrationNo,
       phone,
+      // @ts-ignore
+      email: email || null,
       isSeller,
       isBuyer,
       isShipTo,
@@ -186,6 +159,7 @@ export async function updateCompany(companyId: number, formData: FormData) {
       isLogistics,
       isInsurance,
       isAgency,
+      isActive,
       repsJson,
       deliveryAddressesJson,
     };

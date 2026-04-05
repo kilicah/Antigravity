@@ -5,8 +5,19 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function CompanyTableClient({ companies }: { companies: any[] }) {
+  const activeCompaniesList = companies.filter(c => c.isActive !== false);
+  const passiveCompaniesList = companies.filter(c => c.isActive === false);
+  const handleDelete = async () => {
+    if(!selectedCompanyId) return alert("Lütfen silmek için firma seçin.");
+    if(!confirm("Emin misiniz?")) return;
+    try { const res = await fetch(`/api/companies/${selectedCompanyId}`, { method: "DELETE" }); if(!res.ok) { const j = await res.json(); alert(j.error); } else { window.location.reload(); } } catch(e) { alert("Hata oluştu."); }
+  };
   const [selectedCompanyId, setSelectedCompanyId] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState<"active" | "passive">("active");
   const router = useRouter();
+
+  const selectedCompany = companies.find(c => c.id === selectedCompanyId);
+  const isDeleteEnabled = selectedCompany && selectedCompany.isActive === false;
 
   const handleEditClick = () => {
     if (selectedCompanyId) {
@@ -22,9 +33,20 @@ export default function CompanyTableClient({ companies }: { companies: any[] }) 
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="sticky top-0 -mt-8 pt-8 pb-4 -mx-8 px-8 z-20 bg-slate-50/95 backdrop-blur-md shadow-sm border-b border-slate-200 flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Firma Yönetimi</h1>
         <div className="flex gap-3">
+          <button
+            onClick={handleDelete}
+            disabled={!isDeleteEnabled}
+            className={`px-4 py-2 rounded-md font-medium transition-colors ${
+              isDeleteEnabled 
+                ? "bg-red-50 text-red-600 border border-red-200 hover:bg-red-100" 
+                : "bg-slate-50 text-slate-400 border border-slate-200 cursor-not-allowed"
+            }`}
+          >
+            Tamamen Sil
+          </button>
           <button
             onClick={handleEditClick}
             disabled={!selectedCompanyId}
@@ -35,6 +57,16 @@ export default function CompanyTableClient({ companies }: { companies: any[] }) 
             }`}
           >
             Düzenle
+          </button>
+          <button
+            onClick={() => { setActiveTab(activeTab === "active" ? "passive" : "active"); setSelectedCompanyId(null); }}
+            className={`px-4 py-2 rounded-md font-medium transition-colors border ${
+              activeTab === "active"
+                ? "bg-white text-slate-700 border-slate-300 hover:bg-slate-50 shadow-sm"
+                : "bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100 shadow-sm"
+            }`}
+          >
+            {activeTab === "active" ? "Pasif Firmalar ❌" : "Aktif Firmalar ✅"}
           </button>
           <Link 
             href="/companies/new" 
@@ -49,23 +81,23 @@ export default function CompanyTableClient({ companies }: { companies: any[] }) 
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse whitespace-nowrap">
             <thead>
-              <tr className="bg-slate-100 text-slate-600 text-xs border-b border-slate-200">
-                <th className="py-2 px-3 font-medium w-10 text-center">Seç</th>
-                <th className="py-2 px-3 font-medium w-28">Firma Kodu</th>
-                <th className="py-2 px-3 font-medium">Firma Ünvanı</th>
-                <th className="py-2 px-3 font-medium">Firma Şehir</th>
-                <th className="py-2 px-3 font-medium">Firma Ülke</th>
+              <tr className="bg-slate-100 text-slate-700 text-sm border-b border-slate-300 shadow-sm">
+                <th className="py-3 px-4 font-semibold w-10 text-center">Seç</th>
+                <th className="py-3 px-4 font-semibold w-32">Firma Kodu</th>
+                <th className="py-3 px-4 font-semibold">Firma Ünvanı</th>
+                <th className="py-3 px-4 font-semibold">Firma Şehir</th>
+                <th className="py-3 px-4 font-semibold">Firma Ülke</th>
               </tr>
             </thead>
             <tbody className="text-sm">
-              {companies.length === 0 ? (
+              {(activeTab === "active" ? activeCompaniesList : passiveCompaniesList).length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-12 text-center text-slate-500">
                     Henüz kayıtlı firma bulunmuyor.
                   </td>
                 </tr>
               ) : (
-                companies.map((company) => (
+                (activeTab === "active" ? activeCompaniesList : passiveCompaniesList).map((company) => (
                   <tr 
                     key={company.id} 
                     onClick={() => handleRowClick(company.id)}
@@ -91,7 +123,11 @@ export default function CompanyTableClient({ companies }: { companies: any[] }) 
                       )}
                     </td>
                     <td className="py-1.5 px-3">
-                      <div className="font-medium text-slate-900 leading-tight">{company.name}</div>
+                      <div className="flex items-center gap-2">
+           <div className={`w-2 h-2 rounded-full ${company.isActive !== false ? 'bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]' : 'bg-slate-400 shadow-[0_0_5px_rgba(148,163,184,0.5)]'}`}></div>
+           <div className={`font-bold ${company.isActive !== false ? 'text-slate-900' : 'text-slate-500 line-through decoration-slate-300'}`}>{company.name}</div>
+           {company.isActive === false && <span className="bg-slate-200 text-slate-600 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">Pasif</span>}
+        </div>
                       <div className="flex flex-wrap gap-1 mt-0.5">
                         {company.isSeller && <span className="px-1 py-0 rounded text-[9px] font-bold bg-purple-100 text-purple-800 uppercase leading-relaxed">Satıcı</span>}
                         {company.isBuyer && <span className="px-1 py-0 rounded text-[9px] font-bold bg-blue-100 text-blue-800 uppercase leading-relaxed">Alıcı</span>}

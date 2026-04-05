@@ -48,6 +48,7 @@ export async function PUT(
         taxNo: body.taxNo,
         registrationNo: body.registrationNo,
         phone: body.phone,
+        isActive: body.isActive !== undefined ? body.isActive : undefined,
       },
     });
 
@@ -66,6 +67,40 @@ export async function DELETE(
 ) {
   try {
     const id = parseInt((await params).id, 10);
+    
+    // Check relationships
+    const company = await prisma.company.findUnique({
+      where: { id },
+      select: {
+        _count: {
+          select: {
+            sellerOrders: true,
+            buyerOrders: true,
+            shipToOrders: true,
+            brandOrders: true,
+            agencyOrders: true,
+            invoiceCustoms: true,
+            invoiceLogistics: true,
+            invoiceInsurance: true,
+            buyerInvoices: true
+          }
+        }
+      }
+    });
+
+    if (!company) {
+      return NextResponse.json({ error: "Firma bulunamadı." }, { status: 404 });
+    }
+
+    const totalRelations = Object.values(company._count).reduce((acc, val) => acc + val, 0);
+
+    if (totalRelations > 0) {
+      return NextResponse.json(
+        { error: "Bu firma geçmiş siparişlerde veya faturalarda kullanıldığı için veritabanından tamamen silinemez. Lütfen firmayı düzenleyerek pasife alınız." },
+        { status: 400 }
+      );
+    }
+
     await prisma.company.delete({
       where: { id },
     });

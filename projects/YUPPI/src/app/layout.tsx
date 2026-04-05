@@ -9,7 +9,7 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body className="antialiased bg-slate-50 text-slate-900">
-        <div className="flex min-h-screen">
+        <div className="flex h-screen overflow-hidden">
           <Sidebar />
           <main className="flex-1 p-8 overflow-auto print:p-0 print:overflow-visible">
             {children}

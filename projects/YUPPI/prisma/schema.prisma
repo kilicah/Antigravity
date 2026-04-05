@@ -29,6 +29,7 @@ model Company {
   taxNo           String?
   registrationNo  String?
   phone           String?
+  email           String?
   isSeller        Boolean                 @default(false)
   isBuyer         Boolean                 @default(false)
   isLogistics     Boolean                 @default(false)
@@ -37,6 +38,7 @@ model Company {
   isShipTo        Boolean                 @default(false)
   isInsurance     Boolean                 @default(false)
   isAgency        Boolean                 @default(false)
+  isActive        Boolean                 @default(true)
 
   repsJson        String                  @default("[]")
   deliveryAddressesJson String            @default("[]")
@@ -127,6 +129,7 @@ model Order {
   items           OrderItem[]
   productionOrder ProductionOrder?
 
+  isActive Boolean @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
