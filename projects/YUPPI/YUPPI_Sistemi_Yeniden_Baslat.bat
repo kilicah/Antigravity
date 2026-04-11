@@ -9,6 +9,7 @@ echo.
 
 :: PM2 üzerinden yayınlanıyorsa onu yeniden başlatır (npx pm2 restart yuppi-erp)
 echo PM2 Production (Canlı) Sunucusu kontrol ediliyor...
+set PM2_HOME=C:\YUPPI_PROD_PM2
 call npx pm2 restart yuppi-erp
 
 echo.

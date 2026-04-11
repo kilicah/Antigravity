@@ -75,7 +75,8 @@ export default function OrderEntryForm({ companies, initialData }: any) {
   });
 
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
-
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [errorModalMsg, setErrorModalMsg] = useState("");
 
   // Ensure dates from DB are properly formatted for inputs if editing
   useEffect(() => {
@@ -294,11 +295,14 @@ export default function OrderEntryForm({ companies, initialData }: any) {
       if (response.ok) {
         router.push('/orders');
       } else {
-        alert("Sipariş kaydedilirken bir hata oluştu.");
+        const errorData = await response.json().catch(() => ({}));
+        setErrorModalMsg(errorData.error || `Sistem Hatası: Kod ${response.status}`);
+        setErrorModalOpen(true);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Sistem hatası");
+      setErrorModalMsg(error.message || "Sistem hatası meydana geldi.");
+      setErrorModalOpen(true);
     }
   };
 
@@ -1496,6 +1500,30 @@ export default function OrderEntryForm({ companies, initialData }: any) {
       </div>
 
     </form>
+
+    {errorModalOpen && (
+      <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in-95 border border-slate-100">
+          <div className="flex flex-col items-center text-center">
+            <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-4 shadow-inner">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+              </svg>
+            </div>
+            <h3 className="text-xl font-black text-slate-800 mb-2">Eyvah, Bir Sorun Var!</h3>
+            <p className="text-slate-600 mb-6 bg-slate-50 border border-slate-200 w-full p-3 rounded-lg text-sm text-center break-words font-mono">
+              {errorModalMsg}
+            </p>
+            <button 
+              onClick={() => setErrorModalOpen(false)}
+              className="w-full px-4 py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl shadow-md transition-colors"
+            >
+              Tamam, Kapat
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
 
     {itemToDelete !== null && (
       <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">

@@ -315,15 +315,15 @@ export default function CommercialInvoiceDocument({ order, bankInfo }: { order: 
                 <tr key={item.id} className="uppercase align-top leading-snug">
                   <td className="px-1 pb-2">
                     {item.buyerModelName ? <div className="whitespace-nowrap overflow-hidden text-ellipsis">{item.buyerModelName}</div> : null}
-                    <div>{item.width ? `${item.width}CM ` : ''}{item.weight ? `/ ${item.weight}` : ''}</div>
+                    <div>{item.typeOfGoods ? `${item.typeOfGoods} ` : ''}{item.width ? `${item.width}CM ` : ''}{item.weight ? `/ ${item.weight}` : ''}</div>
                   </td>
                   <td className="px-1 pb-2 break-words">{item.qualityName || "-"}</td>
                   <td className="px-1 pb-2 break-words">{item.qualityCode || "-"}</td>
                   <td className="px-1 pb-2 break-words text-center">{item.colorCode || "-"}</td>
                   <td className="px-1 pb-2 break-words">{item.composition || "-"}</td>
-                  <td className="px-1 pb-2">{item.unitPrice.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} {order.currency}</td>
-                  <td className="px-1 pb-2 text-right">{item.quantity.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} {order.unit}</td>
-                  <td className="px-1 pb-2 text-right pr-2">{item.totalAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} {order.currency}</td>
+                  <td className="px-1 pb-2">{item.unitPrice.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {order.currency}</td>
+                  <td className="px-1 pb-2 text-right">{item.quantity.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {order.unit}</td>
+                  <td className="px-1 pb-2 text-right pr-2">{item.totalAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {order.currency}</td>
                 </tr>
               ))}
               
@@ -339,10 +339,10 @@ export default function CommercialInvoiceDocument({ order, bankInfo }: { order: 
                     {t.grandTotals}
                  </td>
                  <td className="p-1 text-right font-bold align-middle">
-                    {totalQuantity.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} {order.unit}
+                    {totalQuantity.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {order.unit}
                  </td>
                  <td className="p-1 text-right font-bold align-middle pr-2">
-                    {totalAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} {order.currency}
+                    {totalAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {order.currency}
                  </td>
               </tr>
             </tfoot>

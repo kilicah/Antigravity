@@ -144,6 +144,8 @@ model OrderItem {
   composition    String?
   weight         String?
   width          String?
+  gtipNo         String?
+  typeOfGoods    String?
   quantity       Float
   unitPrice      Float
   totalAmount    Float

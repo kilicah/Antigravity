@@ -30,6 +30,25 @@ export default function SalesContractDocument({
   const totalQuantity = order.items.reduce((sum: number, item: any) => sum + item.quantity, 0);
   const totalAmount = order.items.reduce((sum: number, item: any) => sum + item.totalAmount, 0);
 
+  const getRepEmail = (company: any, repName: string) => {
+    if (!company?.repsJson || !repName) return "-";
+    try {
+        const reps = JSON.parse(company.repsJson);
+        const nameToMatch = repName.includes('|') ? repName.split('|')[0].trim().toLocaleUpperCase('tr-TR') : repName.trim().toLocaleUpperCase('tr-TR');
+        const found = reps.find((r: any) => {
+            const raw = r.name || "";
+            const n = raw.includes('|') ? raw.split('|')[0] : raw;
+            return n.trim().toLocaleUpperCase('tr-TR') === nameToMatch;
+        });
+        return found?.email?.toLowerCase() || "-";
+    } catch (e) {
+        return "-";
+    }
+  };
+
+  const sellerEmail = getRepEmail(order.seller, order.sellerRep);
+  const buyerEmail = getRepEmail(order.buyer, order.buyerRep);
+
   const trTerms = [
     "1) İşbu satış sözleşmesi, yukarıda unvanları belirtilen 'Satıcı Firma' ve 'Alıcı Firma' arasında resmi iletişim kanalları (e-posta vb.) aracılığıyla yapılmaktadır.",
     "2) Sözleşmede yer alan ürün fiyatlarına Katma Değer Vergisi (KDV) dahil değildir.",
@@ -217,16 +236,64 @@ export default function SalesContractDocument({
     );
   };
 
+  const renderSignature = () => (
+    <div className="flex justify-between items-start text-[11px] text-center border-x border-b border-slate-800 relative h-[95px] min-h-[95px] max-h-[95px] overflow-hidden bg-white w-full shadow-[0_-1px_2px_rgba(0,0,0,0.02)]">
+      <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+        <img 
+          src={isUSKM ? '/images/Defenni-M-Mavi.jpg' : isUSKT ? '/images/Defenni-T-Mavi.jpg' : '/images/Defenni-T-Mavi.jpg'} 
+          onError={(e) => { e.currentTarget.src = isUSKM ? '/images/Defenni-M.jpg' : '/images/Defenni-T.jpg'; }}
+          alt="Company Stamp" 
+          className="w-[200px] h-[85px] object-contain" 
+        />
+      </div>
+      <div className="w-1/2 p-2 flex flex-col items-start relative z-10">
+        <div className="font-bold text-[12px] underline text-left">{isEng ? 'AUTHORIZED SIGNATURE & STAMP' : 'YETKİLİ İMZA VE KAŞE'}</div>
+        {isSigned && (
+          <img 
+            src={isUSKM ? '/images/USKM-Kase-Imza.png' : isUSKT ? '/images/USKT-Kase-Imza.png' : '/images/USKT-Kase-Imza.png'} 
+            alt="Seller Signature" 
+            className="w-[180px] h-[65px] object-contain mt-1 mix-blend-multiply" 
+          />
+        )}
+      </div>
+      <div className="w-1/2 p-2 flex flex-col items-end relative z-10">
+        <div className="font-bold text-[12px] underline text-right">{isEng ? 'AUTHORIZED SIGNATURE & STAMP' : 'YETKİLİ İMZA VE KAŞE'}</div>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="w-full">
+    <div className="w-full bg-slate-100 min-h-screen pb-12 print:bg-white print:p-0">
       <style dangerouslySetInnerHTML={{__html: `
         @media print {
-          @page { size: A4 landscape; margin: 0; }
-          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          @page { 
+             size: A4 landscape; 
+             margin: 10mm 15mm; 
+             @bottom-right {
+               content: counter(page) " / " counter(pages);
+               font-family: 'Arial Narrow', Arial, sans-serif;
+               font-size: 11px;
+               font-weight: bold;
+             }
+          }
+          body { 
+             -webkit-print-color-adjust: exact !important; 
+             print-color-adjust: exact !important; 
+             background-color: white !important;
+          }
+          .pagebreak { 
+             page-break-before: always !important; 
+             break-before: page !important; 
+          }
+          table { page-break-inside: auto; }
+          tr    { page-break-inside: avoid; page-break-after: auto; }
+          thead { display: table-header-group; }
+          tfoot { display: table-footer-group; }
         }
       `}} />
+
       {/* BAŞLIK & BUTONLAR */}
-      <div className="flex justify-between items-center print:hidden mb-6">
+      <div className="flex justify-between items-center print:hidden mb-6 px-8 pt-8">
         <div>
           <h1 className="text-3xl font-bold text-slate-800">Sözleşme Detayı</h1>
           <p className="text-slate-500">Ref: {order.contractNo}</p>
@@ -275,188 +342,155 @@ export default function SalesContractDocument({
         </div>
       </div>
 
-      <div className="w-full overflow-x-auto print:overflow-visible print:px-[10mm] print:py-[10mm]">
-        <div className="mx-auto w-[1002px] min-w-[1002px] max-w-[1002px] space-y-4 print:space-y-0 text-black">
-        {/* YAZDIRILABİLİR SÖZLEŞME ALANI (SAYFA 1) */}
-        <div className="bg-white print:p-0 font-['Arial_Narrow',_'Arial_Narrow_MT',_Arial,_sans-serif] text-[11px] relative overflow-hidden min-h-[1050px] print:min-h-0 print:h-auto">
-        {renderHeader()}
+      <div className="mx-auto w-[1002px] print:w-full print:max-w-none bg-white shadow-xl print:shadow-none font-['Arial_Narrow',_'Arial_Narrow_MT',_Arial,_sans-serif] text-[11px] text-black">
+         {/* TABLE 1: ITEMS */}
+         <table className="w-full border-collapse">
+            <thead className="print:table-header-group">
+               <tr><td className="p-0 border-0">{renderHeader()}</td></tr>
+            </thead>
+            <tbody className="print:table-row-group">
+               <tr>
+                  <td className="p-0 border-0">
+                    {/* Sub-header block (SATIŞ SÖZLEŞMESİ) */}
+                    <div className="border-x border-b border-t-0 border-slate-800 grid grid-cols-[205px_590px_1fr] w-full bg-white items-stretch">
+                       <div className="font-bold text-[11px] px-2 py-2 border-r border-slate-800 flex flex-col items-center justify-center text-center uppercase leading-tight">
+                         <span>{isEng ? 'ALL GOODS ARE OF TURKISH ORIGIN.' : 'TÜM MALLAR TÜRK MENŞELİDİR.'}</span>
+                         <span className="mt-1">{isEng ? 'OUR TEXTILE PRODUCTS AZO FREE.' : 'TEKSTİL ÜRÜNLERİMİZ AZO İÇERMEZ.'}</span>
+                       </div>
+                       <div className="p-2 flex items-center justify-center text-center border-r border-slate-800">
+                         <h2 className="text-[25px] font-bold text-blue-600 tracking-widest uppercase mb-1">{isEng ? 'SALES CONTRACT' : 'SATIŞ SÖZLEŞMESİ'}</h2>
+                       </div>
+                       <div className="h-[60px] min-h-[60px] max-h-[60px] px-2 flex flex-col justify-center text-center font-normal">
+                         <div className="font-bold text-[12px] uppercase">{isEng ? "BUYER'S P.O. NO" : "ALICI SİPARİŞ NO"}</div>
+                         <div className="text-[11px] mt-0.5 uppercase">{order.buyerPoNo || "-"}</div>
+                       </div>
+                    </div>
 
-        {/* Sub-header block (SATIŞ SÖZLEŞMESİ) */}
-        <div className="border-x border-b border-slate-800 grid grid-cols-[205px_590px_1fr] w-full bg-white items-stretch">
-           <div className="font-bold text-[11px] px-2 py-2 border-r border-slate-800 flex flex-col items-center justify-center text-center uppercase leading-tight">
-             <span>{isEng ? 'ALL GOODS ARE OF TURKISH ORIGIN.' : 'TÜM MALLAR TÜRK MENŞELİDİR.'}</span>
-             <span className="mt-1">{isEng ? 'OUR TEXTILE PRODUCTS AZO FREE.' : 'TEKSTİL ÜRÜNLERİMİZ AZO İÇERMEZ.'}</span>
-           </div>
-           <div className="p-2 flex items-center justify-center text-center border-r border-slate-800">
-             <h2 className="text-[25px] font-bold text-blue-600 tracking-widest uppercase mb-1">{isEng ? 'SALES CONTRACT' : 'SATIŞ SÖZLEŞMESİ'}</h2>
-           </div>
-           <div className="h-[60px] min-h-[60px] max-h-[60px] px-2 flex flex-col justify-center text-center font-normal">
-             <div className="font-bold text-[12px] uppercase">{isEng ? "BUYER'S P.O. NO" : "ALICI SİPARİŞ NO"}</div>
-             <div className="text-[11px] mt-0.5 uppercase">{order.buyerPoNo || "-"}</div>
-           </div>
-        </div>
+                    {/* ITEMS TABLE */}
+                    <table className="table-fixed w-full text-left border-collapse border-b border-x border-slate-800 text-[11px]">
+                      <thead>
+                        <tr className="border-b border-slate-800 font-bold text-[11px] text-center leading-snug">
+                           <th className="p-1 align-middle text-left w-[110px] min-w-[110px] max-w-[110px]">{isEng ? 'BUYER MODEL NAME' : 'ALICI MODEL ADI'}</th>
+                           <th className="p-1 align-middle text-left w-[115px] min-w-[115px] max-w-[115px]">{isEng ? 'ARTICLE NAME' : 'KALİTE İSMİ'}</th>
+                           <th className="p-1 align-middle text-left w-[80px] min-w-[80px] max-w-[80px]">{isEng ? 'ARTICLE CODE' : 'KALİTE KODU'}</th>
+                           <th className="p-1 align-middle text-left w-[110px] min-w-[110px] max-w-[110px]">{isEng ? 'ARTICLE & COLOR CODE' : 'KALİTE VE RENK KODU'}</th>
+                           <th className="p-1 align-middle text-left w-[115px] min-w-[115px] max-w-[115px]">{isEng ? 'ARTICLE COMPOSITION' : 'KALİTE KOMPOSİZYONU'}</th>
+                           <th className="p-1 align-middle w-[60px] min-w-[60px] max-w-[60px]">{isEng ? 'WEIGHT' : 'GRAMAJ'}<br/>(+/- 5%)</th>
+                           <th className="p-1 align-middle w-[50px] min-w-[50px] max-w-[50px]">{isEng ? 'WIDTH' : 'EN'}<br/>(+/- 3%)</th>
+                           <th className="p-1 align-middle w-[105px] min-w-[105px] max-w-[105px]">{isEng ? 'EX-MILL' : 'FABRİKA ÇIKIŞ'}<br/>{isEng ? 'DATE' : 'TARİHİ'}</th>
+                           <th className="py-1 pl-1 pr-[8px] align-middle w-[95px] min-w-[95px] max-w-[95px] text-right whitespace-nowrap">{isEng ? 'QUANTITY' : 'MİKTAR'} <span className="font-bold text-[11px]">MT</span></th>
+                           <th className="p-1 align-middle w-[60px] min-w-[60px] max-w-[60px] text-center whitespace-nowrap">{isEng ? 'UNIT' : 'BİRİM'}<br/>{isEng ? 'PRICE' : 'FİYAT'} <span className="font-bold text-[11px]">{order.currency}</span></th>
+                           <th className="p-1 align-middle text-right w-auto whitespace-nowrap">{isEng ? 'TOTAL AMOUNT' : 'TOPLAM TUTAR'}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {order.items.map((item: any) => (
+                          <tr key={item.id} className="align-top">
+                             <td className="p-1 uppercase">{item.buyerModelName || "-"}</td>
+                             <td className="p-1 uppercase">{item.qualityName || "-"}</td>
+                             <td className="p-1 uppercase">{item.qualityCode || "-"}</td>
+                             <td className="p-1 uppercase leading-snug">{item.colorCode || "-"}</td>
+                             <td className="p-1 uppercase leading-snug">{item.composition || "-"}</td>
+                             <td className="p-1 uppercase text-center">{item.weight ? `${item.weight} GR/M²` : "-"}</td>
+                             <td className="p-1 uppercase text-center">{item.width ? `${item.width} CM` : "-"}</td>
+                             <td className="p-1 text-center uppercase">{item.deliveryDate || "-"}</td>
+                             <td className="py-1 pl-1 pr-[8px] text-right"><span className="text-[11px]">{item.quantity.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span> <span className="text-[11px] ml-1">MT</span></td>
+                             <td className="p-1 text-right"><span className="text-[11px]">{item.unitPrice.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span> <span className="text-[11px] ml-1">{order.currency}</span></td>
+                             <td className="p-1 text-right text-[11px] pr-2">{item.totalAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} {order.currency}</td>
+                          </tr>
+                        ))}
+                         <tr className="border-t border-slate-800 text-[11px]">
+                            <td colSpan={6} className="p-1 align-middle w-[590px] min-w-[590px] max-w-[590px]">
+                               {isEng ? 'QUANTITY TOLERANCE' : 'METRAJ TOLERANSI'} %{order.tolerance?.replace('%', '') || "-"}
+                            </td>
+                            <td colSpan={2} className="p-1 text-center align-middle whitespace-nowrap w-[155px] min-w-[155px] max-w-[155px] text-[12px] font-bold">{isEng ? 'GRAND TOTALS' : 'GENEL TOPLAMLAR'}</td>
+                            <td className="py-1 pl-1 pr-[10px] text-right w-[95px] min-w-[95px] max-w-[95px] text-[12px] font-bold border-l border-r border-slate-800">
+                              {totalQuantity.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} <span className="text-[12px] font-bold">MT</span>
+                            </td>
+                            <td colSpan={2} className="p-1 text-right w-auto text-[12px] font-bold">
+                              {totalAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} <span className="text-[12px] font-bold">{order.currency}</span>
+                            </td>
+                         </tr>
+                      </tbody>
+                    </table>
 
-        {/* ITEMS TABLE */}
-        <table className="table-fixed w-full text-left border-collapse border-b border-x border-slate-800 text-[11px]">
-          <thead>
-            <tr className="border-b border-slate-800 font-bold text-[11px] text-center leading-snug">
-               <th className="p-1 align-middle w-[110px] min-w-[110px] max-w-[110px]">{isEng ? 'BUYER MODEL NAME' : 'ALICI MODEL ADI'}</th>
-               <th className="p-1 align-middle w-[115px] min-w-[115px] max-w-[115px]">{isEng ? 'ARTICLE NAME' : 'KALİTE İSMİ'}</th>
-               <th className="p-1 align-middle w-[80px] min-w-[80px] max-w-[80px]">{isEng ? 'ARTICLE CODE' : 'KALİTE KODU'}</th>
-               <th className="p-1 align-middle w-[110px] min-w-[110px] max-w-[110px]">{isEng ? 'ARTICLE & COLOR CODE' : 'KALİTE VE RENK KODU'}</th>
-               <th className="p-1 align-middle w-[115px] min-w-[115px] max-w-[115px]">{isEng ? 'ARTICLE COMPOSITION' : 'KALİTE KOMPOSİZYONU'}</th>
-               <th className="p-1 align-middle w-[60px] min-w-[60px] max-w-[60px]">{isEng ? 'WEIGHT' : 'GRAMAJ'}<br/>(+/- 5%)</th>
-               <th className="p-1 align-middle w-[50px] min-w-[50px] max-w-[50px]">{isEng ? 'WIDTH' : 'EN'}<br/>(+/- 3%)</th>
-               <th className="p-1 align-middle w-[105px] min-w-[105px] max-w-[105px]">{isEng ? 'EX-MILL' : 'FABRİKA ÇIKIŞ'}<br/>{isEng ? 'DATE' : 'TARİHİ'}</th>
-               <th className="py-1 pl-1 pr-[8px] align-middle w-[95px] min-w-[95px] max-w-[95px] text-right whitespace-nowrap">{isEng ? 'QUANTITY' : 'MİKTAR'} <span className="font-bold text-[11px]">MT</span></th>
-               <th className="p-1 align-middle w-[60px] min-w-[60px] max-w-[60px] text-center whitespace-nowrap">{isEng ? 'UNIT' : 'BİRİM'}<br/>{isEng ? 'PRICE' : 'FİYAT'} <span className="font-bold text-[11px]">{order.currency}</span></th>
-               <th className="p-1 align-middle text-right w-auto whitespace-nowrap">{isEng ? 'TOTAL AMOUNT' : 'TOPLAM TUTAR'}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {order.items.map((item: any) => (
-              <tr key={item.id} className="align-top">
-                 <td className="p-1 uppercase">{item.buyerModelName || "-"}</td>
-                 <td className="p-1 uppercase">{item.qualityName || "-"}</td>
-                 <td className="p-1 uppercase">{item.qualityCode || "-"}</td>
-                 <td className="p-1 uppercase leading-snug">{item.colorCode || "-"}</td>
-                 <td className="p-1 uppercase leading-snug">{item.composition || "-"}</td>
-                 <td className="p-1 uppercase text-center">{item.weight ? `${item.weight} GR/M²` : "-"}</td>
-                 <td className="p-1 uppercase text-center">{item.width ? `${item.width} CM` : "-"}</td>
-                 <td className="p-1 text-center uppercase">{item.deliveryDate || "-"}</td>
-                 <td className="py-1 pl-1 pr-[8px] text-right"><span className="text-[11px]">{item.quantity.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span> <span className="text-[11px] ml-1">MT</span></td>
-                 <td className="p-1 text-right"><span className="text-[11px]">{item.unitPrice.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span> <span className="text-[11px] ml-1">{order.currency}</span></td>
-                 <td className="p-1 text-right text-[11px] pr-2">{item.totalAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} {order.currency}</td>
-              </tr>
-            ))}
-             <tr className="border-t border-slate-800 text-[11px]">
-                <td colSpan={6} className="p-1 align-middle w-[590px] min-w-[590px] max-w-[590px]">
-                   {isEng ? 'QUANTITY TOLERANCE' : 'METRAJ TOLERANSI'} %{order.tolerance?.replace('%', '') || "-"}
-                </td>
-                <td colSpan={2} className="p-1 text-center align-middle whitespace-nowrap w-[155px] min-w-[155px] max-w-[155px] text-[12px] font-bold">{isEng ? 'GRAND TOTALS' : 'GENEL TOPLAMLAR'}</td>
-                <td className="py-1 pl-1 pr-[10px] text-right w-[95px] min-w-[95px] max-w-[95px] text-[12px] font-bold border-l border-r border-slate-800">
-                  {totalQuantity.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} <span className="text-[12px] font-bold">MT</span>
-                </td>
-                <td colSpan={2} className="p-1 text-right w-auto text-[12px] font-bold">
-                  {totalAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} <span className="text-[12px] font-bold">{order.currency}</span>
-                </td>
-             </tr>
-          </tbody>
-        </table>
+                    {/* TERMS TR BLOCK */}
+                    <div className="border-x border-b border-slate-800 text-[11px] w-full bg-white leading-tight font-normal">
+                       <div className="grid grid-cols-[110px_420px_110px_200px_1fr] border-b border-slate-800">
+                          <div className="font-bold p-1 border-r border-slate-800 uppercase">{isEng ? 'PAYMENT TERMS' : 'ÖDEME ŞEKLİ'}</div>
+                          <div className="p-1 border-r border-slate-800 uppercase min-w-0 break-words">{displayPaymentTerms}</div>
+                          <div className="font-bold p-1 border-r border-slate-800 uppercase">{isEng ? 'SELLER REP.' : 'SATICI TEMSİLCİSİ'}</div>
+                          <div className="p-1 border-r border-slate-800 text-center uppercase min-w-0 break-words">{order.sellerRep ? (order.sellerRep.includes('|') ? (isEng ? (order.sellerRep.split('|')[1] || order.sellerRep.split('|')[0]) : order.sellerRep.split('|')[0]) : order.sellerRep) : "-"}</div>
+                          <div className="p-1 text-center text-[11px] text-blue-600 underline min-w-0 break-all flex items-center justify-center">{sellerEmail}</div>
+                       </div>
+                       <div className="grid grid-cols-[110px_420px_110px_200px_1fr] border-b border-slate-800">
+                          <div className="font-bold p-1 border-r border-slate-800 uppercase">{isEng ? 'DELIVERY TERMS' : 'TESLİMAT ŞEKLİ'}</div>
+                          <div className="p-1 border-r border-slate-800 uppercase min-w-0 break-words">
+                             {displayDeliveryTerms} 
+                             {order.deliveryDestination && <span className="ml-2 font-bold">— {order.deliveryDestination}</span>}
+                          </div>
+                          <div className="font-bold p-1 border-r border-slate-800 uppercase">{isEng ? 'BUYER REP.' : 'ALICI TEMSİLCİSİ'}</div>
+                          <div className="p-1 border-r border-slate-800 text-center uppercase min-w-0 break-words">{order.buyerRep ? (order.buyerRep.includes('|') ? (isEng ? (order.buyerRep.split('|')[1] || order.buyerRep.split('|')[0]) : order.buyerRep.split('|')[0]) : order.buyerRep) : "-"}</div>
+                          <div className="p-1 text-center text-[11px] text-blue-600 underline min-w-0 break-all flex items-center justify-center">{buyerEmail}</div>
+                       </div>
 
-        {/* TERMS TR BLOCK */}
-        <div className="border-x border-b border-slate-800 text-[11px] w-full bg-white leading-tight font-normal">
-           <div className="grid grid-cols-[110px_420px_110px_200px_1fr] border-b border-slate-800">
-              <div className="font-bold p-1 border-r border-slate-800 uppercase">{isEng ? 'PAYMENT TERMS' : 'ÖDEME ŞEKLİ'}</div>
-              <div className="p-1 border-r border-slate-800 uppercase min-w-0 break-words">{displayPaymentTerms}</div>
-              <div className="font-bold p-1 border-r border-slate-800 uppercase">{isEng ? 'SELLER REP.' : 'SATICI TEMSİLCİSİ'}</div>
-              <div className="p-1 border-r border-slate-800 text-center uppercase min-w-0 break-words">{order.sellerRep ? (order.sellerRep.includes('|') ? (isEng ? (order.sellerRep.split('|')[1] || order.sellerRep.split('|')[0]) : order.sellerRep.split('|')[0]) : order.sellerRep) : "-"}</div>
-              <div className="p-1 text-center text-[11px] text-blue-600 underline min-w-0 break-all flex items-center justify-center">-</div>
-           </div>
-           <div className="grid grid-cols-[110px_420px_110px_200px_1fr] border-b border-slate-800">
-              <div className="font-bold p-1 border-r border-slate-800 uppercase">{isEng ? 'DELIVERY TERMS' : 'TESLİMAT ŞEKLİ'}</div>
-              <div className="p-1 border-r border-slate-800 uppercase min-w-0 break-words">
-                 {displayDeliveryTerms} 
-                 {order.deliveryDestination && <span className="ml-2 font-bold">— {order.deliveryDestination}</span>}
-              </div>
-              <div className="font-bold p-1 border-r border-slate-800 uppercase">{isEng ? 'BUYER REP.' : 'ALICI TEMSİLCİSİ'}</div>
-              <div className="p-1 border-r border-slate-800 text-center uppercase min-w-0 break-words">{order.buyerRep ? (order.buyerRep.includes('|') ? (isEng ? (order.buyerRep.split('|')[1] || order.buyerRep.split('|')[0]) : order.buyerRep.split('|')[0]) : order.buyerRep) : "-"}</div>
-              <div className="p-1 text-center text-[11px] text-blue-600 underline min-w-0 break-all flex items-center justify-center">-</div>
-           </div>
+                       {/* Bank Info Rows */}
+                       <div className="grid grid-cols-[110px_195px_110px_115px_110px_105px_1fr]">
+                          <div className="font-bold p-1 border-r border-b border-slate-800 uppercase">{isEng ? 'BANK NAME' : 'BANKA ADI'}</div>
+                          <div className="p-1 border-r border-b border-slate-800 uppercase min-w-0 break-words">{bankInfo?.bankName || "-"}</div>
+                          <div className="font-bold p-1 border-r border-b border-slate-800 uppercase">{isEng ? 'BCH NAME & NO' : 'ŞUBE ADI & KODU'}</div>
+                          <div className="p-1 border-r border-b border-slate-800 uppercase text-center min-w-0 break-words">{bankInfo?.branch || "-"}</div>
+                          <div className="font-bold p-1 border-r border-b border-slate-800 uppercase text-center bg-white">{isEng ? 'SWIFT CODE' : 'SWIFT KODU'}</div>
+                          <div className="p-1 uppercase border-r border-b border-slate-800 text-center font-normal min-w-0 break-all flex items-center justify-center">{bankInfo?.swift || "-"}</div>
+                          <div className="p-1 flex flex-col items-center justify-center text-center font-bold text-[11px] uppercase">
+                             {order.brand ? (isEng ? 'ORDER BRAND' : 'SİPARİŞ MARKASI') : ''}
+                          </div>
+                       </div>
+                       <div className="grid grid-cols-[110px_195px_110px_225px_105px_1fr]">
+                          <div className="font-bold p-1 border-r border-slate-800 uppercase">{isEng ? 'ACCOUNT NO' : 'HESAP NO'}</div>
+                          <div className="p-1 border-r border-slate-800 tracking-wider uppercase min-w-0 break-all">{bankInfo?.accountNo || "-"}</div>
+                          <div className="font-bold p-1 border-r border-slate-800 uppercase">{isEng ? 'IBAN NO' : 'IBAN NO'}</div>
+                          <div className="p-1 border-r border-slate-800 tracking-wider uppercase min-w-0 break-all">{bankInfo?.iban || "-"}</div>
+                          <div className="font-bold p-1 border-r border-slate-800 text-center items-center flex justify-center text-[11px] italic">{order.currency}</div>
+                          <div className="p-1 flex items-center justify-center text-center font-normal text-[11px] uppercase">
+                             {order.brand?.name || ''}
+                          </div>
+                       </div>
+                    </div>
+                  </td>
+               </tr>
+            </tbody>
+            <tfoot className="print:table-footer-group">
+               <tr><td className="p-0 border-0">{renderSignature()}</td></tr>
+            </tfoot>
+         </table>
 
-           {/* Bank Info Rows */}
-           <div className="grid grid-cols-[110px_195px_110px_115px_110px_105px_1fr]">
-              <div className="font-bold p-1 border-r border-b border-slate-800 uppercase">{isEng ? 'BANK NAME' : 'BANKA ADI'}</div>
-              <div className="p-1 border-r border-b border-slate-800 uppercase min-w-0 break-words">{bankInfo?.bankName || "-"}</div>
-              <div className="font-bold p-1 border-r border-b border-slate-800 uppercase">{isEng ? 'BCH NAME & NO' : 'ŞUBE ADI & KODU'}</div>
-              <div className="p-1 border-r border-b border-slate-800 uppercase text-center min-w-0 break-words">{bankInfo?.branch || "-"}</div>
-              <div className="font-bold p-1 border-r border-b border-slate-800 uppercase text-center bg-white">{isEng ? 'SWIFT CODE' : 'SWIFT KODU'}</div>
-              <div className="p-1 uppercase border-r border-b border-slate-800 text-center font-normal min-w-0 break-all flex items-center justify-center">{bankInfo?.swift || "-"}</div>
-              <div className="p-1 flex flex-col items-center justify-center text-center font-bold text-[11px] uppercase">
-                 {order.brand ? (isEng ? 'ORDER BRAND' : 'SİPARİŞ MARKASI') : ''}
-              </div>
-           </div>
-           <div className="grid grid-cols-[110px_195px_110px_225px_105px_1fr]">
-              <div className="font-bold p-1 border-r border-slate-800 uppercase">{isEng ? 'ACCOUNT NO' : 'HESAP NO'}</div>
-              <div className="p-1 border-r border-slate-800 tracking-wider uppercase min-w-0 break-all">{bankInfo?.accountNo || "-"}</div>
-              <div className="font-bold p-1 border-r border-slate-800 uppercase">{isEng ? 'IBAN NO' : 'IBAN NO'}</div>
-              <div className="p-1 border-r border-slate-800 tracking-wider uppercase min-w-0 break-all">{bankInfo?.iban || "-"}</div>
-              <div className="font-bold p-1 border-r border-slate-800 text-center items-center flex justify-center text-[11px] italic">{order.currency}</div>
-              <div className="p-1 flex items-center justify-center text-center font-normal text-[11px] uppercase">
-                 {order.brand?.name || ''}
-              </div>
-           </div>
-        </div>
+         {/* PAGE BREAK FOR GENERAL TERMS */}
+         <div className="h-8 print:hidden w-full bg-slate-100 border-none"></div>
 
-        {/* Signature Block */}
-        <div className="flex justify-between items-start text-[11px] text-center border-x border-b border-slate-800 relative h-[90px] min-h-[90px] max-h-[90px] overflow-hidden bg-white">
-          <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
-            <img 
-              src={isUSKM ? '/images/Defenni-M-Mavi.jpg' : isUSKT ? '/images/Defenni-T-Mavi.jpg' : '/images/Defenni-T-Mavi.jpg'} 
-              onError={(e) => { e.currentTarget.src = isUSKM ? '/images/Defenni-M.jpg' : '/images/Defenni-T.jpg'; }}
-              alt="Company Stamp" 
-              className="w-[200px] h-[85px] object-contain" 
-            />
-          </div>
-          <div className="w-1/2 p-2 flex flex-col items-start relative z-10">
-            <div className="font-bold text-[12px] underline text-left">{isEng ? 'AUTHORIZED SIGNATURE & STAMP' : 'YETKİLİ İMZA VE KAŞE'}</div>
-            {isSigned && (
-              <img 
-                src={isUSKM ? '/images/USKM-Kase-Imza.png' : isUSKT ? '/images/USKT-Kase-Imza.png' : '/images/USKT-Kase-Imza.png'} 
-                alt="Seller Signature" 
-                className="w-[180px] h-[65px] object-contain mt-1" 
-              />
-            )}
-          </div>
-          <div className="w-1/2 p-2 flex flex-col items-end relative z-10">
-            <div className="font-bold text-[12px] underline text-right">{isEng ? 'AUTHORIZED SIGNATURE & STAMP' : 'YETKİLİ İMZA VE KAŞE'}</div>
-          </div>
-        </div>
-        {/* Padding to restore 140px total layout height to keep perfect A4 print alignment */}
-        <div className="h-[50px] w-full bg-transparent"></div>
-
+         {/* TABLE 2: TERMS */}
+         <div style={{ pageBreakBefore: 'always', breakBefore: 'page', display: 'block', height: '1px' }} className="hidden print:block w-full">&nbsp;</div>
+         <table className="w-full border-collapse">
+            <thead className="print:table-header-group">
+               <tr><td className="p-0 border-0">{renderHeader()}</td></tr>
+            </thead>
+            <tbody className="print:table-row-group">
+               <tr>
+                  <td className="p-0 border-0">
+                    <div className="border-x border-b border-t-0 border-slate-800 p-4 text-[11px] leading-tight text-justify bg-white space-y-0.5 pb-4">
+                      <h3 className="font-bold text-[12px] text-center mb-2 uppercase tracking-widest">{isEng ? 'CONTRACT GENERAL CONDITIONS' : 'SÖZLEŞME GENEL ŞARTLARI'}</h3>
+                      {termsToUse.map((term, i) => (
+                         <div key={i}>{term}</div>
+                      ))}
+                    </div>
+                  </td>
+               </tr>
+            </tbody>
+            <tfoot className="print:table-footer-group">
+               <tr><td className="p-0 border-0">{renderSignature()}</td></tr>
+            </tfoot>
+         </table>
       </div>
-
-      <div className="pagebreak print:break-before-page border border-transparent w-[1002px] print:w-full print:p-0 min-h-0 font-['Arial_Narrow',_'Arial_Narrow_MT',_Arial,_sans-serif] mt-12 print:mt-[10mm]">
-        {renderHeader()}
-        <div className="border border-t-0 border-slate-800 p-4 text-[11px] leading-tight text-justify bg-white space-y-0.5 pb-4">
-          <h3 className="font-bold text-[12px] text-center mb-2 uppercase tracking-widest">{isEng ? 'CONTRACT GENERAL CONDITIONS' : 'SÖZLEŞME GENEL ŞARTLARI'}</h3>
-          {termsToUse.map((term, i) => (
-             <div key={i}>{term}</div>
-          ))}
-        </div>
-        {/* Signature Block Page 2 */}
-        <div className="flex justify-between items-start text-[11px] text-center border-x border-b border-slate-800 bg-white shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.1)] relative z-10 w-full mt-[-10px] h-[90px] min-h-[90px] max-h-[90px] overflow-hidden">
-          <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
-            <img 
-              src={isUSKM ? '/images/Defenni-M-Mavi.jpg' : isUSKT ? '/images/Defenni-T-Mavi.jpg' : '/images/Defenni-T-Mavi.jpg'} 
-              onError={(e) => { e.currentTarget.src = isUSKM ? '/images/Defenni-M.jpg' : '/images/Defenni-T.jpg'; }}
-              alt="Company Stamp" 
-              className="w-[200px] h-[85px] object-contain" 
-            />
-          </div>
-          <div className="w-1/2 p-2 flex flex-col items-start relative z-10">
-            <div className="font-bold text-[12px] underline text-left">{isEng ? 'AUTHORIZED SIGNATURE & STAMP' : 'YETKİLİ İMZA VE KAŞE'}</div>
-            {isSigned && (
-              <img 
-                src={isUSKM ? '/images/USKM-Kase-Imza.png' : isUSKT ? '/images/USKT-Kase-Imza.png' : '/images/USKT-Kase-Imza.png'} 
-                alt="Seller Signature" 
-                className="w-[180px] h-[65px] object-contain mt-1" 
-              />
-            )}
-          </div>
-          <div className="w-1/2 p-2 flex flex-col items-end relative z-10">
-            <div className="font-bold text-[12px] underline text-right">{isEng ? 'AUTHORIZED SIGNATURE & STAMP' : 'YETKİLİ İMZA VE KAŞE'}</div>
-          </div>
-        </div>
-        {/* Padding to restore 140px total layout height to keep perfect A4 print alignment */}
-        <div className="h-[50px] w-full bg-transparent"></div>
-      </div>
-      </div>
-    </div>
     </div>
   );
 }
-
-
-

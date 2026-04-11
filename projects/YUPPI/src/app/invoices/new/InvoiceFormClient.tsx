@@ -20,7 +20,9 @@ export default function InvoiceFormClient({ orders, buyer, logisticsCompanies, c
           selected: initialData ? !!existingInvItem : true,
           quantity: existingInvItem ? existingInvItem.quantity : item.quantity,
           unitPrice: existingInvItem ? existingInvItem.unitPrice : item.unitPrice,
-          rolls: existingInvItem ? existingInvItem.rolls : []
+          rolls: existingInvItem ? existingInvItem.rolls : [],
+          gtipNo: item.gtipNo || "",
+          typeOfGoods: item.typeOfGoods || ""
         };
       });
     });
@@ -31,6 +33,20 @@ export default function InvoiceFormClient({ orders, buyer, logisticsCompanies, c
     setItemsState(prev => ({
       ...prev,
       [itemId]: { ...prev[itemId], selected: !prev[itemId].selected }
+    }));
+  };
+
+  const handleGtip = (itemId: number, val: string) => {
+    setItemsState(prev => ({
+      ...prev,
+      [itemId]: { ...prev[itemId], gtipNo: val }
+    }));
+  };
+
+  const handleTypeOfGoods = (itemId: number, val: string) => {
+    setItemsState(prev => ({
+      ...prev,
+      [itemId]: { ...prev[itemId], typeOfGoods: val }
     }));
   };
 
@@ -93,7 +109,12 @@ export default function InvoiceFormClient({ orders, buyer, logisticsCompanies, c
         
         const data = XLSX.utils.sheet_to_json(ws);
         
-        const parsedRolls = data.map((row: any, index: number) => {
+        const parsedRolls = data.reduce((acc: any[], row: any, index: number) => {
+          // Eğer satır verilerinden herhangi birinde toplam ifadesi geçiyorsa bu satırı atla
+          const isTotalRow = Object.values(row).some(v => 
+            typeof v === 'string' && (v.toLowerCase().includes('toplam') || v.toLowerCase().includes('total') || v.toLowerCase().includes('genel'))
+          );
+          if (isTotalRow) return acc;
           const getVal = (keys: string[]) => {
             const foundKey = Object.keys(row).find(k => k && keys.some(search => k.toLowerCase().trim().includes(search.toLowerCase())));
             return foundKey ? row[foundKey] : null;
@@ -103,7 +124,7 @@ export default function InvoiceFormClient({ orders, buyer, logisticsCompanies, c
           const grossKg = rawNetKg > 0 ? rawNetKg + 0.50 : 0;
           const rawQuantity = parseFloat(getVal(['metre', 'metraj', 'quantity', 'miktar', 'adet', 'uzunluk'])?.toString().replace(',','.') || "0") || 0;
 
-          return {
+          acc.push({
             id: `temp-${index}`,
             rollNo: getVal(['top', 'cuval', 'no', 'sıra', 'roll', 'kutu'])?.toString() || (index + 1).toString(),
             barcode: getVal(['barno', 'barkod', 'barcode', 'lot', 'parti'])?.toString() || "-",
@@ -111,8 +132,9 @@ export default function InvoiceFormClient({ orders, buyer, logisticsCompanies, c
             grossKg: grossKg,
             netKg: rawNetKg,
             lotNo: getVal(['parti', 'lot'])?.toString() || "",
-          };
-        });
+          });
+          return acc;
+        }, []);
 
         const validRolls = parsedRolls.filter(r => r.quantity > 0 || r.grossKg > 0);
         
@@ -153,6 +175,8 @@ export default function InvoiceFormClient({ orders, buyer, logisticsCompanies, c
         if (state && state.selected && state.quantity > 0) {
           selectedItems.push({
             orderItemId: item.id,
+            gtipNo: state.gtipNo,
+            typeOfGoods: state.typeOfGoods,
             quantity: state.quantity,
             unitPrice: state.unitPrice,
             totalAmount: state.quantity * state.unitPrice,
@@ -166,6 +190,14 @@ export default function InvoiceFormClient({ orders, buyer, logisticsCompanies, c
       alert("Lütfen faturaya eklenecek en az bir kalem seçin.");
       setLoading(false);
       return;
+    }
+
+    for (const s of selectedItems) {
+      if (s.gtipNo && s.gtipNo.length > 0 && s.gtipNo.length < 8) {
+        alert("Hata: Girilen GTİP NO en az 8 haneli olmalıdır.");
+        setLoading(false);
+        return;
+      }
     }
 
     try {
@@ -186,7 +218,8 @@ export default function InvoiceFormClient({ orders, buyer, logisticsCompanies, c
         const data = await res.json();
         router.push(`/invoices/${data.id}`);
       } else {
-        alert(`Fatura ${isEdit ? 'güncellenirken' : 'oluşturulurken'} hata oluştu!`);
+        const errorData = await res.json().catch(() => ({}));
+        alert(`Hata: ${errorData.error || 'Bilinmeyen bir hata oluştu!'}`);
       }
     } catch (err) {
       console.error(err);
@@ -254,9 +287,11 @@ export default function InvoiceFormClient({ orders, buyer, logisticsCompanies, c
                 <tr className="bg-slate-100/50 text-slate-500 text-xs uppercase tracking-wider">
                   <th className="py-2 px-4 w-10 text-center">Ekle</th>
                   <th className="py-2 px-4">Kalem (Model / Kalite)</th>
-                  <th className="py-2 px-4 w-48 text-center">Çeki Listesi</th>
+                  <th className="py-2 px-4 w-32 text-center">TYPE OF GOODS</th>
+                  <th className="py-2 px-4 w-32 text-center">GTİP NO</th>
+                  <th className="py-2 px-4 w-32 text-center">Çeki Listesi</th>
                   <th className="py-2 px-4 text-right">Sipariş Mik.</th>
-                  <th className="py-2 px-4 text-right w-48">Faturaya Eklenecek</th>
+                  <th className="py-2 px-4 text-right w-40">Faturaya Eklenecek</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -277,6 +312,26 @@ export default function InvoiceFormClient({ orders, buyer, logisticsCompanies, c
                       <td className="py-2 px-4">
                         <div className="font-semibold text-slate-800">{item.buyerModelName || 'Model Yok'}</div>
                         <div className="text-xs text-slate-500">{item.qualityName || 'Kalite Yok'}</div>
+                      </td>
+                      <td className="py-2 px-4 text-center">
+                        <input
+                          type="text"
+                          value={iState.typeOfGoods || ""}
+                          onChange={(e) => handleTypeOfGoods(item.id, e.target.value)}
+                          disabled={!iState.selected}
+                          placeholder="Örn: WOVEN FAB."
+                          className="w-full text-center p-1.5 border border-slate-200 rounded text-slate-800 text-xs font-mono focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-slate-100"
+                        />
+                      </td>
+                      <td className="py-2 px-4 text-center">
+                        <input
+                          type="text"
+                          value={iState.gtipNo || ""}
+                          onChange={(e) => handleGtip(item.id, e.target.value)}
+                          disabled={!iState.selected}
+                          placeholder="Örn: 1223.45.67"
+                          className="w-full text-center p-1.5 border border-slate-200 rounded text-slate-800 text-xs font-mono focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-slate-100"
+                        />
                       </td>
                       <td className="py-2 px-4 text-center">
                         <div className="flex flex-col items-center justify-center gap-1">

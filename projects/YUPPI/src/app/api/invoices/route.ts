@@ -24,6 +24,20 @@ export async function POST(req: Request) {
 
     // items is an array of { orderItemId, quantity, unitPrice, totalAmount, rolls: [] }
 
+    await Promise.all(items.map((item: any) => {
+      const updateData: any = {};
+      if (item.gtipNo !== undefined) updateData.gtipNo = item.gtipNo;
+      if (item.typeOfGoods !== undefined) updateData.typeOfGoods = item.typeOfGoods;
+      
+      if (Object.keys(updateData).length > 0) {
+        return prisma.orderItem.update({
+          where: { id: item.orderItemId },
+          data: updateData
+        });
+      }
+      return Promise.resolve();
+    }));
+
     // First create the invoice structure
     const invoice = await prisma.invoice.create({
       data: {
@@ -100,8 +114,8 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json(invoice, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating invoice:", error);
-    return NextResponse.json({ error: "Fatura oluşturulamadı" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Fatura oluşturulamadı" }, { status: 500 });
   }
 }

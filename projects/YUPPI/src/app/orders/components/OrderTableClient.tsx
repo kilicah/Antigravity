@@ -68,7 +68,6 @@ export default function OrderTableClient({ orders }: { orders: any[] }) {
           <h1 className="text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">
             Sipariş Yönetimi
           </h1>
-          <p className="text-slate-500 mt-1">Tüm sözleşme ve sipariş işlemlerini takip edin.</p>
         </div>
         <Link 
           href="/orders/new" 
@@ -80,7 +79,6 @@ export default function OrderTableClient({ orders }: { orders: any[] }) {
 
       {/* ACTION BAR */}
       <div className="flex items-center gap-3 mb-4 bg-white/80 backdrop-blur-xl p-3 rounded-xl border border-slate-200/60 shadow-sm transition-all shrink-0">
-        <span className="text-sm font-semibold text-slate-500 mr-2 uppercase tracking-wide">İşlemler:</span>
         <button
           onClick={() => handleAction("")}
           disabled={selectedOrderIds.length !== 1}

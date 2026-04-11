@@ -414,6 +414,19 @@ export default function ProductionOrderDocument({ order }: { order: any }) {
           
         </div>
 
+        {/* ABBREVIATION LEGEND */}
+        <div className="w-full border-x border-b border-slate-800 p-1.5 flex flex-wrap justify-center gap-x-4 gap-y-1 text-[9px] leading-tight font-bold text-slate-700 bg-slate-50 uppercase">
+            <span>B.S: BUYER'S SAMPLE</span>
+            <span>{"L/D: LAB DIP"}</span>
+            <span>PPS: PRE-PRODUCTION SAMPLE</span>
+            <span>TOPS: TOP OF PRODUCTION SAMPLE</span>
+            <span>SRL: SPECIFIC ROLL LABEL</span>
+            <span>FD: FABRIC DIRECTION</span>
+            <span>PSHP: PARTIAL SHIPMENT ALLOWED</span>
+            <span>SUS: SUSTAINABILITY</span>
+            <span>LT: LAB TEST</span>
+        </div>
+
       </div>
     </div>
   );

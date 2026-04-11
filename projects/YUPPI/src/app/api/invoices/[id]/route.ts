@@ -47,6 +47,16 @@ export async function PUT(
       return NextResponse.json({ error: "Eksik bilgi" }, { status: 400 });
     }
 
+    await Promise.all(items.map((item: any) => {
+      if (item.gtipNo !== undefined) {
+        return prisma.orderItem.update({
+          where: { id: item.orderItemId },
+          data: { gtipNo: item.gtipNo }
+        });
+      }
+      return Promise.resolve();
+    }));
+
     // 1. Delete associated children manually because sometimes Prisma struggles with deep replacements cleanly
     // But since InvoiceItem Cascade deletes rolls (Wait, does it? Let's assume we do it manually to be safe)
     
