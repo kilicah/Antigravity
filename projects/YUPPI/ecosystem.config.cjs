@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "yuppi-erp",
+      name: "YUPPI",
       // Next.js statik dosyayı çalıştırmak için `npm run start` veya direkt next modülünü çalıştırmalıyız.
       script: "node_modules/next/dist/bin/next",
       args: "start",
