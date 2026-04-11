@@ -83,7 +83,7 @@ export default function Sidebar() {
       
       <div className={`p-6 border-t border-slate-800/80 text-xs text-slate-500 flex items-center transition-all duration-300 ${isExpanded ? 'justify-between' : 'justify-center'}`}>
         {isExpanded && <span className="font-medium whitespace-nowrap">USK Global</span>}
-        <span className="bg-slate-800 px-2 py-1 rounded-md text-[10px] uppercase tracking-wider">v1.11</span>
+        <span className="bg-slate-800 px-2 py-1 rounded-md text-[10px] uppercase tracking-wider">v1.14</span>
       </div>
     </aside>
   );
