@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       name: 'yuppi_session',
       value: token,
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false, // Tailscale IP (100.x.x.x) HTTP kullanımında cookie düşmemesi için
       maxAge: 60 * 60 * 24, // 24 Saat kuralı
       path: '/',
     });

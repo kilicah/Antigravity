@@ -171,7 +171,9 @@ export default function Sidebar() {
         
         {isExpanded && (
           <div className="mt-4 pt-3 border-t border-slate-800/60 flex justify-center">
-             <span className="bg-orange-600/20 text-orange-400 border border-orange-500/30 px-2 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider">v1.16 TEST SUNUCUSU</span>
+             <span className="bg-orange-600/20 text-orange-400 border border-orange-500/30 px-2 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider">
+               {typeof window !== 'undefined' && window.location.port === '8080' ? 'V1.16 CANLI SUNUCU' : 'V1.16 TEST SUNUCUSU'}
+             </span>
           </div>
         )}
       </div>

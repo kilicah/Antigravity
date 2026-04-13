@@ -144,7 +144,7 @@ export default function OrderTableClient({ orders }: { orders: any[] }) {
           Düzenle
         </button>
         <button
-          onClick={handleDelete}
+          onClick={() => handleDelete()}
           disabled={selectedOrderIds.length === 0}
           className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold transition-colors border ${
             selectedOrderIds.length > 0

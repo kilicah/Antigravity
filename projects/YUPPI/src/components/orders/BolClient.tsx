@@ -242,15 +242,22 @@ export default function BolClient({
                <div className="uppercase">PHONE. +90 212 8757700 - 304</div>
                <div className="text-purple-800 font-bold underline uppercase">ergun.kadir@hgl.com.tr</div>
                
-               {isSigned && (
-                  <div className="absolute top-0 right-10 flex justify-center items-center opacity-90 z-20 pointer-events-none drop-shadow-md overflow-visible">
-                    <img 
-                      src="/images/Kase-Imza.png" 
-                      alt="Stamp" 
-                      className="w-[180px] h-auto object-contain mix-blend-multiply" 
-                    />
-                  </div>
-                )}
+               {isSigned && (() => {
+                  const sellerN = (isEng && seller?.nameEn ? seller?.nameEn : (seller?.name || "USK TEKSTİL")).toUpperCase();
+                  const isUSKM = sellerN.includes("MENSUCAT") || sellerN.includes("USKM");
+                  const isUSKT = sellerN.includes("TEKSTİL") || sellerN.includes("TEKSTIL") || sellerN.includes("USKT");
+                  return (
+                    <div className="absolute top-0 right-10 flex justify-center items-center opacity-90 z-20 pointer-events-none drop-shadow-md overflow-visible">
+                      {isUSKM ? (
+                         <img src="/images/USKM-Kase-Imza.png" alt="Stamp" className="w-[180px] h-auto object-contain mix-blend-multiply filter contrast-125 sepia-[0.3]" />
+                      ) : isUSKT ? (
+                         <img src="/images/USKT-Kase-Imza.png" alt="Stamp" className="w-[180px] h-auto object-contain mix-blend-multiply filter contrast-125 sepia-[0.3]" />
+                      ) : (
+                         <div className="font-bold border px-10 py-6 uppercase bg-slate-50 text-slate-400 border-slate-300 transform -rotate-6">STAMP</div>
+                      )}
+                    </div>
+                  );
+               })()}
             </div>
           </div>
 
