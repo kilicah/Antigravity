@@ -3,12 +3,16 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import PasswordConfirmModal from "@/components/PasswordConfirmModal";
 
 export default function InvoiceTableClient({ invoices }: { invoices: any[] }) {
   const router = useRouter();
   const [selectedInvoiceIds, setSelectedInvoiceIds] = useState<number[]>([]);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"active" | "passive">("active");
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const filteredInvoices = invoices.filter(i => activeTab === "active" ? i.isActive !== false : i.isActive === false);
 
   const handleSelectInvoice = (invoiceId: number) => {
     if (selectedInvoiceIds.includes(invoiceId)) {
@@ -19,29 +23,43 @@ export default function InvoiceTableClient({ invoices }: { invoices: any[] }) {
   };
 
   const handleEdit = () => {
-    if (selectedInvoiceIds.length !== 1) {
-      alert("Lütfen düzenlemek için sadece bir fatura seçiniz.");
-      return;
-    }
+    if (selectedInvoiceIds.length !== 1) return;
     router.push(`/invoices/${selectedInvoiceIds[0]}/edit`);
   };
 
-  const handleDeleteClick = () => {
-    if (selectedInvoiceIds.length !== 1) return;
-    setIsDeleteModalOpen(true);
-  };
-
-  const confirmDelete = async () => {
+  const prepareDelete = () => {
     if (selectedInvoiceIds.length !== 1) return;
     
+    if (activeTab === "active") {
+      if (!confirm("Seçili faturayı pasife (arşive) almak istiyor musunuz?")) return;
+      executeDelete();
+    } else {
+      setIsPasswordModalOpen(true);
+    }
+  };
+
+  const executeDelete = async (password?: string) => {
     setIsDeleting(true);
     try {
-      await fetch(`/api/invoices/${selectedInvoiceIds[0]}`, { method: 'DELETE' });
+      const fetchOptions: any = { method: "DELETE" };
+      if (activeTab === "passive") {
+        fetchOptions.headers = { "Content-Type": "application/json" };
+        fetchOptions.body = JSON.stringify({ password });
+      }
+
+      const res = await fetch(`/api/invoices/${selectedInvoiceIds[0]}${activeTab === "passive" ? "?hard=true" : ""}`, fetchOptions);
+      if (!res.ok) {
+        const body = await res.json();
+        throw new Error(body.error || "Silme başarısız");
+      }
+      
       setSelectedInvoiceIds([]);
-      setIsDeleteModalOpen(false);
-      router.refresh();
-    } catch (err) {
+      setIsPasswordModalOpen(false);
+      window.location.reload();
+    } catch (err: any) {
+      if (activeTab === "passive") throw err; // rethrow for modal
       console.error(err);
+      alert(err.message || "Bir hata oluştu");
     } finally {
       setIsDeleting(false);
     }
@@ -51,8 +69,22 @@ export default function InvoiceTableClient({ invoices }: { invoices: any[] }) {
 
   return (
     <>
+    <div className="flex items-center gap-3 mb-4 bg-white/80 backdrop-blur-xl p-3 rounded-xl border border-slate-200/60 shadow-sm transition-all shrink-0">
+      <div className="ml-auto flex shrink-0 w-full justify-between sm:justify-end">
+        <button
+          onClick={() => { setActiveTab(activeTab === "active" ? "passive" : "active"); setSelectedInvoiceIds([]); }}
+          className={`px-4 py-2 rounded-md text-sm font-bold transition-all border shadow-sm ${
+            activeTab === "active"
+              ? "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
+              : "bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100"
+          }`}
+        >
+          {activeTab === "active" ? "Arşivlenmiş Faturalar 🗃️" : "Aktif Faturalar ✅"}
+        </button>
+      </div>
+    </div>
+
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-      
       {/* 🟢 TOP ACTION BAR (Only visible if something is selected) */}
       <div className={`
         flex items-center gap-3 px-6 py-4 bg-emerald-50/50 border-b border-emerald-100 transition-all duration-300
@@ -105,10 +137,10 @@ export default function InvoiceTableClient({ invoices }: { invoices: any[] }) {
                )}
 
                <button 
-                  onClick={handleDeleteClick}
+                  onClick={prepareDelete}
                   className="flex items-center px-4 py-2 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-lg font-medium text-sm transition-colors whitespace-nowrap ml-auto"
                >
-                  Sil
+                  {activeTab === "active" ? "Arşive Kaldır" : "Tamamen Sil"}
                </button>
              </>
           )}
@@ -127,18 +159,17 @@ export default function InvoiceTableClient({ invoices }: { invoices: any[] }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100/50">
-            {invoices.length === 0 ? (
+            {filteredInvoices.length === 0 ? (
               <tr>
                 <td colSpan={5} className="py-16 text-center text-slate-500 bg-slate-50/30">
                    <div className="flex flex-col items-center justify-center">
                       <svg className="w-12 h-12 text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                      <p>Henüz sistemde kayıtlı bir fatura bulunmuyor.</p>
-                      <p className="mt-2 text-sm text-slate-400">Fatura oluşturmak için 'Siparişler' tablosundan ilgili siparişi seçip Fatura oluşturun.</p>
+                      <p>Kayıt bulunamadı.</p>
                    </div>
                 </td>
               </tr>
             ) : (
-              invoices.map((invoice) => {
+              filteredInvoices.map((invoice) => {
                 const totalAmount = invoice.items.reduce((sum: number, item: any) => sum + item.totalAmount, 0);
                 const isSelected = selectedInvoiceIds.includes(invoice.id);
                 
@@ -187,36 +218,13 @@ export default function InvoiceTableClient({ invoices }: { invoices: any[] }) {
       </div>
     </div>
 
-    {/* CUSTOM DELETE MODAL */}
-    {isDeleteModalOpen && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
-        <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
-          <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mb-4">
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-bold text-slate-900 mb-2">Faturayı Sil</h3>
-          <p className="text-slate-500 mb-6 font-medium">Bu işlem geri alınamaz. <strong>{selectedInvoice?.invoiceNo || `#INV-${selectedInvoice?.id}`}</strong> numaralı fatura ve ilgili tüm alt kalemler sistemden tamamen silinecektir.</p>
-          <div className="flex gap-3 justify-end">
-            <button 
-              onClick={() => setIsDeleteModalOpen(false)}
-              className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors"
-              disabled={isDeleting}
-            >
-              İptal
-            </button>
-            <button 
-              onClick={confirmDelete}
-              className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2"
-              disabled={isDeleting}
-            >
-              {isDeleting ? 'Siliniyor...' : 'Evet, Sil'}
-            </button>
-          </div>
-        </div>
-      </div>
-    )}
+    <PasswordConfirmModal
+      isOpen={isPasswordModalOpen}
+      onClose={() => setIsPasswordModalOpen(false)}
+      onConfirm={executeDelete}
+      title="Faturayı Kalıcı Olarak Sil"
+      description={`Bu işlem geri alınamaz. Seçili fatura ve tüm çeki verileri sistemden SİLİNECEKTİR.`}
+    />
     </>
   );
 }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import PasswordConfirmModal from "@/components/PasswordConfirmModal";
 
 export default function OrderTableClient({ orders }: { orders: any[] }) {
   const router = useRouter();
@@ -11,32 +12,40 @@ export default function OrderTableClient({ orders }: { orders: any[] }) {
 
   const filteredOrders = orders.filter(o => activeTab === "active" ? o.isActive !== false : o.isActive === false);
 
-  const handleDelete = async () => {
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+
+  const handleDelete = async (password?: string) => {
     if (selectedOrderIds.length === 0) return alert("Sipariş seçin.");
 
     if (activeTab === "active") {
       if (!confirm("Seçili sipariş(ler)i pasife (arşive) almak istiyor musunuz?")) return;
     } else {
-      const pwd = prompt("Siparişleri KALICI olarak silmek üzeresiniz! İşleme devam etmek için şifreyi girin:");
-      if (pwd !== "1996") {
-        alert("Hatalı şifre. Silme işlemi iptal edildi.");
+      if (!password || typeof password !== "string") {
+        setIsPasswordModalOpen(true);
         return;
       }
     }
 
     try {
       for (const id of selectedOrderIds) {
-        const res = await fetch(`/api/orders/${id}${activeTab === "passive" ? "?hard=true" : ""}`, {
-          method: "DELETE"
-        });
+        const fetchOptions: any = { method: "DELETE" };
+        if (activeTab === "passive") {
+          fetchOptions.headers = { "Content-Type": "application/json" };
+          fetchOptions.body = JSON.stringify({ password });
+        }
+
+        const res = await fetch(`/api/orders/${id}${activeTab === "passive" ? "?hard=true" : ""}`, fetchOptions);
         if (!res.ok) {
           const body = await res.json();
-          alert(`Hata (Sipariş #${id}): ` + body.error);
+          if (activeTab === "passive") throw new Error(`Hata (Sipariş #${id}): ` + body.error);
+          else alert(`Hata (Sipariş #${id}): ` + body.error);
         }
       }
       setSelectedOrderIds([]);
+      setIsPasswordModalOpen(false);
       window.location.reload();
-    } catch (err) {
+    } catch (err: any) {
+      if (activeTab === "passive") throw err;
       console.error(err);
       alert("Bir hata oluştu.");
     }
@@ -240,6 +249,14 @@ export default function OrderTableClient({ orders }: { orders: any[] }) {
           </table>
         </div>
       </div>
+
+      <PasswordConfirmModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+        onConfirm={handleDelete}
+        title="Siparişi Kalıcı Olarak Sil"
+        description="Seçilen pasif durumdaki siparişler kalıcı olarak silinecektir. Bu işlem geri alınamaz."
+      />
     </div>
   );
 }

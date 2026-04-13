@@ -7,12 +7,36 @@ export async function DELETE(
 ) {
   try {
     const id = parseInt((await params).id, 10);
-    
-    await prisma.invoice.delete({
-      where: { id }
-    });
+    const searchParams = request.nextUrl.searchParams;
+    const isHardDelete = searchParams.get("hard") === "true";
 
-    return NextResponse.json({ success: true });
+    if (isHardDelete) {
+      const body = await request.json().catch(() => ({}));
+      if (!body.password) {
+        return NextResponse.json({ error: "Kalıcı silme işlemi için şifrenizi girmelisiniz." }, { status: 400 });
+      }
+      
+      const userId = request.headers.get("x-user-id");
+      if (!userId) return NextResponse.json({ error: "Yetkisiz erişim." }, { status: 401 });
+      
+      const admin = await prisma.user.findUnique({ where: { id: parseInt(userId, 10) }});
+      if (!admin || admin.role !== 'ADMIN') return NextResponse.json({ error: "Bu işlem için yönetici yetkisi gerekir." }, { status: 403 });
+      
+      const bcrypt = require('bcryptjs');
+      const isMatch = await bcrypt.compare(body.password, admin.password);
+      if (!isMatch) return NextResponse.json({ error: "Şifreniz hatalı, lütfen tekrar deneyin." }, { status: 401 });
+
+      await prisma.invoice.delete({
+        where: { id }
+      });
+      return NextResponse.json({ success: true, message: "Kalıcı olarak silindi" });
+    } else {
+      await prisma.invoice.update({
+        where: { id },
+        data: { isActive: false }
+      });
+      return NextResponse.json({ success: true, message: "Arşive kaldırıldı" });
+    }
   } catch (error) {
     console.error("Error deleting invoice:", error);
     return NextResponse.json(
@@ -48,10 +72,14 @@ export async function PUT(
     }
 
     await Promise.all(items.map((item: any) => {
-      if (item.gtipNo !== undefined) {
+      const updateData: any = {};
+      if (item.gtipNo !== undefined) updateData.gtipNo = item.gtipNo;
+      if (item.typeOfGoods !== undefined) updateData.typeOfGoods = item.typeOfGoods;
+      
+      if (Object.keys(updateData).length > 0) {
         return prisma.orderItem.update({
           where: { id: item.orderItemId },
-          data: { gtipNo: item.gtipNo }
+          data: updateData
         });
       }
       return Promise.resolve();
@@ -126,8 +154,8 @@ export async function PUT(
       const packingList = await (prisma as any).packingList.create({
         data: {
           invoiceId: invoice.id,
-          totalGrossKg: invoice.grossKg,
-          totalNetKg: invoice.netKg,
+          grossWeight: invoice.grossKg,
+          netWeight: invoice.netKg,
           totalRolls: invoice.rollCount
         }
       });

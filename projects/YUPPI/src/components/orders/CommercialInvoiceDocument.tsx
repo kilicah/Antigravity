@@ -314,10 +314,11 @@ export default function CommercialInvoiceDocument({ order, bankInfo }: { order: 
               {order.items.map((item: any) => (
                 <tr key={item.id} className="uppercase align-top leading-snug">
                   <td className="px-1 pb-2">
-                    {item.buyerModelName ? <div className="whitespace-nowrap overflow-hidden text-ellipsis">{item.buyerModelName}</div> : null}
-                    <div>{item.typeOfGoods ? `${item.typeOfGoods} ` : ''}{item.width ? `${item.width}CM ` : ''}{item.weight ? `/ ${item.weight}` : ''}</div>
+                    <div>{item.typeOfGoods ? `${item.typeOfGoods} ` : ''}{item.width ? `${item.width}CM ` : ''}{item.weight ? `/ ${item.weight}${/^[0-9.,]+$/.test(item.weight.toString().trim()) ? ' GR/M2' : ''}` : ''}</div>
                   </td>
-                  <td className="px-1 pb-2 break-words">{item.qualityName || "-"}</td>
+                  <td className="px-1 pb-2 break-words text-center font-bold">
+                     <span className="font-normal">{item.qualityName || "-"}</span>{item.buyerModelName ? ` (${item.buyerModelName})` : ""}
+                  </td>
                   <td className="px-1 pb-2 break-words">{item.qualityCode || "-"}</td>
                   <td className="px-1 pb-2 break-words text-center">{item.colorCode || "-"}</td>
                   <td className="px-1 pb-2 break-words">{item.composition || "-"}</td>

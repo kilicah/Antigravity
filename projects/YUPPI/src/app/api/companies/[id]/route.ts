@@ -101,6 +101,17 @@ export async function DELETE(
       );
     }
 
+    const body = await req.json().catch(() => ({}));
+    if (!body.password) {
+      return NextResponse.json({ error: "Silme işlemi için şifrenizi girmelisiniz." }, { status: 400 });
+    }
+    const userId = req.headers.get("x-user-id");
+    const admin = await prisma.user.findUnique({ where: { id: parseInt(userId as string, 10) }});
+    if (!admin || admin.role !== 'ADMIN') return NextResponse.json({ error: "Yönetici yetkiniz yok." }, { status: 403 });
+    const bcrypt = require('bcryptjs');
+    const isMatch = await bcrypt.compare(body.password, admin.password);
+    if (!isMatch) return NextResponse.json({ error: "Şifreniz hatalı!" }, { status: 401 });
+
     await prisma.company.delete({
       where: { id },
     });

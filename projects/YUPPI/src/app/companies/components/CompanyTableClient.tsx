@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import PasswordConfirmModal from "@/components/PasswordConfirmModal";
 
 export default function CompanyTableClient({ companies }: { companies: any[] }) {
   const router = useRouter();
@@ -11,28 +12,26 @@ export default function CompanyTableClient({ companies }: { companies: any[] }) 
 
   const filteredCompanies = companies.filter(c => activeTab === "active" ? c.isActive !== false : c.isActive === false);
 
-  const handleDelete = async () => {
-    if (selectedCompanyIds.length === 0) return alert("Sipariş seçin."); // Wait, alert("Firma seçin.");
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
-    const pwd = prompt("Firmaları KALICI olarak silmek üzeresiniz! İşleme devam etmek için şifreyi girin:");
-    if (pwd !== "1996") {
-      alert("Hatalı şifre. Silme işlemi iptal edildi.");
-      return;
-    }
-
+  const handleDelete = async (password: string) => {
     try {
       for (const id of selectedCompanyIds) {
-        const res = await fetch(`/api/companies/${id}`, { method: "DELETE" });
+        const res = await fetch(`/api/companies/${id}`, { 
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password })
+        });
         if (!res.ok) {
           const body = await res.json();
-          alert(`Hata (Firma #${id}): ` + body.error);
+          throw new Error(`Hata (Firma #${id}): ` + body.error);
         }
       }
       setSelectedCompanyIds([]);
+      setIsPasswordModalOpen(false);
       window.location.reload();
-    } catch (err) {
-      console.error(err);
-      alert("Bir hata oluştu.");
+    } catch (err: any) {
+      throw err;
     }
   };
 
@@ -80,7 +79,7 @@ export default function CompanyTableClient({ companies }: { companies: any[] }) 
         </button>
         {activeTab === "passive" && (
           <button
-            onClick={handleDelete}
+            onClick={() => setIsPasswordModalOpen(true)}
             disabled={selectedCompanyIds.length === 0}
             className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold transition-colors border ${
               selectedCompanyIds.length > 0
@@ -187,6 +186,14 @@ export default function CompanyTableClient({ companies }: { companies: any[] }) 
           </table>
         </div>
       </div>
+
+      <PasswordConfirmModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+        onConfirm={handleDelete}
+        title="Firma(ları) Sil"
+        description="Seçilen pasif durumdaki firmalar kalıcı olarak silinecektir. Bu işlem geri alınamaz."
+      />
     </div>
   );
 }

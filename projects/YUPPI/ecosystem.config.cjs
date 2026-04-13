@@ -12,10 +12,18 @@ module.exports = {
       },
       env: {
         NODE_ENV: "production",
-        PORT: 8080
+        PORT: 8080,
+        DATABASE_URL: "file:./production.db"
       },
       // Yüksek CPU kullanımında tekrar başlat, bellek limitini ayarla (isteğe bağlı)
       max_memory_restart: '1G'
+    },
+    {
+      name: "YUPPI-BACKUP",
+      script: "backup_db.js",
+      cron_restart: "0 */2 * * *", // Her 2 saatte bir tetiklenir
+      autorestart: false, // Kod bitince kapanır, arkada gereksiz çalışmaz
+      watch: false
     }
   ] // PM2 ayar dosyası
 };
