@@ -154,7 +154,7 @@ export default function Sidebar() {
             </button>
           ) : (
             <div className="flex flex-col gap-2 mt-2 w-full border-t border-slate-800/80 pt-2 items-center">
-              <span className="bg-orange-600/20 text-orange-400 border border-orange-500/30 px-1 py-0.5 rounded text-[8px] uppercase font-bold tracking-widest text-center">v1.15</span>
+              <span className="bg-orange-600/20 text-orange-400 border border-orange-500/30 px-1 py-0.5 rounded text-[8px] uppercase font-bold tracking-widest text-center">v1.16</span>
               <button 
                 onClick={async () => {
                   await fetch('/api/logout', { method: 'POST' });
@@ -171,7 +171,7 @@ export default function Sidebar() {
         
         {isExpanded && (
           <div className="mt-4 pt-3 border-t border-slate-800/60 flex justify-center">
-             <span className="bg-orange-600/20 text-orange-400 border border-orange-500/30 px-2 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider">v1.15 TEST SUNUCUSU</span>
+             <span className="bg-orange-600/20 text-orange-400 border border-orange-500/30 px-2 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider">v1.16 TEST SUNUCUSU</span>
           </div>
         )}
       </div>
