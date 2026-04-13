@@ -48,6 +48,7 @@ export default async function SelectedInvoicePage({
   // Later we will refactor the PDF component to take native `invoice` prop.
   
   const hybridOrderData = {
+     id: firstOrder?.id,
      contractNo: Array.from(new Set(invoice.items.map(i => i.orderItem.order.contractNo))).join(', '),
      buyer: invoice.buyer,
      seller: firstOrder?.seller,

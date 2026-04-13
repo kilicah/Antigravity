@@ -36,7 +36,7 @@ export default async function PackingListPrintPage({ params }: { params: Promise
   if (invoice.items.length > 0) {
       const parts = invoice.items.map(i => {
          const oi: any = i.orderItem;
-         const model = oi.qualityName || '';
+         const model = [oi.qualityName, oi.qualityCode].filter(Boolean).join(' / ') || '';
          const color = oi.colorCode || '';
          const comp = oi.composition || '';
          const typeOfGoods = oi.typeOfGoods || '';

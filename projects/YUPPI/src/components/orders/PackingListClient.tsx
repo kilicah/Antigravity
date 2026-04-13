@@ -26,7 +26,7 @@ export default function PackingListClient({
     invoiceDate: isEng ? "INVOICE DATE" : "FATURA TARİHİ",
     customerPo: isEng ? "BUYER ORDER NO" : "ALICI SİPARİŞ NO",
     roll: isEng ? "ROLL" : "TOP",
-    design: isEng ? "DESIGN/COLOR/COMPOSITION" : "DESEN/RENK/İÇERİK",
+    design: isEng ? "ARTICLE NAME / CODE / COLOR / COMPOSITION" : "KALİTE İSMİ / KODU / RENGİ / KOMPOZİSYONU",
     orderNo: isEng ? "ORDER NO" : "SİPARİŞ NO",
     lot: isEng ? "LOT" : "LOT",
     barNo: isEng ? "BAR NO" : "BAR NO",
