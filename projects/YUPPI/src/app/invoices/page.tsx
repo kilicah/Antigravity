@@ -1,10 +1,24 @@
 import { prisma } from "@/lib/prisma";
 import InvoiceTableClient from "./components/InvoiceTableClient";
+import { headers } from "next/headers";
 
 export const dynamic = 'force-dynamic';
 
 export default async function InvoicesPage() {
+  const headersList = await headers();
+  const role = headersList.get("x-user-role");
+  const userId = headersList.get("x-user-id");
+
+  let whereClause: any = {};
+  if (role === "USER" && userId) {
+    const allowedUserId = parseInt(userId);
+    whereClause = {
+      buyer: { allowedUsers: { some: { id: allowedUserId } } }
+    };
+  }
+
   const invoices = await prisma.invoice.findMany({
+    where: whereClause,
     include: {
       buyer: true,
       items: true,
@@ -24,7 +38,7 @@ export default async function InvoicesPage() {
         </div>
       </div>
 
-      <InvoiceTableClient invoices={invoices} />
+      <InvoiceTableClient invoices={invoices} userRole={role || "USER"} />
     </div>
   );
 }

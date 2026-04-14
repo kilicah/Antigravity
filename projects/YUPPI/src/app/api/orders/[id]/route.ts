@@ -6,6 +6,11 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const role = req.headers.get('x-user-role');
+    if (role === 'USER') {
+      return NextResponse.json({ error: "Siparişleri düzenleme yetkiniz yok." }, { status: 403 });
+    }
+
     const id = parseInt((await params).id, 10);
     const body = await req.json();
 
@@ -158,6 +163,11 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const role = req.headers.get('x-user-role');
+    if (role !== 'ADMIN') {
+      return NextResponse.json({ error: "Siparişleri silme yetkiniz yok." }, { status: 403 });
+    }
+
     const id = parseInt((await params).id, 10);
     const searchParams = req.nextUrl.searchParams;
     const isHardDelete = searchParams.get("hard") === "true";

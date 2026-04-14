@@ -14,15 +14,23 @@ export default function UsersPage() {
   const [role, setRole] = useState("USER");
   const [fullName, setFullName] = useState("");
   const [avatar, setAvatar] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [assignedSellerId, setAssignedSellerId] = useState("");
+  const [allowedCompanyIds, setAllowedCompanyIds] = useState<string[]>([]);
+  const [companies, setCompanies] = useState<any[]>([]);
 
   const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("/api/users");
-      const data = await res.json();
-      if (res.ok) setUsers(data);
+      const [resUsers, resCompanies] = await Promise.all([
+        fetch("/api/users"),
+        fetch("/api/companies")
+      ]);
+      if (resUsers.ok) setUsers(await resUsers.json());
+      if (resCompanies.ok) setCompanies(await resCompanies.json());
     } catch (err) {
       console.error(err);
     } finally {
@@ -41,6 +49,10 @@ export default function UsersPage() {
     setRole("USER");
     setFullName("");
     setAvatar("");
+    setEmail("");
+    setPhone("");
+    setAssignedSellerId("");
+    setAllowedCompanyIds([]);
     setError("");
     setIsModalOpen(true);
   };
@@ -52,6 +64,10 @@ export default function UsersPage() {
     setRole(user.role);
     setFullName(user.fullName || "");
     setAvatar(user.avatar || "");
+    setEmail(user.email || "");
+    setPhone(user.phone || "");
+    setAssignedSellerId(user.assignedSellerId?.toString() || "");
+    setAllowedCompanyIds(user.allowedCompanies?.map((c: any) => c.id.toString()) || []);
     setError("");
     setIsModalOpen(true);
   };
@@ -119,7 +135,7 @@ export default function UsersPage() {
     try {
       if (editingUser) {
         // UPDATE
-        const payload: any = { role, fullName, avatar };
+        const payload: any = { role, fullName, avatar, email, phone, assignedSellerId, allowedCompanyIds };
         if (password.trim() !== "") payload.password = password;
 
         const res = await fetch(`/api/users/${editingUser.id}`, {
@@ -133,7 +149,7 @@ export default function UsersPage() {
         const res = await fetch("/api/users", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password, role, fullName, avatar }),
+          body: JSON.stringify({ username, password, role, fullName, avatar, email, phone, assignedSellerId, allowedCompanyIds }),
         });
         if (!res.ok) throw new Error((await res.json()).error);
       }
@@ -217,6 +233,8 @@ export default function UsersPage() {
                 <td className="py-4 px-6">
                   {u.role === 'ADMIN' 
                       ? <span className="px-2 py-1 bg-amber-100 text-amber-800 text-[10px] uppercase font-bold rounded shadow-sm border border-amber-200">Yönetici</span>
+                      : u.role === 'SUPERVISOR'
+                      ? <span className="px-2 py-1 bg-blue-100 text-blue-800 text-[10px] uppercase font-bold rounded shadow-sm border border-blue-200">Yetkili</span>
                       : <span className="px-2 py-1 bg-slate-100 text-slate-600 text-[10px] uppercase font-bold rounded border border-slate-200">Kullanıcı</span>}
                 </td>
                 <td className="py-4 px-6">
@@ -297,6 +315,29 @@ export default function UsersPage() {
                 </div>
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">E-Posta Adresi</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Örn: isim@sirket.com"
+                    className="w-full border rounded-lg px-3 py-2 text-sm text-slate-900 border-slate-300 focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Telefon</label>
+                  <input
+                    type="text"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="Örn: +90 5xx xxx xx xx"
+                    className="w-full border rounded-lg px-3 py-2 text-sm text-slate-900 border-slate-300 focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+              </div>
+
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Gerçek İsim Soyisim</label>
                 <input
@@ -304,21 +345,60 @@ export default function UsersPage() {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Örn: Mehmet Aydın"
-                  className="w-full border rounded-lg px-3 py-2 text-sm text-slate-900 border-slate-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  className="w-full border rounded-lg px-3 py-2 text-sm text-slate-900 border-slate-300 focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Sistem Yetkisi</label>
-                <select
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                >
-                  <option value="USER">Normal Kullanıcı</option>
-                  <option value="ADMIN">Sistem Yöneticisi</option>
-                </select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Sistem Yetkisi</label>
+                  <select
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500"
+                  >
+                    <option value="USER">Sadece İzleyici (Filtrelenmiş Veri)</option>
+                    <option value="SUPERVISOR">Yetkili Kullanıcı (Silme Hariç)</option>
+                    <option value="ADMIN">Sistem Yöneticisi (Limitsiz)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Satıcı Bağlantısı</label>
+                  <select
+                    value={assignedSellerId}
+                    onChange={(e) => setAssignedSellerId(e.target.value)}
+                    className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-indigo-500"
+                  >
+                    <option value="">-- Herhangi Biri --</option>
+                    {companies.filter(c => c.isSeller).map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
+
+              {role === 'USER' && (
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                  <label className="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">Erişebildiği Firmalar ve Markalar (Veri İzolasyonu)</label>
+                  <p className="text-[11px] text-slate-500 mb-3">Bu kullanıcı sadece buradaki seçili firmaların (Müşteri, Sevk, Marka) verilerini ve siparişlerini görebilir.</p>
+                  <div className="max-h-40 overflow-y-auto space-y-1 bg-white border border-slate-200 rounded-lg p-2">
+                    {companies.filter(c => !c.isSeller).map(c => (
+                      <label key={c.id} className="flex items-center gap-2 p-1.5 hover:bg-slate-50 rounded cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={allowedCompanyIds.includes(c.id.toString())}
+                          onChange={(e) => {
+                            if (e.target.checked) setAllowedCompanyIds([...allowedCompanyIds, c.id.toString()]);
+                            else setAllowedCompanyIds(allowedCompanyIds.filter(id => id !== c.id.toString()));
+                          }}
+                          className="w-3.5 h-3.5 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                        />
+                        <span className="text-xs font-medium text-slate-700">{c.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-6">
                 <button

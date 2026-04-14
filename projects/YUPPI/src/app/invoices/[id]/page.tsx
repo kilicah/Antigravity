@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CommercialInvoiceDocument from "@/components/orders/CommercialInvoiceDocument";
@@ -11,6 +12,10 @@ export default async function SelectedInvoicePage({
 }) {
   const id = parseInt((await params).id, 10);
   
+  const headersList = await headers();
+  const userId = headersList.get("x-user-id");
+  
+
   const invoice = await prisma.invoice.findUnique({
     where: { id },
     include: {
@@ -122,7 +127,7 @@ export default async function SelectedInvoicePage({
       <PackingListManager invoiceId={id} />
 
       <div className="bg-white shadow-2xl print:shadow-none flex justify-center pb-12 print:pb-0">
-         <CommercialInvoiceDocument order={hybridOrderData as any} bankInfo={bankInfo} />
+         <CommercialInvoiceDocument order={hybridOrderData as any} bankInfo={bankInfo}  />
       </div>
 
     </div>

@@ -7,7 +7,7 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
     const params = await props.params;
     const id = parseInt(params.id);
     const body = await req.json();
-    const { password, isActive, role, fullName, avatar } = body;
+    const { password, isActive, role, fullName, avatar, email, phone, assignedSellerId, allowedCompanyIds } = body;
 
     const updateData: any = {};
     if (password && password.trim() !== '') {
@@ -17,6 +17,18 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
     if (role) updateData.role = role;
     if (fullName !== undefined) updateData.fullName = fullName;
     if (avatar !== undefined) updateData.avatar = avatar;
+    if (email !== undefined) updateData.email = email;
+    if (phone !== undefined) updateData.phone = phone;
+    
+    if (assignedSellerId !== undefined) {
+      updateData.assignedSellerId = assignedSellerId ? parseInt(assignedSellerId) : null;
+    }
+    
+    if (allowedCompanyIds && Array.isArray(allowedCompanyIds)) {
+       updateData.allowedCompanies = {
+         set: allowedCompanyIds.map((id: any) => ({ id: parseInt(id) }))
+       };
+    }
 
     await prisma.user.update({
       where: { id },

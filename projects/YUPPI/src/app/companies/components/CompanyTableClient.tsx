@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import PasswordConfirmModal from "@/components/PasswordConfirmModal";
 
-export default function CompanyTableClient({ companies }: { companies: any[] }) {
+export default function CompanyTableClient({ companies, userRole }: { companies: any[], userRole?: string }) {
   const router = useRouter();
   const [selectedCompanyIds, setSelectedCompanyIds] = useState<number[]>([]);
   const [activeTab, setActiveTab] = useState<"active" | "passive">("active");
@@ -56,28 +56,32 @@ export default function CompanyTableClient({ companies }: { companies: any[] }) 
             Firma Yönetimi
           </h1>
         </div>
-        <Link 
-          href="/companies/new" 
-          className="group relative inline-flex items-center justify-center px-6 py-2.5 text-sm font-medium text-white transition-all duration-200 bg-slate-900 border border-transparent rounded-lg hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 shadow-[0_4px_14px_0_rgb(0,0,0,10%)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.23)] hover:-translate-y-0.5"
-        >
-          <span className="mr-2 text-lg leading-none">+</span> Yeni Firma Ekle
-        </Link>
+        {userRole !== 'USER' && (
+          <Link 
+            href="/companies/new" 
+            className="group relative inline-flex items-center justify-center px-6 py-2.5 text-sm font-medium text-white transition-all duration-200 bg-slate-900 border border-transparent rounded-lg hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 shadow-[0_4px_14px_0_rgb(0,0,0,10%)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.23)] hover:-translate-y-0.5"
+          >
+            <span className="mr-2 text-lg leading-none">+</span> Yeni Firma Ekle
+          </Link>
+        )}
       </div>
 
       {/* ACTION BAR */}
       <div className="flex items-center gap-3 mb-4 bg-white/80 backdrop-blur-xl p-3 rounded-xl border border-slate-200/60 shadow-sm transition-all shrink-0">
-        <button
-          onClick={() => handleAction("/edit")}
-          disabled={selectedCompanyIds.length !== 1}
-          className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold transition-colors border ${
-            selectedCompanyIds.length === 1
-              ? "bg-slate-800 text-white hover:bg-slate-700 border-slate-800 shadow-sm cursor-pointer" 
-              : "bg-slate-50 text-slate-400 border-slate-200 opacity-60 cursor-not-allowed"
-          }`}
-        >
-          Düzenle
-        </button>
-        {activeTab === "passive" && (
+        {userRole !== 'USER' && (
+          <button
+            onClick={() => handleAction("/edit")}
+            disabled={selectedCompanyIds.length !== 1}
+            className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold transition-colors border ${
+              selectedCompanyIds.length === 1
+                ? "bg-slate-800 text-white hover:bg-slate-700 border-slate-800 shadow-sm cursor-pointer" 
+                : "bg-slate-50 text-slate-400 border-slate-200 opacity-60 cursor-not-allowed"
+            }`}
+          >
+            Düzenle
+          </button>
+        )}
+        {activeTab === "passive" && userRole === 'ADMIN' && (
           <button
             onClick={() => setIsPasswordModalOpen(true)}
             disabled={selectedCompanyIds.length === 0}

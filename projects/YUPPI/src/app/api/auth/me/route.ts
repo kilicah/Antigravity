@@ -13,7 +13,7 @@ export async function GET(req: Request) {
   try {
     const user = await prisma.user.findUnique({
       where: { id: parseInt(id) },
-      select: { id: true, username: true, role: true, fullName: true, avatar: true }
+      select: { id: true, username: true, role: true, fullName: true, avatar: true, email: true, phone: true }
     });
     
     if (!user) return NextResponse.json({ error: 'Kullanıcı bulunamadı' }, { status: 404 });
@@ -29,7 +29,7 @@ export async function PUT(req: Request) {
     if (!id) return NextResponse.json({ error: 'Oturum bulunamadı' }, { status: 401 });
 
     const body = await req.json();
-    const { password, fullName, avatar } = body;
+    const { password, fullName, avatar, email, phone } = body;
     
     const updateData: any = {};
     if (password && password.trim() !== '') {
@@ -37,6 +37,8 @@ export async function PUT(req: Request) {
     }
     if (fullName !== undefined) updateData.fullName = fullName;
     if (avatar !== undefined) updateData.avatar = avatar;
+    if (email !== undefined) updateData.email = email;
+    if (phone !== undefined) updateData.phone = phone;
 
     if (Object.keys(updateData).length > 0) {
       await prisma.user.update({

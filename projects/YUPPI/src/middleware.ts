@@ -25,6 +25,10 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
+  if (pathname.startsWith('/admin') && verifiedToken.role !== 'ADMIN') {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-user-id', verifiedToken.id.toString());
   requestHeaders.set('x-user-role', verifiedToken.role);

@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { numberToWords } from "@/utils/numberToWords";
 
-export default function CommercialInvoiceDocument({ order, bankInfo }: { order: any; bankInfo: any }) {
+export default function CommercialInvoiceDocument({ order, bankInfo, repUser }: { order: any; bankInfo: any; repUser?: any }) {
   const [isEng, setIsEng] = useState(order.language === 'ENG');
   const [isSigned, setIsSigned] = useState(false);
 

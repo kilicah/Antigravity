@@ -1,10 +1,27 @@
 import { prisma } from "@/lib/prisma";
 import CompanyTableClient from "./components/CompanyTableClient";
+import { headers } from "next/headers";
 
 export const dynamic = 'force-dynamic';
 
 export default async function CompaniesPage() {
-  const rawCompanies = await prisma.company.findMany();
+  const headersList = await headers();
+  const role = headersList.get("x-user-role");
+  const userId = headersList.get("x-user-id");
+
+  let whereClause: any = {};
+  if (role === "USER" && userId) {
+    whereClause = {
+      OR: [
+        { isSeller: true },
+        { allowedUsers: { some: { id: parseInt(userId) } } }
+      ]
+    };
+  }
+
+  const rawCompanies = await prisma.company.findMany({
+    where: whereClause
+  });
 
   const companies = rawCompanies.sort((a, b) => {
     // Both have codes -> Sort alphabetically by code
@@ -21,6 +38,6 @@ export default async function CompaniesPage() {
   });
 
   return (
-    <CompanyTableClient companies={companies} />
+    <CompanyTableClient companies={companies} userRole={role || "USER"} />
   );
 }

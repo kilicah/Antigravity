@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import SalesContractDocument from "@/components/orders/SalesContractDocument";
+import { headers } from "next/headers";
 
 export default async function OrderViewPage({
   params,
@@ -40,11 +41,16 @@ export default async function OrderViewPage({
     }
   });
 
+  const headersList = await headers();
+  const userId = headersList.get("x-user-id");
+  
+
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       <SalesContractDocument 
         order={order}
         bankInfo={bankInfo}
+        
       />
     </div>
   );

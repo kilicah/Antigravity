@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import PasswordConfirmModal from "@/components/PasswordConfirmModal";
 
-export default function OrderTableClient({ orders }: { orders: any[] }) {
+export default function OrderTableClient({ orders, userRole }: { orders: any[], userRole?: string }) {
   const router = useRouter();
   const [selectedOrderIds, setSelectedOrderIds] = useState<number[]>([]);
   const [activeTab, setActiveTab] = useState<"active" | "passive">("active");
@@ -78,12 +78,14 @@ export default function OrderTableClient({ orders }: { orders: any[] }) {
             Sipariş Yönetimi
           </h1>
         </div>
-        <Link 
-          href="/orders/new" 
-          className="group relative inline-flex items-center justify-center px-6 py-2.5 text-sm font-medium text-white transition-all duration-200 bg-slate-900 border border-transparent rounded-lg hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 shadow-[0_4px_14px_0_rgb(0,0,0,10%)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.23)] hover:-translate-y-0.5"
-        >
-          <span className="mr-2 text-lg leading-none">+</span> Yeni Sözleşme
-        </Link>
+        {userRole !== 'USER' && (
+          <Link 
+            href="/orders/new" 
+            className="group relative inline-flex items-center justify-center px-6 py-2.5 text-sm font-medium text-white transition-all duration-200 bg-slate-900 border border-transparent rounded-lg hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 shadow-[0_4px_14px_0_rgb(0,0,0,10%)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.23)] hover:-translate-y-0.5"
+          >
+            <span className="mr-2 text-lg leading-none">+</span> Yeni Sözleşme
+          </Link>
+        )}
       </div>
 
       {/* ACTION BAR */}
@@ -110,17 +112,19 @@ export default function OrderTableClient({ orders }: { orders: any[] }) {
         >
           Üretim Fişi
         </button>
-        <button
-          onClick={handleInvoiceAction}
-          disabled={selectedOrderIds.length === 0}
-          className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold transition-colors border ${
-            selectedOrderIds.length > 0
-              ? "bg-rose-50 text-rose-700 hover:bg-rose-100 border-rose-200 shadow-sm cursor-pointer" 
-              : "bg-slate-50 text-slate-400 border-slate-200 opacity-60 cursor-not-allowed"
-          }`}
-        >
-          Fatura
-        </button>
+        {userRole !== 'USER' && (
+          <button
+            onClick={handleInvoiceAction}
+            disabled={selectedOrderIds.length === 0}
+            className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold transition-colors border ${
+              selectedOrderIds.length > 0
+                ? "bg-rose-50 text-rose-700 hover:bg-rose-100 border-rose-200 shadow-sm cursor-pointer" 
+                : "bg-slate-50 text-slate-400 border-slate-200 opacity-60 cursor-not-allowed"
+            }`}
+          >
+            Fatura
+          </button>
+        )}
         <button
           onClick={() => handleAction("/tracking")}
           disabled={selectedOrderIds.length !== 1}
@@ -132,28 +136,32 @@ export default function OrderTableClient({ orders }: { orders: any[] }) {
         >
           Sipariş Takibi
         </button>
-        <button
-          onClick={() => handleAction("/edit")}
-          disabled={selectedOrderIds.length !== 1}
-          className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold transition-colors border ml-auto ${
-            selectedOrderIds.length === 1
-              ? "bg-slate-800 text-white hover:bg-slate-700 border-slate-800 shadow-sm cursor-pointer" 
-              : "bg-slate-50 text-slate-400 border-slate-200 opacity-60 cursor-not-allowed"
-          }`}
-        >
-          Düzenle
-        </button>
-        <button
-          onClick={() => handleDelete()}
-          disabled={selectedOrderIds.length === 0}
-          className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold transition-colors border ${
-            selectedOrderIds.length > 0
-              ? "bg-red-50 text-red-600 hover:bg-red-100 border-red-200 shadow-sm cursor-pointer" 
-              : "bg-slate-50 text-slate-400 border-slate-200 opacity-60 cursor-not-allowed"
-          }`}
-        >
-          {activeTab === "active" ? "Arşivle" : "Tamamen Sil"}
-        </button>
+        {userRole !== 'USER' && (
+          <button
+            onClick={() => handleAction("/edit")}
+            disabled={selectedOrderIds.length !== 1}
+            className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold transition-colors border ml-auto ${
+              selectedOrderIds.length === 1
+                ? "bg-slate-800 text-white hover:bg-slate-700 border-slate-800 shadow-sm cursor-pointer" 
+                : "bg-slate-50 text-slate-400 border-slate-200 opacity-60 cursor-not-allowed"
+            }`}
+          >
+            Düzenle
+          </button>
+        )}
+        {userRole === 'ADMIN' && (
+          <button
+            onClick={() => handleDelete()}
+            disabled={selectedOrderIds.length === 0}
+            className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-semibold transition-colors border ml-auto ${
+              selectedOrderIds.length > 0
+                ? "bg-red-50 text-red-600 hover:bg-red-100 border-red-200 shadow-sm cursor-pointer" 
+                : "bg-slate-50 text-slate-400 border-slate-200 opacity-60 cursor-not-allowed"
+            }`}
+          >
+            {activeTab === "active" ? "Arşivle" : "Tamamen Sil"}
+          </button>
+        )}
 
         <div className="ml-auto flex shrink-0">
           <button

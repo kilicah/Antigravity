@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CommercialInvoiceDocument from "@/components/orders/CommercialInvoiceDocument";
@@ -23,6 +24,10 @@ export default async function InvoiceViewPage({
   });
 
   if (!order) notFound();
+
+  const headersList = await headers();
+  const userId = headersList.get("x-user-id");
+  
 
   // Fetch default bank info
   const bankInfo = await prisma.bankInfo.findFirst({
@@ -72,7 +77,7 @@ export default async function InvoiceViewPage({
 
       {/* YAZDIRILABİLİR YENİ TABLO ALANI */}
       <div className="bg-white shadow-2xl print:shadow-none flex justify-center pb-12 print:pb-0">
-         <CommercialInvoiceDocument order={order} bankInfo={bankInfo} />
+         <CommercialInvoiceDocument order={order} bankInfo={bankInfo}  />
       </div>
 
     </div>

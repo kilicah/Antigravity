@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import PasswordConfirmModal from "@/components/PasswordConfirmModal";
 
-export default function InvoiceTableClient({ invoices }: { invoices: any[] }) {
+export default function InvoiceTableClient({ invoices, userRole }: { invoices: any[], userRole?: string }) {
   const router = useRouter();
   const [selectedInvoiceIds, setSelectedInvoiceIds] = useState<number[]>([]);
   const [activeTab, setActiveTab] = useState<"active" | "passive">("active");
@@ -98,12 +98,14 @@ export default function InvoiceTableClient({ invoices }: { invoices: any[] }) {
         <div className="flex items-center gap-2 overflow-x-auto custom-scrollbar pb-1 w-full pl-2">
           {selectedInvoiceIds.length === 1 && (
              <>
-               <button 
-                 onClick={handleEdit}
-                 className="flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium text-sm transition-colors shadow-sm whitespace-nowrap"
-               >
-                 Düzenle
-               </button>
+               {userRole !== 'USER' && (
+                 <button 
+                   onClick={handleEdit}
+                   className="flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium text-sm transition-colors shadow-sm whitespace-nowrap"
+                 >
+                   Düzenle
+                 </button>
+               )}
                
                <Link 
                  href={`/invoices/${selectedInvoiceIds[0]}`}
@@ -136,12 +138,14 @@ export default function InvoiceTableClient({ invoices }: { invoices: any[] }) {
                  </Link>
                )}
 
-               <button 
-                  onClick={prepareDelete}
-                  className="flex items-center px-4 py-2 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-lg font-medium text-sm transition-colors whitespace-nowrap ml-auto"
-               >
-                  {activeTab === "active" ? "Arşive Kaldır" : "Tamamen Sil"}
-               </button>
+               {userRole === 'ADMIN' && (
+                 <button 
+                    onClick={prepareDelete}
+                    className="flex items-center px-4 py-2 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-lg font-medium text-sm transition-colors whitespace-nowrap ml-auto"
+                 >
+                    {activeTab === "active" ? "Arşive Kaldır" : "Tamamen Sil"}
+                 </button>
+               )}
              </>
           )}
         </div>

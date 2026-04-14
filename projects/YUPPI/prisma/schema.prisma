@@ -16,8 +16,16 @@ model User {
   password  String
   fullName  String?
   avatar    String?
+  email     String?
+  phone     String?
   role      String   @default("ADMIN")
   isActive  Boolean  @default(true)
+  
+  assignedSellerId Int?
+  assignedSeller   Company?  @relation("UserSeller", fields: [assignedSellerId], references: [id])
+  
+  allowedCompanies Company[] @relation("UserAllowedCompanies")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -54,6 +62,9 @@ model Company {
 
   repsJson        String                  @default("[]")
   deliveryAddressesJson String            @default("[]")
+
+  assignedUsers   User[]                  @relation("UserSeller")
+  allowedUsers    User[]                  @relation("UserAllowedCompanies")
 
   sellerOrders    Order[]                 @relation("SellerContracts")
   buyerOrders     Order[]                 @relation("BuyerContracts")

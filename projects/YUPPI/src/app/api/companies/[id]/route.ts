@@ -32,6 +32,11 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const role = req.headers.get('x-user-role');
+    if (role === 'USER') {
+      return NextResponse.json({ error: "Firma düzenleme yetkiniz yok." }, { status: 403 });
+    }
+
     const id = parseInt((await params).id, 10);
     const body = await req.json();
 

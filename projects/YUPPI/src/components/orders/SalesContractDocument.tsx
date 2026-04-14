@@ -7,8 +7,7 @@ import PrintButton from "@/components/PrintButton";
 
 export default function SalesContractDocument({
   order,
-  bankInfo
-}: {
+  bankInfo}: {
   order: any,
   bankInfo: any
 }) {
@@ -30,8 +29,8 @@ export default function SalesContractDocument({
   const totalQuantity = order.items.reduce((sum: number, item: any) => sum + item.quantity, 0);
   const totalAmount = order.items.reduce((sum: number, item: any) => sum + item.totalAmount, 0);
 
-  const getRepEmail = (company: any, repName: string) => {
-    if (!company?.repsJson || !repName) return "-";
+    const getRepInfo = (company: any, repName: string) => {
+    if (!company?.repsJson || !repName) return { email: "-", phone: "" };
     try {
         const reps = JSON.parse(company.repsJson);
         const nameToMatch = repName.includes('|') ? repName.split('|')[0].trim().toLocaleUpperCase('tr-TR') : repName.trim().toLocaleUpperCase('tr-TR');
@@ -40,14 +39,19 @@ export default function SalesContractDocument({
             const n = raw.includes('|') ? raw.split('|')[0] : raw;
             return n.trim().toLocaleUpperCase('tr-TR') === nameToMatch;
         });
-        return found?.email?.toLowerCase() || "-";
+        return {
+           email: found?.email?.toLowerCase() || "-",
+           phone: found?.phone || ""
+        };
     } catch (e) {
-        return "-";
+        return { email: "-", phone: "" };
     }
   };
 
-  const sellerEmail = getRepEmail(order.seller, order.sellerRep);
-  const buyerEmail = getRepEmail(order.buyer, order.buyerRep);
+  const sellerRepInfo = getRepInfo(order.seller, order.sellerRep);
+  const sellerEmail = sellerRepInfo.email;
+  const buyerRepInfo = getRepInfo(order.buyer, order.buyerRep);
+  const buyerEmail = buyerRepInfo.email;
 
   const trTerms = [
     "1) İşbu satış sözleşmesi, yukarıda unvanları belirtilen 'Satıcı Firma' ve 'Alıcı Firma' arasında resmi iletişim kanalları (e-posta vb.) aracılığıyla yapılmaktadır.",
@@ -127,12 +131,12 @@ export default function SalesContractDocument({
               <div className="uppercase text-[11px]">
                  {isEng ? (
                    [
-                     order.seller.phone && `P. ${order.seller.phone}`,
+                     (sellerRepInfo.phone || order.seller.phone) && `P. ${sellerRepInfo.phone || order.seller.phone}`,
                      order.seller.registrationNo && `TRD. REG.NO. ${order.seller.registrationNo}`
                    ].filter(Boolean).join(' / ')
                  ) : (
                    [
-                     order.seller.phone && `T. ${order.seller.phone}`,
+                     (sellerRepInfo.phone || order.seller.phone) && `T. ${sellerRepInfo.phone || order.seller.phone}`,
                      order.seller.registrationNo && `TİC. SİC. NO ${order.seller.registrationNo}`
                    ].filter(Boolean).join(' / ')
                  )}
@@ -165,12 +169,12 @@ export default function SalesContractDocument({
               <div className="uppercase text-[11px]">
                  {isEng ? (
                    [
-                     order.buyer.phone && `P. ${order.buyer.phone}`,
+                     (buyerRepInfo.phone || order.buyer.phone) && `P. ${buyerRepInfo.phone || order.buyer.phone}`,
                      order.buyer.registrationNo && `TRD. REG.NO. ${order.buyer.registrationNo}`
                    ].filter(Boolean).join(' / ')
                  ) : (
                    [
-                     order.buyer.phone && `T. ${order.buyer.phone}`,
+                     (buyerRepInfo.phone || order.buyer.phone) && `T. ${buyerRepInfo.phone || order.buyer.phone}`,
                      order.buyer.registrationNo && `TİC. SİC. NO ${order.buyer.registrationNo}`
                    ].filter(Boolean).join(' / ')
                  )}

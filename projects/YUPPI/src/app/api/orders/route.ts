@@ -1,9 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const role = req.headers.get('x-user-role');
+    const userId = req.headers.get('x-user-id');
+
+    let whereClause: any = {};
+    if (role === 'USER' && userId) {
+      const allowedUserId = parseInt(userId);
+      whereClause = {
+        OR: [
+          { buyer: { allowedUsers: { some: { id: allowedUserId } } } },
+          { shipTo: { allowedUsers: { some: { id: allowedUserId } } } },
+          { brand: { allowedUsers: { some: { id: allowedUserId } } } }
+        ]
+      };
+    }
+
     const orders = await prisma.order.findMany({
+      where: whereClause,
       orderBy: { createdAt: "desc" },
       include: {
         buyer: { select: { name: true } },
@@ -19,6 +35,11 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
+    const role = req.headers.get('x-user-role');
+    if (role === 'USER') {
+      return NextResponse.json({ error: "Sipariş oluşturma yetkiniz yok." }, { status: 403 });
+    }
+
     const body = await req.json();
     
     // Validate required relationships
