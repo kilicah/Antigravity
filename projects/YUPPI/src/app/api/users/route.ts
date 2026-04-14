@@ -2,12 +2,25 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const users = await prisma.user.findMany({
-      select: { 
-        id: true, username: true, role: true, isActive: true, createdAt: true, fullName: true, avatar: true,
-        email: true, phone: true, assignedSellerId: true, allowedCompanies: { select: { id: true, name: true } }
+      select: {
+        id: true,
+        username: true,
+        role: true,
+        fullName: true,
+        avatar: true,
+        email: true,
+        phone: true,
+        initials: true,
+        isActive: true,
+        lastActiveAt: true,
+        assignedSellerId: true,
+        createdAt: true, 
+        allowedCompanies: { select: { id: true, name: true } }
       },
       orderBy: { id: 'desc' }
     });
@@ -20,7 +33,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { username, password, role, fullName, avatar, email, phone, assignedSellerId, allowedCompanyIds } = body;
+    const { username, password, role, fullName, avatar, email, phone, initials, assignedSellerId, allowedCompanyIds } = body;
     
     if (!username || !password) {
         return NextResponse.json({ error: 'Kullanıcı adı ve şifre zorunludur.' }, { status: 400 });
@@ -36,6 +49,7 @@ export async function POST(req: Request) {
         avatar: avatar || null,
         email: email || null,
         phone: phone || null,
+        initials: initials || null,
         assignedSellerId: assignedSellerId ? parseInt(assignedSellerId) : null,
         ...(allowedCompanyIds && Array.isArray(allowedCompanyIds) ? {
           allowedCompanies: {

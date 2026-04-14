@@ -13,7 +13,7 @@ export async function GET(req: Request) {
   try {
     const user = await prisma.user.findUnique({
       where: { id: parseInt(id) },
-      select: { id: true, username: true, role: true, fullName: true, avatar: true, email: true, phone: true }
+      select: { id: true, username: true, role: true, fullName: true, initials: true, avatar: true, email: true, phone: true }
     });
     
     if (!user) return NextResponse.json({ error: 'Kullanıcı bulunamadı' }, { status: 404 });

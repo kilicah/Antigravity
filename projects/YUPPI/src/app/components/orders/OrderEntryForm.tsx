@@ -16,6 +16,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
   const router = useRouter();
   
   const defaultFormState = {
+    contractNo: "",
     contractDate: new Date().toISOString().split('T')[0],
     buyerPoNo: "",
     sellerId: "",
@@ -75,15 +76,20 @@ export default function OrderEntryForm({ companies, initialData }: any) {
   });
 
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+  const [contractPrefix, setContractPrefix] = useState("");
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorModalMsg, setErrorModalMsg] = useState("");
 
   // Ensure dates from DB are properly formatted for inputs if editing
   useEffect(() => {
     if (initialData) {
+      if (initialData.contractNo) {
+        setContractPrefix(initialData.contractNo.slice(0, -5));
+      }
       setFormData((prev: any) => ({
         ...prev,
         // Parse Dates
+        contractNo: initialData.contractNo ? initialData.contractNo.slice(-5) : prev.contractNo,
         contractDate: initialData.contractDate ? new Date(initialData.contractDate).toISOString().split('T')[0] : prev.contractDate,
         agencyId: initialData.agencyId?.toString() || "",
         commission: initialData.commission || "",
@@ -110,6 +116,35 @@ export default function OrderEntryForm({ companies, initialData }: any) {
         logisticsCompanyId: initialData.invoice?.logisticsCompanyId?.toString() || "",
         insuranceCompanyId: initialData.invoice?.insuranceCompanyId?.toString() || "",
       }));
+    } else {
+      // IF NEW ORDER -> Fetch User Initials + Next No
+      (async () => {
+        try {
+          const meRes = await fetch('/api/auth/me');
+          let prefix = "";
+          if (meRes.ok) {
+            const data = await meRes.json();
+            if (data?.user) {
+               if (data.user.initials) {
+                 prefix = data.user.initials;
+               } else if (data.user.fullName) {
+                 prefix = data.user.fullName.split(' ').map((n: string) => n[0]).join('').toUpperCase() + '.';
+               }
+            }
+          }
+          
+          setContractPrefix(prefix);
+          
+          const nextRes = await fetch(`/api/orders/next-no?prefix=${encodeURIComponent(prefix)}`);
+          let nextNo = "00001";
+          if (nextRes.ok) {
+             const nData = await nextRes.json();
+             if (nData.nextNo) nextNo = nData.nextNo;
+          }
+          
+          setFormData((prev: any) => ({ ...prev, contractNo: nextNo }));
+        } catch(e) {}
+      })();
     }
   }, [initialData]);
 
@@ -254,6 +289,7 @@ export default function OrderEntryForm({ companies, initialData }: any) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
+          contractNo: contractPrefix + formData.contractNo,
           // Convert empty dates to null if needed
           sellerId: parseInt(formData.sellerId),
           buyerId: parseInt(formData.buyerId),
@@ -318,6 +354,26 @@ export default function OrderEntryForm({ companies, initialData }: any) {
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+          <div>
+            <label className="block text-[11px] uppercase font-bold text-indigo-500 tracking-wider mb-1.5">
+              {formData.language === 'ENG' ? 'ORDER NO' : 'SİPARİŞ NO'} <span className="text-red-500">*</span>
+            </label>
+            <div className="flex w-full ring-2 ring-indigo-200 rounded-md focus-within:ring-indigo-500 overflow-hidden text-base">
+              <div className="flex items-center justify-center bg-indigo-50 px-3 text-indigo-700 font-bold border-r border-indigo-200 whitespace-nowrap">
+                {contractPrefix || "..."}
+              </div>
+              <input 
+                type="text" 
+                name="contractNo" 
+                required
+                maxLength={5}
+                value={formData.contractNo}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2.5 focus:outline-none font-bold text-slate-800 bg-white placeholder-slate-300 tracking-widest text-center"
+                placeholder="00001"
+              />
+            </div>
+          </div>
           <div>
             <label className="block text-[11px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">
               {formData.language === 'ENG' ? 'DATE' : 'TARIH'} <span className="text-red-500">*</span>

@@ -102,6 +102,7 @@ export async function PUT(
         where: { id },
         data: {
           contractDate: new Date(body.contractDate),
+          contractNo: body.contractNo || undefined,
           buyerPoNo: body.buyerPoNo || null,
           sellerId: body.sellerId,
           buyerId: body.buyerId,

@@ -10,6 +10,31 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const handleForgotPassword = async () => {
+    if (!username) {
+      setError("Şifre hatırlatması için önce Kullanıcı Adı kutusuna adınızı yazın.");
+      return;
+    }
+    
+    if (confirm(`${username} kullanıcısı için sistem yöneticisine şifre sıfırlama talebi gönderilecek. Onaylıyor musunuz?`)) {
+      try {
+        const res = await fetch("/api/auth/forgot-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert("Şifre sıfırlama talebiniz başarıyla yöneticiye iletildi.");
+        } else {
+          setError(data.error || "Talep iletilemedi.");
+        }
+      } catch (e) {
+        setError("Sunucu hatası.");
+      }
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -46,10 +71,10 @@ export default function LoginPage() {
       
       <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] relative z-10">
         <div className="mb-8 text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-             <span className="text-white text-2xl font-black tracking-tighter">Y</span>
+          <div className="w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+             <img src="/us-logo.png" className="w-full h-full object-contain drop-shadow-xl" alt="US Logo" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">YUPPI ERP</h1>
+          <h1 className="text-2xl font-bold text-white mb-2">YUPPI</h1>
           <p className="text-slate-400 text-sm">Devam etmek için lütfen giriş yapın.</p>
         </div>
 
@@ -99,7 +124,14 @@ export default function LoginPage() {
         </form>
 
         <div className="mt-8 text-center text-xs text-slate-500">
-          Giriş bilgilerinizi unuttuysanız sistem yöneticisiyle iletişime geçin.
+          Giriş bilgilerinizi unuttuysanız{" "}
+          <button 
+            type="button"
+            onClick={handleForgotPassword}
+            className="text-indigo-400 font-bold hover:text-indigo-300 underline underline-offset-2 transition-colors"
+          >
+            sistem yöneticisine talep gönderin.
+          </button>
         </div>
       </div>
     </div>

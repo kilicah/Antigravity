@@ -11,15 +11,17 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  password  String
-  fullName  String?
-  avatar    String?
-  email     String?
-  phone     String?
-  role      String   @default("ADMIN")
-  isActive  Boolean  @default(true)
+  id              Int       @id @default(autoincrement())
+  username        String    @unique
+  password        String
+  role            String    @default("USER") // ADMIN, SUPERVISOR, USER
+  fullName        String?
+  avatar          String?
+  email           String?
+  phone           String?
+  initials        String?
+  lastActiveAt    DateTime?
+  isActive        Boolean   @default(true)
   
   assignedSellerId Int?
   assignedSeller   Company?  @relation("UserSeller", fields: [assignedSellerId], references: [id])

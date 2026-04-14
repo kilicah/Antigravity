@@ -19,6 +19,12 @@ export default function Sidebar() {
           if (data.user) setUser(data.user);
         })
         .catch(err => console.error(err));
+        
+      // Ping atarak kullanıcının 'online' görünmesini sağla
+      const ping = () => fetch('/api/auth/ping', { method: 'POST' }).catch(() => {});
+      ping(); // İlk açılışta
+      const interval = setInterval(ping, 2 * 60 * 1000); // Her 2 dakikada
+      return () => clearInterval(interval);
     }
   }, [pathname]);
 
@@ -81,10 +87,8 @@ export default function Sidebar() {
     >
       <div className="h-20 flex items-center justify-between px-6 border-b border-slate-800/80">
         <div className="flex items-center gap-3 overflow-hidden">
-           <div className="min-w-[32px] w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <span className="text-white font-bold text-lg leading-none">Y</span>
-           </div>
-           <h1 className={`text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 tracking-wider transition-opacity duration-300 whitespace-nowrap ${isExpanded ? 'opacity-100' : 'opacity-0 hidden'}`}>YUPPI ERP</h1>
+           <img src="/us-logo.png" className="w-10 h-10 object-contain drop-shadow-md" alt="US Logo" />
+           <h1 className={`text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 tracking-wider transition-opacity duration-300 whitespace-nowrap ${isExpanded ? 'opacity-100' : 'opacity-0 hidden'}`}>YUPPI</h1>
         </div>
         {isExpanded && (
            <button 
@@ -155,7 +159,7 @@ export default function Sidebar() {
           ) : (
             <div className="flex flex-col gap-2 mt-2 w-full border-t border-slate-800/80 pt-2 items-center">
               <span className="bg-orange-600/20 text-orange-400 border border-orange-500/30 px-1 py-0.5 rounded text-[8px] uppercase font-bold tracking-widest text-center">
-                {typeof window !== 'undefined' && window.location.port === '8080' ? 'V1.17' : 'v1.17x'}
+                {typeof window !== 'undefined' && window.location.hostname.includes('yuppi.usk.one') ? 'V1.18' : 'v1.18x'}
               </span>
               <button 
                 onClick={async () => {
@@ -174,7 +178,7 @@ export default function Sidebar() {
         {isExpanded && (
           <div className="mt-4 pt-3 border-t border-slate-800/60 flex justify-center text-center">
              <span className="bg-orange-600/20 text-orange-400 border border-orange-500/30 px-2 py-1 rounded-md text-[10px] uppercase font-bold tracking-wider">
-               {typeof window !== 'undefined' && window.location.port === '8080' ? 'V1.17 YUPPI ✨' : 'V1.17x TEST SUNUCUSU'}
+               {typeof window !== 'undefined' && window.location.hostname.includes('yuppi.usk.one') ? 'V1.18 YUPPI ✨' : 'V1.18x TEST SUNUCUSU'}
              </span>
           </div>
         )}

@@ -7,7 +7,7 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
     const params = await props.params;
     const id = parseInt(params.id);
     const body = await req.json();
-    const { password, isActive, role, fullName, avatar, email, phone, assignedSellerId, allowedCompanyIds } = body;
+    const { password, isActive, role, fullName, avatar, email, phone, initials, assignedSellerId, allowedCompanyIds } = body;
 
     const updateData: any = {};
     if (password && password.trim() !== '') {
@@ -19,6 +19,7 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
     if (avatar !== undefined) updateData.avatar = avatar;
     if (email !== undefined) updateData.email = email;
     if (phone !== undefined) updateData.phone = phone;
+    if (initials !== undefined) updateData.initials = initials;
     
     if (assignedSellerId !== undefined) {
       updateData.assignedSellerId = assignedSellerId ? parseInt(assignedSellerId) : null;

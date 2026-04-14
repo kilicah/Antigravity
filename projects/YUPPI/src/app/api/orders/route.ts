@@ -58,12 +58,16 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    let autoContractNo = "26001";
-    if (lastOrder && lastOrder.contractNo) {
-       const numericPart = parseInt(lastOrder.contractNo.replace(/\D/g, ''), 10);
-       if (!isNaN(numericPart)) {
-          autoContractNo = String(numericPart + 1);
-       }
+    let autoContractNo = body.contractNo;
+    
+    if (!autoContractNo) {
+      autoContractNo = "26001";
+      if (lastOrder && lastOrder.contractNo) {
+         const numericPart = parseInt(lastOrder.contractNo.replace(/\D/g, ''), 10);
+         if (!isNaN(numericPart)) {
+            autoContractNo = String(numericPart + 1);
+         }
+      }
     }
 
     // Creating the order and items in a transaction using nested writes

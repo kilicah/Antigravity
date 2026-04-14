@@ -13,6 +13,7 @@ export default function UsersPage() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("USER");
   const [fullName, setFullName] = useState("");
+  const [initials, setInitials] = useState("");
   const [avatar, setAvatar] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -40,6 +41,12 @@ export default function UsersPage() {
 
   useEffect(() => {
     fetchUsers();
+    
+    // Her 30 saniyede bir online listesini güncelle
+    const interval = setInterval(() => {
+      fetchUsers();
+    }, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const openNewUserModal = () => {
@@ -48,6 +55,7 @@ export default function UsersPage() {
     setPassword("");
     setRole("USER");
     setFullName("");
+    setInitials("");
     setAvatar("");
     setEmail("");
     setPhone("");
@@ -63,6 +71,7 @@ export default function UsersPage() {
     setPassword(""); // Şifreyi boş getir
     setRole(user.role);
     setFullName(user.fullName || "");
+    setInitials(user.initials || "");
     setAvatar(user.avatar || "");
     setEmail(user.email || "");
     setPhone(user.phone || "");
@@ -135,7 +144,7 @@ export default function UsersPage() {
     try {
       if (editingUser) {
         // UPDATE
-        const payload: any = { role, fullName, avatar, email, phone, assignedSellerId, allowedCompanyIds };
+        const payload: any = { role, fullName, avatar, email, phone, initials, assignedSellerId, allowedCompanyIds };
         if (password.trim() !== "") payload.password = password;
 
         const res = await fetch(`/api/users/${editingUser.id}`, {
@@ -149,7 +158,7 @@ export default function UsersPage() {
         const res = await fetch("/api/users", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password, role, fullName, avatar, email, phone, assignedSellerId, allowedCompanyIds }),
+          body: JSON.stringify({ username, password, role, fullName, avatar, email, phone, initials, assignedSellerId, allowedCompanyIds }),
         });
         if (!res.ok) throw new Error((await res.json()).error);
       }
@@ -178,7 +187,24 @@ export default function UsersPage() {
       console.error(err);
     }
   };
-
+  const handleResetPasswordAndEmail = async () => {
+    if (!editingUser) return;
+    if (!confirm(`${fullName} kullanıcısı için şifre sıfırlanacak ve e-posta ile gönderilecektir. Devam edilsin mi?`)) return;
+    
+    try {
+      const res = await fetch(`/api/users/${editingUser.id}/reset-password`, {
+        method: "POST"
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert("Başarılı: " + data.message);
+      } else {
+        alert("Hata: " + data.error);
+      }
+    } catch (e) {
+      alert("İşlem sırasında bir hata oluştu.");
+    }
+  };
   if (loading) return <div className="p-8 text-slate-500">Yükleniyor...</div>;
 
   return (
@@ -237,18 +263,32 @@ export default function UsersPage() {
                       ? <span className="px-2 py-1 bg-blue-100 text-blue-800 text-[10px] uppercase font-bold rounded shadow-sm border border-blue-200">Yetkili</span>
                       : <span className="px-2 py-1 bg-slate-100 text-slate-600 text-[10px] uppercase font-bold rounded border border-slate-200">Kullanıcı</span>}
                 </td>
-                <td className="py-4 px-6">
+                <td className="py-4 px-6 flex items-center justify-between gap-3">
                   <button 
                     onClick={() => toggleStatus(u)}
+                    disabled={u.role === 'ADMIN'}
                     className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-bold uppercase transition-all ${
                       u.isActive 
                         ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200' 
                         : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
-                    }`}
+                    } ${u.role === 'ADMIN' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    title={u.role === 'ADMIN' ? 'Yöneticiler pasife alınamaz' : ''}
                   >
                     <div className={`w-1.5 h-1.5 rounded-full ${u.isActive ? 'bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]' : 'bg-red-500'}`}></div>
                     {u.isActive ? 'Aktif' : 'Pasif'}
                   </button>
+                  
+                  {u.lastActiveAt && (new Date().getTime() - new Date(u.lastActiveAt).getTime()) < 5 * 60 * 1000 ? (
+                    <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-green-600 bg-green-50 px-2 py-1 rounded border border-green-200">
+                      <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_5px_rgba(34,197,94,0.5)] animate-pulse"></div>
+                      Online
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-slate-400 bg-slate-50 px-2 py-1 rounded border border-slate-200">
+                      <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
+                      Offline
+                    </span>
+                  )}
                 </td>
                 <td className="py-4 px-6 text-right">
                   <button
@@ -338,15 +378,28 @@ export default function UsersPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Gerçek İsim Soyisim</label>
-                <input
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Örn: Mehmet Aydın"
-                  className="w-full border rounded-lg px-3 py-2 text-sm text-slate-900 border-slate-300 focus:outline-none focus:border-indigo-500"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Gerçek İsim Soyisim</label>
+                  <input
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Örn: Mehmet Aydın"
+                    className="w-full border rounded-lg px-3 py-2 text-sm text-slate-900 border-slate-300 focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">İnisiyal</label>
+                  <input
+                    type="text"
+                    value={initials}
+                    onChange={(e) => setInitials(e.target.value.toUpperCase())}
+                    placeholder="Örn: HK.1"
+                    maxLength={10}
+                    className="w-full border rounded-lg px-3 py-2 text-sm text-slate-900 border-slate-300 focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -400,20 +453,34 @@ export default function UsersPage() {
                 </div>
               )}
 
-              <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
-                >
-                  İptal
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-colors"
-                >
-                  {editingUser ? 'Değişiklikleri Kaydet' : 'Oluştur'}
-                </button>
+              <div className="pt-4 flex justify-between gap-3 border-t border-slate-100 mt-6 overflow-hidden">
+                <div>
+                  {editingUser && (
+                    <button
+                      type="button"
+                      onClick={handleResetPasswordAndEmail}
+                      className="px-4 py-2 text-xs font-semibold text-orange-600 bg-orange-100 hover:bg-orange-200 border border-orange-200 rounded-lg transition-colors flex items-center gap-1.5"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                      Şifre Sıfırla & Gönder
+                    </button>
+                  )}
+                </div>
+                <div className="flex justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="px-4 py-2 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                  >
+                    İptal
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-colors"
+                  >
+                    {editingUser ? 'Değişiklikleri Kaydet' : 'Oluştur'}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
