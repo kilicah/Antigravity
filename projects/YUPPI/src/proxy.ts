@@ -4,7 +4,7 @@ import { verifyToken } from './lib/auth';
 
 const publicRoutes = ['/login', '/api/login'];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (publicRoutes.some(route => pathname.startsWith(route)) || pathname.includes('.')) {
