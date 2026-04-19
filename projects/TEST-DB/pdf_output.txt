@@ -1,0 +1,134 @@
+TÜRKİYE         TİC. SİC. NO. 40640
+ALICI MODEL ADI       KALİTE İSMİ     KALİTE KODU
+ALICI KALİTE VE RENK 
+KODU
+KALİTE 
+KOMPOSİZYONU
+GRAMAJ  
+(+/- 5%)
+GR/M²
+FABRİKA ÇIKIŞ 
+TARİHİ
+MİKTAR    MT
+BİRİM 
+FİYAT
+GBP
+TEKSTIL
+UZEYIR          ALINCIG           SSSM       ASAS             SSSS               2222 GR/M²   333 CM
+4 HAFTA 
+YARRAGIM
+333,00  MT    222,00 GBP        73.926,00 GBP
+EN UZUN ISIM PLAIN 
+COK UZUN
+EN UZUN KUMAS ADI 
+NE OLSUN
+G-333555
+MALDONADA 
+BESIKTASTA 
+CAPUCCINO
+%100 MAL %20 
+COTTON %2 ELAS
+155 GR/M²   142 CM
+ILK YUKLEME 4 
+HAFTA 6 
+HAFTADA 
+TAMAM
+35.000,00  MT      3,25 GBP       113.750,00 GBP
+GR/M²      CM                        MT         GBP            0,00 GBP
+GGGGGGGGGGG 
+GGGGGGGGGG
+GR/M²      CM                        MT         GBP            0,00 GBP
+MENSUCAT
+35.583,00             MT                   188.251,00                      GBP
+ÖDEME ŞEKLİ                                                                                                             -
+TESLİMAT ŞEKLİ                                                                                                           -
+BANKA ADI                                  ŞUBE ADI & KODU
+HESAP NO                                   IBAN NO
+SATICI FİRMA
+USK MENSUCAT ANONİM ŞİRKETİ
+ALICI FİRMA
+fk@usktekstil.com.tr
+hk@usktextile.com
+EN (+/- 3%)                                          TOPLAM TUTAR
+NO.49/2, OSMANGAZİ, 16110, BURSA
+DEMİRTAŞ DUMLUPINAR OSB., MUSTAFA KARAER CD.,
+VAT. 474 035 9046 ULUDAĞ / TRD.REG.NO.71079
++90 224 2612100
+SEVK ADRESİ / ALICI
+USK PAZARLAMA DIŞ TİCARET ANONİM ŞİRKETİ
+DEMİRTAŞ DUMLUPINAR OSB., MUSTAFA KARAER CD.,
+USK TEKSTİL SANAYİ VE TİCARET LİMİTED ŞİRKETİ
+DEMİRTAŞ DUMLUPINAR OSB., MUSTAFA KARAER CD.,
+TÜM MALLAR TÜRK MENŞELİDİR. TEKSTİL ÜRÜNLERİMİZ 
+AZO İÇERMEZ.
+T.C. ZIRAAT BANKASI                                         SWIFT KODUMERINOS BRANCH - 2062
+SATIŞ SÖZLEŞMESİ
+NO.49/2, OSMANGAZİ, 16110, BURSA
+ULUDAĞ VD. 894 083 8891  / TİC. SİC. NO. 113822
++90 224 2612100
+TÜRKİYE                                       TÜRKİYE
+SATICI TEMSİLCİSİ
+ALICI TEMSİLCİSİ
+ABDULLAH HÜSEYİN KILIÇ
+FATIH MEHMET KILIC
+NO.49/2, OSMANGAZİ, 16110, BURSA
+TR68 0001 0020 6260 6109 5950 51       GBP
+ALICI S. NO
+SÖZLEŞME NO
+SÖZLEŞME TARİHİ
+40001
+FCA - TAŞIYICIYA TESLİM / GEMLIK
+180 GÜN / SİPARİŞ TARİHİNDEKİ KUR GEÇERLİDİR
+TEL. +90 224 2612100
+ERTUĞRULGAZİ VD. 883 003 8249 
+10.01.2026
+TCZBTR2A
+60610959-5051
+ABCD00001
+METRAJ TOLERANSI: +/- %5                                               GENEL TOPLAMLAR
+YETKİLİ İMZA VE KAŞEYETKİLİ İMZA VE KAŞE
+ALICI REFERANS NUMUNE GONDERIMI
+KARŞI NUMUNE TALEBİ
+ÜRETİM ÖNCESİ ONAYI
+KUMAŞ TOP BAŞI NUMUNESİ
+LAB DIP ÇALIŞMASI (L/D)
+BARKOD TANIMLAMA TALEBİ
+KUMAŞ LABORATUVAR TESTİ
+ÜRÜN AMBAJLAMA TALİMATNAMESİ
+----------------Page (0) Break----------------
+TÜRKİYE         TİC. SİC. NO. 40640
+SATICI FİRMA
+USK MENSUCAT ANONİM ŞİRKETİ
+ALICI FİRMA
+NO.49/2, OSMANGAZİ, 16110, BURSA
+DEMİRTAŞ DUMLUPINAR OSB., MUSTAFA KARAER CD.,
+VAT. 474 035 9046 ULUDAĞ / TRD.REG.NO.71079
++90 224 2612100
+SEVK ADRESİ / ALICI
+USK PAZARLAMA DIŞ TİCARET ANONİM ŞİRKETİ
+DEMİRTAŞ DUMLUPINAR OSB., MUSTAFA KARAER CD.,
+USK TEKSTİL SANAYİ VE TİCARET LİMİTED ŞİRKETİ
+DEMİRTAŞ DUMLUPINAR OSB., MUSTAFA KARAER CD.,
+TÜM MALLAR TÜRK MENŞELİDİR. TEKSTİL ÜRÜNLERİMİZ 
+AZO İÇERMEZ.
+SATIŞ SÖZLEŞMESİ
+NO.49/2, OSMANGAZİ, 16110, BURSA
+ULUDAĞ VD. 894 083 8891  / TİC. SİC. NO. 113822
++90 224 2612100
+TÜRKİYE                                       TÜRKİYE
+NO.49/2, OSMANGAZİ, 16110, BURSA
+ALICI S. NO
+SÖZLEŞME NO
+SÖZLEŞME TARİHİ
+40001
+TEL. +90 224 2612100
+ERTUĞRULGAZİ VD. 883 003 8249 
+10.01.2026ABCD00001
+AUTHORIZED SIGNATURE & STAMP                                                                       AUTHORIZED SIGNATURE & STAMP
+NAKLİYE YADA YÜKLEME TALİMATNAMESİ
+1) İşbu satış sözleşmesi, yukarıda unvanları belirtilen 'Satıcı Firma' ve 'Alıcı Firma' arasında resmi iletişim kanalları (e-posta vb.) aracılığıyla yapılmaktadır.2) Sözleşmede yer alan ürün fiyatlarına Katma Değer Vergisi (KDV) dahil değildir.3) Tüm satışlar depo teslimi şeklindedir. Aksi sözleşmede belirtilmediği sürece nakliye hizmeti fiyata dahil değildir. Sevkiyat ve taşıma sırasında oluşabilecek her türlü hasar ve kayıp Alıcı Firma sorumluluğundadır. 4) Alıcı Firma, siparişlerin sevki için sevk adresi bildirmediği takdirde, firma merkez adresi sevk adresine olarak kabul edilecektir. 5) Satış faturaları, ilgili tarihte Türkiye Cumhuriyet Merkez Bankası’nın döviz satış kuru esas alınarak düzenlenir. Ödemeler, bu kur üzerinden takip edilerek tahsil edilir.
+6) Alıcı Firma'nın cari hesap borç/alacak hareketleri (KDV dahil), sözleşmede belirtilen döviz cinsi üzerinden takip edilir.7) Kumaş bedeli tamamen ödenene kadar, sözleşme kapsamında sevk edilen tüm ürünler Satıcı Firman’nın mülkiyetinde kalır.8) Hazır olan ürünler, en geç 15 gün içinde Alıcı Firma tarafından teslim alınmalıdır. Aksi takdirde, ürünlerin sevkiyatı re’sen gerçekleştirilir ve faturası düzenlenir.9) Renk başına düşen ürün miktarında, artı (+) veya eksi (-) %5 oranında tolerans uygulanır.10) Renk onaylarında, standart olarak spektrofotometre ölçüm sonucu “Delta 1” değerine kadar olan farklılıklar kabul edilmiş sayılacaktır.
+11) Devam eden laboratuvar renk çalışmaları, “Delta 1” değerine kadar olan tüm farklılıkların kabul göreceği ilkesine bağlı olarak, resmi iletişim kanalı aracılığıyla onayları bildirilecektir.12) Alıcı Firma, talep ettiği ürünler için kendi belirlediği test standartlarını sözleşme öncesinde yazılı olarak bildirmelidir. Aksi halde, sözleşmenin Ek-1’inde yer alan ürün FDS formundaki teknik değerler esas alınır.13) Ürün test değerleri, orijinal numunede olduğu gibi olacaktır. Alıcı Firma tarafından onaylanmayan bir değer mevcutsa, resmi yazışma kanalları aracılığıyla bildirilmelidir. Ürün sevki sonrasında yapılacak değişiklik (tebdil) taleplerine ilişkin tüm masraflar ile kumaşta oluşabilecek problemler (örneğin renk, en, gramaj, tuşe ve test değerlerindeki sapmalar) Alıcı Firma'ya aittir.14) Konfeksiyon üretim araçlarıyla yapılan testlerin (örneğin buhar sonrası çekme vb.) sonuçları, firmamızca geçerli kabul edilmeyecektir. Ayrıca, elastan iplik içeren ürünlerde (likralı kumaşlar) buhar sonrası çekme değerleri için 
+herhangi bir garanti verilmemektedir.15) Kesilen veya konfeksiyonu yapılan ürünlerin iadesi ve reklamasyonu kabul edilmez.16) Ürün sevk tarihi geldiği halde sevk talebi iletilmeyen ürünlerde; gramaj, tuşe, çekme, metraj ve genel görünüm açısından oluşabilecek sapmalardan Alıcı Firma sorumludur. Bu gerekçelerle yapılan iade veya reklamasyon talepleri kabul edilmez.17) Alıcı Firma, siparişi onayladığı andan itibaren sözleşme hükümlerini kabul etmiş sayılır. Taraflarca aksi yazılı olarak kararlaştırılmadıkça, bu sözleşmede yapılacak herhangi bir değişiklik geçersizdir. Sipariş iptali, yalnızca satıcı 
+firmanın yazılı onayı ve üretim/tedarik sürecinden doğan yükümlülüklerin Alıcı Firma tarafından tazmin edilmesi şartıyla mümkündür.18) Taraflar arasında doğabilecek her türlü uyuşmazlıkta, Bursa Mahkemeleri ve İcra Daireleri yetkilidir.19) Sözleşme, üzerinde belirtilen tarihte ve Ek-1 FDS formu ile imzalanıp, resmi yazışma kanalları aracılığıyla gönderilmediği takdirde geçerli sayılmaz, işleme alınmaz ve sevkiyat yapılmaz.
+----------------Page (1) Break----------------

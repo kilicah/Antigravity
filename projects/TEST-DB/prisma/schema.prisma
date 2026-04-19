@@ -1,0 +1,419 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int       @id @default(autoincrement())
+  username        String    @unique
+  password        String
+  role            String    @default("USER") // ADMIN, SUPERVISOR, USER
+  fullName        String?
+  avatar          String?
+  email           String?
+  phone           String?
+  initials        String?
+  lastActiveAt    DateTime?
+  isActive        Boolean   @default(true)
+  
+  assignedSellerId Int?
+  assignedSeller   Company?  @relation("UserSeller", fields: [assignedSellerId], references: [id])
+  
+  allowedCompanies Company[] @relation("UserAllowedCompanies")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Company {
+  id              Int                     @id @default(autoincrement())
+  code            String?
+  name            String
+  nameEn          String?
+  address         String?
+  addressEn       String?
+  district        String?
+  districtEn      String?
+  city            String?
+  cityEn          String?
+  country         String?
+  countryEn       String?
+  zipCode         String?
+  taxOffice       String?
+  taxOfficeEn     String?
+  taxNo           String?
+  registrationNo  String?
+  phone           String?
+  email           String?
+  isSeller        Boolean                 @default(false)
+  isBuyer         Boolean                 @default(false)
+  isLogistics     Boolean                 @default(false)
+  isCustoms       Boolean                 @default(false)
+  isBrand         Boolean                 @default(false)
+  isShipTo        Boolean                 @default(false)
+  isInsurance     Boolean                 @default(false)
+  isAgency        Boolean                 @default(false)
+  isActive        Boolean                 @default(true)
+
+  repsJson        String                  @default("[]")
+  deliveryAddressesJson String            @default("[]")
+
+  assignedUsers   User[]                  @relation("UserSeller")
+  allowedUsers    User[]                  @relation("UserAllowedCompanies")
+
+  sellerOrders    Order[]                 @relation("SellerContracts")
+  buyerOrders     Order[]                 @relation("BuyerContracts")
+  shipToOrders    Order[]                 @relation("ShipToContracts")
+  brandOrders     Order[]                 @relation("BrandContracts")
+  agencyOrders    Order[]                 @relation("AgencyContracts")
+
+  invoiceCustoms  Invoice[]               @relation("InvoiceCustoms")
+  invoiceLogistics Invoice[]              @relation("InvoiceLogistics")
+  invoiceInsurance Invoice[]              @relation("InvoiceInsurance")
+  buyerInvoices   Invoice[]               @relation("BuyerInvoices")
+
+  productVariants CompanyProductVariant[]
+  bankInfos       BankInfo[]
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+}
+
+model BankInfo {
+  id        Int      @id @default(autoincrement())
+  companyId Int
+  currency  String // EUR, USD, GBP, TRY
+  bankName  String
+  branch    String?
+  accountNo String?
+  iban      String?
+  swift     String?
+  isDefault Boolean  @default(false)
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Deprecated: left here to preserve existing logic if needed in older code, but unused now
+model Representative {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id           Int      @id @default(autoincrement())
+  contractNo   String   @unique
+  contractDate DateTime
+  buyerPoNo    String?
+
+  // Relationships
+  sellerId    Int
+  buyerId     Int
+  shipToId    Int?
+  brandId     Int?
+  agencyId    Int?
+
+  sellerRep   String?
+  buyerRep    String?
+  commission  String?
+
+  seller    Company                @relation("SellerContracts", fields: [sellerId], references: [id])
+  buyer     Company                @relation("BuyerContracts", fields: [buyerId], references: [id])
+  shipTo    Company?               @relation("ShipToContracts", fields: [shipToId], references: [id])
+  brand     Company?               @relation("BrandContracts", fields: [brandId], references: [id])
+  agency    Company?               @relation("AgencyContracts", fields: [agencyId], references: [id])
+
+  // Terms
+  deliveryTerms       String?
+  deliveryDestination String?
+  paymentTerms        String?
+  transporter         String?
+  currency            String  @default("USD")
+  unit                String  @default("MT") // MT, YD, KG, ADET
+  language            String  @default("TR")
+
+  // Tolerans
+  tolerance String?
+
+  // Specific Requests
+  specialDocsRequest    Boolean @default(false)
+  specialDocsDetail     String?
+  specialLoadingRequest Boolean @default(false)
+  specialLoadingDetail  String?
+
+  // Extensions
+  items           OrderItem[]
+  productionOrder ProductionOrder?
+
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id             Int     @id @default(autoincrement())
+  orderId        Int
+  buyerModelName String?
+  qualityName    String?
+  qualityCode    String?
+  colorCode      String?
+  composition    String?
+  weight         String?
+  width          String?
+  gtipNo         String?
+  typeOfGoods    String?
+  quantity       Float
+  unitPrice      Float
+  totalAmount    Float
+  deliveryDate   String?
+
+  // Specific Item Requests
+  bsRequest   Boolean @default(false)
+  ldRequest   String? @default("WAIT") // YES, WAIT, NO
+  ldDetail    String?
+  ppsRequest  Boolean @default(false)
+  topsRequest Boolean @default(false)
+  srlRequest  String? @default("WAIT") // YES, WAIT, NO
+  srlDetail   String?
+  fdRequest   Boolean @default(false)
+  pshpRequest Boolean @default(false)
+  susRequest  Boolean @default(false)
+  ltRequest   String? @default("WAIT") // YES, WAIT, NO
+  ltDetail    String?
+
+  // Production Tracking per Item
+  bdd            DateTime? // B/S-DD (Bulk Sample Delivery Date)
+  bq             Float? // B/S-Q (Bulk Sample Quantity)
+  bsSentDate     DateTime? // B/S-SD (Bulk Sent Date)
+  bsApprovalDate DateTime? // B/S-AD (Bulk Approval Date)
+  exmd           DateTime?
+
+  // Marketing Checklist
+  etd            DateTime?
+  fds            String?   @default("WAIT") // YES, WAIT, NO
+  cs             String?   @default("WAIT") // YES, WAIT, NO
+  csSentDate     DateTime?
+  csApprovalDate DateTime?
+  ldSentDate     DateTime?
+  ldApprovalDate DateTime?
+
+  // Further Approvals
+  mpa   Boolean   @default(false)
+  dpa   Boolean   @default(false)
+  rs    String?   @default("WAIT") // YES, WAIT, NO
+  rsMs  DateTime?
+  bsMs  DateTime?
+  bltRd DateTime?
+  bltMs DateTime?
+  bltMa DateTime?
+  ltAd  DateTime?
+  bsad  DateTime?
+
+  // Post-Production fields
+  pl         Boolean @default(false)
+  fabricType String?
+  apQuantity Float?
+
+  order Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  invoiceItems InvoiceItem[]
+}
+
+model ProductionOrder {
+  id                     Int       @id @default(autoincrement())
+  orderId                Int       @unique
+  exMillDate             DateTime?
+  bulkDate               DateTime?
+  packingInstructions    String?
+  fabricDirection        String?
+  partialShipmentAllowed Boolean   @default(false)
+
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Invoice {
+  id          Int       @id @default(autoincrement())
+  invoiceNo   String?
+  invoiceDate DateTime?
+  buyerId     Int?
+  grossKg     Float?
+  netKg       Float?
+  rollCount   Int?
+  sackCount   Int?
+
+  customsCompanyId   Int?
+  logisticsCompanyId Int?
+  insuranceCompanyId Int?
+
+  buyer            Company? @relation("BuyerInvoices", fields: [buyerId], references: [id])
+  customsCompany   Company? @relation("InvoiceCustoms", fields: [customsCompanyId], references: [id])
+  logisticsCompany Company? @relation("InvoiceLogistics", fields: [logisticsCompanyId], references: [id])
+  insuranceCompany Company? @relation("InvoiceInsurance", fields: [insuranceCompanyId], references: [id])
+
+  items            InvoiceItem[]
+  packingList      PackingList?
+
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InvoiceItem {
+  id             Int       @id @default(autoincrement())
+  invoiceId      Int
+  orderItemId    Int
+  quantity       Float
+  unitPrice      Float
+  totalAmount    Float
+
+  invoice        Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  orderItem      OrderItem @relation(fields: [orderItemId], references: [id])
+  rolls          Roll[]
+}
+
+model PackingList {
+  id           Int      @id @default(autoincrement())
+  invoiceId    Int      @unique
+  invoice      Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  documentUrl  String?
+  totalRolls   Int?
+  totalSacks   Int?
+  grossWeight  Float?
+  netWeight    Float?
+
+  rolls        Roll[]
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Roll {
+  id             Int          @id @default(autoincrement())
+  packingListId  Int
+  packingList    PackingList  @relation(fields: [packingListId], references: [id], onDelete: Cascade)
+  
+  invoiceItemId  Int?
+  invoiceItem    InvoiceItem? @relation(fields: [invoiceItemId], references: [id])
+  
+  rollNo         String?   
+  barcode        String?   
+  quantity       Float     
+  grossKg        Float?
+  netKg          Float?
+  lotNo          String?   
+  
+  createdAt      DateTime @default(now())
+}
+
+model Product {
+  id             Int      @id @default(autoincrement())
+  code           String?  
+  normalizedCode String   @unique
+  name           String
+  
+  // R&D Info
+  composition    String?
+  weight         String?
+  width          String?
+  gtipNo         String?
+  
+  // Pricing & MOQs
+  costPrice      Float?   // MalDol
+  priceTier1     Float?   // 500-1000
+  priceTier2     Float?   // 1000-5000
+  priceTier3     Float?   // 5000-10000 USD (FOB)
+  poundPrice     Float?   // INGILTERE GBP (CIF)
+  euroPrice      Float?   // EURO (CIF)
+  
+  minOrderQty    Float?   @default(0) // Legacy
+  mcq            Float?
+  tMoq           Float?
+  
+  productTypes   String?  // Commma-separated: "W,K,Y,FP..."
+  priceUpdatedAt DateTime?
+  priceNote      String?
+  
+  isActive       Boolean  @default(true) // Legacy field, to be migrated/removed later
+  status         String   @default("ACTIVE") // "ACTIVE", "PASSIVE", "CANCELLED"
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model RnDItem {
+  id             Int      @id @default(autoincrement())
+  code           String?  
+  normalizedCode String   @unique
+  name           String
+  
+  composition    String?
+  weight         String?
+  width          String?
+  
+  rawData        String?
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model SystemConfig {
+  id             Int      @id @default(1)
+  
+  // Hesaplama Temeli
+  baseTier       String   @default("T2")
+  
+  // Döviz Kurları (XXX / USD ve USD / TRY mantığı)
+  usdToGbpRate   Float    @default(1.30)
+  usdToEurRate   Float    @default(1.10)
+  usdToTryRate   Float    @default(50.00)
+
+  // Navlun Bedelleri (Miktarlar)
+  usdFreight     Float    @default(0.0)
+  gbpFreight     Float    @default(0.20)
+  eurFreight     Float    @default(0.25)
+  tryFreight     Float    @default(0.0)
+
+  // Satış Komisyonları (Yüzde %)
+  usdCommission  Float    @default(0.0)
+  gbpCommission  Float    @default(5.0)
+  eurCommission  Float    @default(0.0)
+  tryCommission  Float    @default(0.0)
+
+  // Legacy (Eskileri çöpe atmamak adına bir süre mecburen varlar, DB push'ta sorun olmasın diye kalsın ama kod buralara bakmayacak)
+  commissionRate Float?   @default(1.05)
+  freightCost    Float?   @default(0.20)
+
+  rndNote        String?
+  
+  updatedAt      DateTime @updatedAt
+}
+
+model CompanyProductVariant {
+  id             Int      @id @default(autoincrement())
+  companyId      Int
+  qualityName    String
+  buyerModelName String?
+  colorCode      String?
+  composition    String?
+  weight         String?
+  width          String?
+  
+  company        Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([companyId, qualityName, buyerModelName, colorCode])
+}
+
