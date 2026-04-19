@@ -79,7 +79,6 @@ model Company {
   invoiceInsurance Invoice[]              @relation("InvoiceInsurance")
   buyerInvoices   Invoice[]               @relation("BuyerInvoices")
 
-  productVariants CompanyProductVariant[]
   bankInfos       BankInfo[]
   createdAt       DateTime                @default(now())
   updatedAt       DateTime                @updatedAt
@@ -369,36 +368,14 @@ model RnDItem {
 
 model SystemConfig {
   id             Int      @id @default(1)
-  
-  // Hesaplama Temeli
+  commissionRate Float    @default(1.05)
+  freightCost    Float    @default(0.20)
+  usdToGbpRate   Float    @default(1.25)
+  usdToEurRate   Float    @default(1.08)
   baseTier       String   @default("T2")
-  
-  // Döviz Kurları (XXX / USD ve USD / TRY mantığı)
-  usdToGbpRate   Float    @default(1.30)
-  usdToEurRate   Float    @default(1.10)
-  usdToTryRate   Float    @default(50.00)
-
-  // Navlun Bedelleri (Miktarlar)
-  usdFreight     Float    @default(0.0)
-  gbpFreight     Float    @default(0.20)
-  eurFreight     Float    @default(0.25)
-  tryFreight     Float    @default(0.0)
-
-  // Satış Komisyonları (Yüzde %)
-  usdCommission  Float    @default(0.0)
-  gbpCommission  Float    @default(5.0)
-  eurCommission  Float    @default(0.0)
-  tryCommission  Float    @default(0.0)
-
-  // Legacy (Eskileri çöpe atmamak adına bir süre mecburen varlar, DB push'ta sorun olmasın diye kalsın ama kod buralara bakmayacak)
-  commissionRate Float?   @default(1.05)
-  freightCost    Float?   @default(0.20)
-
-  rndNote        String?
   
   updatedAt      DateTime @updatedAt
 }
-
 model CompanyProductVariant {
   id             Int      @id @default(autoincrement())
   companyId      Int
@@ -408,8 +385,6 @@ model CompanyProductVariant {
   composition    String?
   weight         String?
   width          String?
-  
-  company        Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt

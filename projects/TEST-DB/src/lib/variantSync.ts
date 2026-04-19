@@ -13,6 +13,7 @@ export async function syncOrderItemsToVariants(buyerId: number, items: any[]) {
     if (!buyerModelName && !colorCode) continue; // Default product, no distinct variant info to save
 
     try {
+      // @ts-ignore
       const existingVariant = await prisma.companyProductVariant.findFirst({
         where: {
           companyId: buyerId,
@@ -24,6 +25,7 @@ export async function syncOrderItemsToVariants(buyerId: number, items: any[]) {
 
       if (existingVariant) {
         // Update existing variant with latest specs
+        // @ts-ignore
         await prisma.companyProductVariant.update({
           where: { id: existingVariant.id },
           data: {
@@ -34,6 +36,7 @@ export async function syncOrderItemsToVariants(buyerId: number, items: any[]) {
         });
       } else {
         // Create new variant
+        // @ts-ignore
         await prisma.companyProductVariant.create({
           data: {
             companyId: buyerId,

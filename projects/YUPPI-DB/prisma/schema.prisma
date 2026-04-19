@@ -376,3 +376,19 @@ model SystemConfig {
   
   updatedAt      DateTime @updatedAt
 }
+model CompanyProductVariant {
+  id             Int      @id @default(autoincrement())
+  companyId      Int
+  qualityName    String
+  buyerModelName String?
+  colorCode      String?
+  composition    String?
+  weight         String?
+  width          String?
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([companyId, qualityName, buyerModelName, colorCode])
+}
+
