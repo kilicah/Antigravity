@@ -1,0 +1,500 @@
+"use client";
+
+import React, { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import PrintButton from "@/components/PrintButton";
+
+export default function SalesContractDocument({
+  order,
+  bankInfo}: {
+  order: any,
+  bankInfo: any
+}) {
+  const [isEng, setIsEng] = useState(order.language === "ENG");
+  const [isSigned, setIsSigned] = useState(false);
+
+  let displayPaymentTerms = order.paymentTerms || "-";
+  if (order.paymentTerms && order.paymentTerms.includes('|')) {
+     const parts = order.paymentTerms.split('|');
+     displayPaymentTerms = isEng ? parts[1].trim() : parts[0].trim();
+  }
+
+  let displayDeliveryTerms = order.deliveryTerms || "-";
+  if (order.deliveryTerms && order.deliveryTerms.includes('|')) {
+     const parts = order.deliveryTerms.split('|');
+     displayDeliveryTerms = isEng ? (parts[1] || parts[0]).trim() : parts[0].trim();
+  }
+
+  const totalQuantity = order.items.reduce((sum: number, item: any) => sum + item.quantity, 0);
+  const totalAmount = order.items.reduce((sum: number, item: any) => sum + item.totalAmount, 0);
+
+    const getRepInfo = (company: any, repName: string) => {
+    if (!company?.repsJson || !repName) return { email: "-", phone: "" };
+    try {
+        const reps = JSON.parse(company.repsJson);
+        const nameToMatch = repName.includes('|') ? repName.split('|')[0].trim().toLocaleUpperCase('tr-TR') : repName.trim().toLocaleUpperCase('tr-TR');
+        const found = reps.find((r: any) => {
+            const raw = r.name || "";
+            const n = raw.includes('|') ? raw.split('|')[0] : raw;
+            return n.trim().toLocaleUpperCase('tr-TR') === nameToMatch;
+        });
+        return {
+           email: found?.email?.toLowerCase() || "-",
+           phone: found?.phone || ""
+        };
+    } catch (e) {
+        return { email: "-", phone: "" };
+    }
+  };
+
+  const sellerRepInfo = getRepInfo(order.seller, order.sellerRep);
+  const sellerEmail = sellerRepInfo.email;
+  const buyerRepInfo = getRepInfo(order.buyer, order.buyerRep);
+  const buyerEmail = buyerRepInfo.email;
+
+  const trTerms = [
+    "1) İşbu satış sözleşmesi, yukarıda unvanları belirtilen 'Satıcı Firma' ve 'Alıcı Firma' arasında resmi iletişim kanalları (e-posta vb.) aracılığıyla yapılmaktadır.",
+    "2) Sözleşmede yer alan ürün fiyatlarına Katma Değer Vergisi (KDV) dahil değildir.",
+    "3) Tüm satışlar depo teslimi şeklindedir. Aksi sözleşmede belirtilmediği sürece nakliye hizmeti fiyata dahil değildir. Sevkiyat ve taşıma sırasında oluşabilecek her türlü hasar ve kayıp Alıcı Firma sorumluluğundadır.",
+    "4) Alıcı Firma, siparişlerin sevki için sevk adresi bildirmediği takdirde, firma merkez adresi sevk adresine olarak kabul edilecektir.",
+    "5) Satış faturaları, ilgili tarihte Türkiye Cumhuriyet Merkez Bankası’nın döviz satış kuru esas alınarak düzenlenir. Ödemeler, bu kur üzerinden takip edilerek tahsil edilir.",
+    "6) Alıcı Firma'nın cari hesap borç/alacak hareketleri (KDV dahil), sözleşmede belirtilen döviz cinsi üzerinden takip edilir.",
+    "7) Kumaş bedeli tamamen ödenene kadar, sözleşme kapsamında sevk edilen tüm ürünler Satıcı Firman’nın mülkiyetinde kalır.",
+    "8) Hazır olan ürünler, en geç 15 gün içinde Alıcı Firma tarafından teslim alınmalıdır. Aksi takdirde, ürünlerin sevkiyatı re’sen gerçekleştirilir ve faturası düzenlenir.",
+    "9) Renk başına düşen ürün miktarında, artı (+) veya eksi (-) %5 oranında tolerans uygulanır.",
+    "10) Renk onaylarında, standart olarak spektrofotometre ölçüm sonucu “Delta 1” değerine kadar olan farklılıklar kabul edilmiş sayılacaktır.",
+    "11) Devam eden laboratuvar renk çalışmaları, “Delta 1” değerine kadar olan tüm farklılıkların kabul göreceği ilkesine bağlı olarak, resmi iletişim kanalı aracılığıyla onayları bildirilecektir.",
+    "12) Alıcı Firma, talep ettiği ürünler için kendi belirlediği test standartlarını sözleşme öncesinde yazılı olarak bildirmelidir. Aksi halde, sözleşmenin Ek-1’inde yer alan ürün FDS formundaki teknik değerler esas alınır.",
+    "13) Ürün test değerleri, orijinal numunede olduğu gibi olacaktır. Alıcı Firma tarafından onaylanmayan bir değer mevcutsa, resmi yazışma kanalları aracılığıyla bildirilmelidir. Ürün sevki sonrasında yapılacak değişiklik (tebdil) taleplerine ilişkin tüm masraflar ile kumaşta oluşabilecek problemler (örneğin renk, en, gramaj, tuşe ve test değerlerindeki sapmalar) Alıcı Firma'ya aittir.",
+    "14) Konfeksiyon üretim araçlarıyla yapılan testlerin (örneğin buhar sonrası çekme vb.) sonuçları, firmamızca geçerli kabul edilmeyecektir. Ayrıca, elastan iplik içeren ürünlerde (likralı kumaşlar) buhar sonrası çekme değerleri için herhangi bir garanti verilmemektedir.",
+    "15) Kesilen veya konfeksiyonu yapılan ürünlerin iadesi ve reklamasyonu kabul edilmez.",
+    "16) Ürün sevk tarihi geldiği halde sevk talebi iletilmeyen ürünlerde; gramaj, tuşe, çekme, metraj ve genel görünüm açısından oluşabilecek sapmalardan Alıcı Firma sorumludur. Bu gerekçelerle yapılan iade veya reklamasyon talepleri kabul edilmez.",
+    "17) Alıcı Firma, siparişi onayladığı andan itibaren sözleşme hükümlerini kabul etmiş sayılır. Taraflarca aksi yazılı olarak kararlaştırılmadıkça, bu sözleşmede yapılacak herhangi bir değişiklik geçersizdir. Sipariş iptali, yalnızca satıcı firmanın yazılı onayı ve üretim/tedarik sürecinden doğan yükümlülüklerin Alıcı Firma tarafından tazmin edilmesi şartıyla mümkündür.",
+    "18) Taraflar arasında doğabilecek her türlü uyuşmazlıkta, Bursa Mahkemeleri ve İcra Daireleri yetkilidir.",
+    "19) Sözleşme, üzerinde belirtilen tarihte ve Ek-1 FDS formu ile imzalanıp, resmi yazışma kanalları aracılığıyla gönderilmediği takdirde geçerli sayılmaz, işleme alınmaz ve sevkiyat yapılmaz."
+  ];
+
+  const engTerms = [
+    "1) This sales agreement is made between the 'Seller Company' and 'Buyer Company' whose titles are specified above through official communication channels (e-mail, etc.).",
+    "2) Unless otherwise stated in the contract, transportation service is not included in the price. Any damage or loss that may occur during shipment and transportation is the responsibility of the Buyer.",
+    "3) If the buyer does not provide a shipping address for the orders, the company headquarters address will be accepted as the shipping address.",
+    "4) All products shipped under the contract remain the property of the Seller until the fabric cost is fully paid.",
+    "5) Ready products must be collected by the Buyer within 15 days at the latest. Otherwise, the products will be shipped ex officio and the invoice will be issued.",
+    "6) A tolerance of plus (+) or minus (-) 5% applies to the product quantity per color.",
+    "7) In color approvals, differences up to the 'Delta 1' value as a result of standard spectrophotometer measurement will be considered accepted.",
+    "8) Ongoing laboratory color studies will be notified via official communication channels, subject to the principle that all differences up to 'Delta 1' will be accepted.",
+    "9) The Buyer must provide their specific test standards in writing prior to the contract. Otherwise, the technical values in the FDS form in Annex-1 of the contract will be taken as the basis.",
+    "10) Product test values will be the same as the original sample. All costs regarding replacement requests to be made after product shipment and problems that may occur in the fabric (e.g., deviations in color, width, weight, touch, and test values) belong to the Buyer.",
+    "11) The results of tests performed with garment production tools (e.g., shrinkage after steam, etc.) will not be considered valid by our company.",
+    "12) The return or claim of products that have been cut or made into garments is not accepted.",
+    "13) For products for which a shipping request is not forwarded despite the arrival of the shipment date; The Buyer is responsible for any deviations that may occur in terms of weight, touch, shrinkage, length and general appearance. Return or claim requests made for these reasons are not accepted.",
+    "14) By approving the order, the Buyer is deemed to have accepted the terms of the contract. Order cancellation is only possible with the written approval of the seller company.",
+    "15) The Courts and Enforcement Offices of Bursa are authorized for any disputes that may arise between the parties.",
+    "16) The contract is not considered valid, will not be processed, and shipment will not be made unless it is signed on the specified date together with the Annex-1 FDS form."
+  ];
+
+  const sellerName = order.seller.name.toUpperCase();
+  const isUSKM = sellerName.includes("MENSUCAT") || sellerName.includes("USKM");
+  const isUSKT = sellerName.includes("TEKSTİL") || sellerName.includes("TEKSTIL") || sellerName.includes("USKT");
+
+  const termsToUse = isEng ? engTerms : trTerms;
+
+  const renderHeader = () => {
+    const logoSrc = isUSKM ? '/images/Defenni-M-Mavi.jpg' : isUSKT ? '/images/Defenni-T-Mavi.jpg' : '/images/Defenni-T-Mavi.jpg';
+
+    return (
+      <div className="border border-slate-800 text-[11px] leading-tight grid grid-cols-[265px_265px_265px_1fr] w-full h-[120px] min-h-[120px] max-h-[120px] overflow-hidden">
+          {/* SATICI FİRMA */}
+          <div className="border-r border-slate-800 p-2 flex flex-col justify-start">
+              <div className="font-bold text-[12px] mb-1 underline underline-offset-2">{isEng ? 'SELLER' : 'SATICI FİRMA'}</div>
+              <div className="font-bold text-[11px] uppercase mb-1">{isEng && order.seller.nameEn ? order.seller.nameEn : order.seller.name}</div>
+              <div className="uppercase text-[11px] break-words whitespace-pre-wrap">{isEng && order.seller.addressEn ? order.seller.addressEn : order.seller.address}</div>
+              <div className="uppercase text-[11px]">
+               {(() => {
+                 const d = isEng && order.seller.districtEn ? order.seller.districtEn : order.seller.district;
+                 const c = isEng && order.seller.cityEn ? order.seller.cityEn : order.seller.city;
+                 const cntry = isEng && order.seller.countryEn ? order.seller.countryEn : order.seller.country;
+                 const zip = order.seller.zipCode;
+                 const locArr = [d, c, cntry].filter(Boolean);
+                 const locStr = locArr.join(', ');
+                 return (locStr || zip) ? `${locStr}${locStr && zip ? ' ' : ''}${zip || ''}` : '';
+               })()}
+              </div>
+              <div className="uppercase text-[11px] mt-1">
+                 {isEng ? (
+                   order.seller.taxNo && `VAT NO. ${order.seller.taxNo} ${order.seller.taxOfficeEn || order.seller.taxOffice || ""}`.trim()
+                 ) : (
+                   order.seller.taxNo && `${order.seller.taxOffice ? order.seller.taxOffice + " VD." : ""} ${order.seller.taxNo}`.trim()
+                 )}
+              </div>
+              <div className="uppercase text-[11px]">
+                 {isEng ? (
+                   [
+                     (sellerRepInfo.phone || order.seller.phone) && `P. ${sellerRepInfo.phone || order.seller.phone}`,
+                     order.seller.registrationNo && `TRD. REG.NO. ${order.seller.registrationNo}`
+                   ].filter(Boolean).join(' / ')
+                 ) : (
+                   [
+                     (sellerRepInfo.phone || order.seller.phone) && `T. ${sellerRepInfo.phone || order.seller.phone}`,
+                     order.seller.registrationNo && `TİC. SİC. NO ${order.seller.registrationNo}`
+                   ].filter(Boolean).join(' / ')
+                 )}
+              </div>
+          </div>
+          
+          {/* ALICI FİRMA */}
+          <div className="border-r border-slate-800 p-2 flex flex-col justify-start">
+              <div className="font-bold text-[12px] mb-1 underline underline-offset-2">{isEng ? 'BUYER' : 'ALICI FİRMA'}</div>
+              <div className="font-bold text-[11px] uppercase mb-1">{isEng && order.buyer.nameEn ? order.buyer.nameEn : order.buyer.name}</div>
+              <div className="uppercase text-[11px] break-words whitespace-pre-wrap">{isEng && order.buyer.addressEn ? order.buyer.addressEn : order.buyer.address}</div>
+              <div className="uppercase text-[11px]">
+               {(() => {
+                 const d = isEng && order.buyer.districtEn ? order.buyer.districtEn : order.buyer.district;
+                 const c = isEng && order.buyer.cityEn ? order.buyer.cityEn : order.buyer.city;
+                 const cntry = isEng && order.buyer.countryEn ? order.buyer.countryEn : order.buyer.country;
+                 const zip = order.buyer.zipCode;
+                 const locArr = [d, c, cntry].filter(Boolean);
+                 const locStr = locArr.join(', ');
+                 return (locStr || zip) ? `${locStr}${locStr && zip ? ' ' : ''}${zip || ''}` : '';
+               })()}
+              </div>
+              <div className="uppercase text-[11px] mt-1">
+                 {isEng ? (
+                   order.buyer.taxNo && `VAT NO. ${order.buyer.taxNo} ${order.buyer.taxOfficeEn || order.buyer.taxOffice || ""}`.trim()
+                 ) : (
+                   order.buyer.taxNo && `${order.buyer.taxOffice ? order.buyer.taxOffice + " VD." : ""} ${order.buyer.taxNo}`.trim()
+                 )}
+              </div>
+              <div className="uppercase text-[11px]">
+                 {isEng ? (
+                   [
+                     (buyerRepInfo.phone || order.buyer.phone) && `P. ${buyerRepInfo.phone || order.buyer.phone}`,
+                     order.buyer.registrationNo && `TRD. REG.NO. ${order.buyer.registrationNo}`
+                   ].filter(Boolean).join(' / ')
+                 ) : (
+                   [
+                     (buyerRepInfo.phone || order.buyer.phone) && `T. ${buyerRepInfo.phone || order.buyer.phone}`,
+                     order.buyer.registrationNo && `TİC. SİC. NO ${order.buyer.registrationNo}`
+                   ].filter(Boolean).join(' / ')
+                 )}
+              </div>
+          </div>
+
+          {/* SEVK ADRESİ */}
+          <div className="border-r border-slate-800 p-2 flex flex-col justify-start">
+              <div className="font-bold text-[12px] mb-1 underline underline-offset-2">{isEng ? 'SHIP TO / CONSIGNEE' : 'SEVK ADRESİ / ALICI'}</div>
+              <div className="font-bold text-[11px] uppercase mb-1">{order.shipTo ? (isEng && order.shipTo.nameEn ? order.shipTo.nameEn : order.shipTo.name) : (isEng && order.buyer.nameEn ? order.buyer.nameEn : order.buyer.name)}</div>
+              <div className="uppercase text-[11px] break-words whitespace-pre-wrap">{order.shipTo ? (isEng && order.shipTo.addressEn ? order.shipTo.addressEn : order.shipTo.address) : (isEng && order.buyer.addressEn ? order.buyer.addressEn : order.buyer.address)}</div>
+              <div className="uppercase text-[11px]">
+               {(() => {
+                 const target = order.shipTo || order.buyer;
+                 const d = isEng && target.districtEn ? target.districtEn : target.district;
+                 const c = isEng && target.cityEn ? target.cityEn : target.city;
+                 const cntry = isEng && target.countryEn ? target.countryEn : target.country;
+                 const zip = target.zipCode;
+                 const locArr = [d, c, cntry].filter(Boolean);
+                 const locStr = locArr.join(', ');
+                 return (locStr || zip) ? `${locStr}${locStr && zip ? ' ' : ''}${zip || ''}` : '';
+               })()}
+              </div>
+              <div className="uppercase text-[11px] mt-1">
+                 {(() => {
+                   const target = order.shipTo || order.buyer;
+                   if (!target.taxNo) return null;
+                   return isEng ? 
+                     `VAT NO. ${target.taxNo} ${target.taxOfficeEn || target.taxOffice || ""}`.trim() : 
+                     `${target.taxOffice ? target.taxOffice + " VD." : ""} ${target.taxNo}`.trim();
+                 })()}
+              </div>
+              <div className="uppercase text-[11px]">
+                 {(() => {
+                   const target = order.shipTo || order.buyer;
+                   return isEng ? (
+                     [
+                       target.phone && `P. ${target.phone}`,
+                       target.registrationNo && `TRD. REG.NO. ${target.registrationNo}`
+                     ].filter(Boolean).join(' / ')
+                   ) : (
+                     [
+                       target.phone && `T. ${target.phone}`,
+                       target.registrationNo && `TİC. SİC. NO ${target.registrationNo}`
+                     ].filter(Boolean).join(' / ')
+                   );
+                 })()}
+              </div>
+          </div>
+
+          {/* SÖZLEŞME VE TARİH */}
+          <div className="flex flex-col text-center h-full">
+              <div className="w-full h-[60px] min-h-[60px] max-h-[60px] flex flex-col justify-center px-2">
+                  <div className="font-bold text-[12px]">{isEng ? 'CONTRACT NO' : 'SÖZLEŞME NO'}</div>
+                  <div className="text-[11px] tracking-widest mt-0.5">{order.contractNo}</div>
+              </div>
+              <div className="w-full h-[60px] min-h-[60px] max-h-[60px] border-t border-slate-800 flex flex-col justify-center px-2">
+                  <div className="font-bold text-[12px]">{isEng ? 'CONTRACT DATE' : 'SÖZLEŞME TARİHİ'}</div>
+                  <div className="text-[11px] tracking-widest mt-0.5">{new Date(order.contractDate).toLocaleDateString(isEng ? 'en-GB' : 'tr-TR')}</div>
+              </div>
+          </div>
+      </div>
+    );
+  };
+
+  const renderSignature = () => (
+    <div className="flex justify-between items-start text-[11px] text-center border-x border-b border-slate-800 relative h-[95px] min-h-[95px] max-h-[95px] overflow-hidden bg-white w-full shadow-[0_-1px_2px_rgba(0,0,0,0.02)]">
+      <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+        <img 
+          src={isUSKM ? '/images/Defenni-M-Mavi.jpg' : isUSKT ? '/images/Defenni-T-Mavi.jpg' : '/images/Defenni-T-Mavi.jpg'} 
+          onError={(e) => { e.currentTarget.src = isUSKM ? '/images/Defenni-M.jpg' : '/images/Defenni-T.jpg'; }}
+          alt="Company Stamp" 
+          className="w-[200px] h-[85px] object-contain" 
+        />
+      </div>
+      <div className="w-1/2 p-2 flex flex-col items-start relative z-10">
+        <div className="font-bold text-[12px] underline text-left">{isEng ? 'AUTHORIZED SIGNATURE & STAMP' : 'YETKİLİ İMZA VE KAŞE'}</div>
+        {isSigned && (
+          <img 
+            src={isUSKM ? '/images/USKM-Kase-Imza.png' : isUSKT ? '/images/USKT-Kase-Imza.png' : '/images/USKT-Kase-Imza.png'} 
+            alt="Seller Signature" 
+            className="w-[180px] h-[65px] object-contain mt-1 mix-blend-multiply" 
+          />
+        )}
+      </div>
+      <div className="w-1/2 p-2 flex flex-col items-end relative z-10">
+        <div className="font-bold text-[12px] underline text-right">{isEng ? 'AUTHORIZED SIGNATURE & STAMP' : 'YETKİLİ İMZA VE KAŞE'}</div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="w-full bg-slate-100 min-h-screen pb-12 print:bg-white print:p-0">
+      <style dangerouslySetInnerHTML={{__html: `
+        @media print {
+          @page { 
+             size: A4 landscape; 
+             margin: 10mm 15mm; 
+             @bottom-right {
+               content: counter(page) " / " counter(pages);
+               font-family: 'Arial Narrow', Arial, sans-serif;
+               font-size: 11px;
+               font-weight: bold;
+             }
+          }
+          body { 
+             -webkit-print-color-adjust: exact !important; 
+             print-color-adjust: exact !important; 
+             background-color: white !important;
+          }
+          .pagebreak { 
+             page-break-before: always !important; 
+             break-before: page !important; 
+          }
+          table { page-break-inside: auto; }
+          tr    { page-break-inside: avoid; page-break-after: auto; }
+          thead { display: table-header-group; }
+          tfoot { display: table-footer-group; }
+        }
+      `}} />
+
+      {/* BAŞLIK & BUTONLAR */}
+      <div className="flex justify-between items-center print:hidden mb-6 px-8 pt-8">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-800">Sözleşme Detayı</h1>
+          <p className="text-slate-500">Ref: {order.contractNo}</p>
+        </div>
+        <div className="space-x-4 flex items-center">
+          <Link 
+            href="/orders" 
+            className="px-4 py-2 text-slate-600 bg-white border border-slate-300 rounded hover:bg-slate-50 transition-colors"
+          >
+            &larr; Geri Dön
+          </Link>
+          <Link 
+            href={`/orders/${order.id}/tracking`}
+            className="px-4 py-2 text-indigo-700 bg-indigo-50 border border-indigo-200 shadow-sm rounded hover:bg-indigo-100 transition-colors flex items-center gap-2 font-bold"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            Sipariş Takip Tablosu
+          </Link>
+          <Link 
+            href={`/orders/${order.id}/edit`}
+            className="px-4 py-2 text-blue-600 bg-white border border-blue-300 shadow-sm rounded hover:bg-blue-50 transition-colors flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+            Düzenle
+          </Link>
+          <button
+            onClick={() => setIsEng(false)}
+            className={`px-4 py-2 font-bold rounded shadow-sm border ${!isEng ? 'bg-indigo-600 text-white border-indigo-700' : 'bg-white text-slate-600 hover:bg-slate-50 border-slate-300'}`}
+          >
+            🇹🇷 TÜRKÇE
+          </button>
+          <button
+            onClick={() => setIsEng(true)}
+            className={`px-4 py-2 font-bold rounded shadow-sm border ${isEng ? 'bg-indigo-600 text-white border-indigo-700' : 'bg-white text-slate-600 hover:bg-slate-50 border-slate-300'}`}
+          >
+            🇬🇧 ENGLISH
+          </button>
+          <button 
+            onClick={() => setIsSigned(!isSigned)}
+            className="px-4 py-2 text-white bg-emerald-600 shadow-sm rounded hover:bg-emerald-700 transition-colors flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+            {isSigned ? 'İmzayı Kaldır' : 'Sözleşmeyi İmzala'}
+          </button>
+          <PrintButton />
+        </div>
+      </div>
+
+      <div className="mx-auto w-[1002px] print:w-full print:max-w-none bg-white shadow-xl print:shadow-none font-['Arial_Narrow',_'Arial_Narrow_MT',_Arial,_sans-serif] text-[11px] text-black">
+         {/* TABLE 1: ITEMS */}
+         <table className="w-full border-collapse">
+            <thead className="print:table-header-group">
+               <tr><td className="p-0 border-0">{renderHeader()}</td></tr>
+            </thead>
+            <tbody className="print:table-row-group">
+               <tr>
+                  <td className="p-0 border-0">
+                    {/* Sub-header block (SATIŞ SÖZLEŞMESİ) */}
+                    <div className="border-x border-b border-t-0 border-slate-800 grid grid-cols-[205px_590px_1fr] w-full bg-white items-stretch">
+                       <div className="font-bold text-[11px] px-2 py-2 border-r border-slate-800 flex flex-col items-center justify-center text-center uppercase leading-tight">
+                         <span>{isEng ? 'ALL GOODS ARE OF TURKISH ORIGIN.' : 'TÜM MALLAR TÜRK MENŞELİDİR.'}</span>
+                         <span className="mt-1">{isEng ? 'OUR TEXTILE PRODUCTS AZO FREE.' : 'TEKSTİL ÜRÜNLERİMİZ AZO İÇERMEZ.'}</span>
+                       </div>
+                       <div className="p-2 flex items-center justify-center text-center border-r border-slate-800">
+                         <h2 className="text-[25px] font-bold text-blue-600 tracking-widest uppercase mb-1">{isEng ? 'SALES CONTRACT' : 'SATIŞ SÖZLEŞMESİ'}</h2>
+                       </div>
+                       <div className="h-[60px] min-h-[60px] max-h-[60px] px-2 flex flex-col justify-center text-center font-normal">
+                         <div className="font-bold text-[12px] uppercase">{isEng ? "BUYER'S P.O. NO" : "ALICI SİPARİŞ NO"}</div>
+                         <div className="text-[11px] mt-0.5 uppercase">{order.buyerPoNo || "-"}</div>
+                       </div>
+                    </div>
+
+                    {/* ITEMS TABLE */}
+                    <table className="table-fixed w-full text-left border-collapse border-b border-x border-slate-800 text-[11px]">
+                      <thead>
+                        <tr className="border-b border-slate-800 font-bold text-[11px] text-center leading-snug">
+                           <th className="p-1 align-middle text-left w-[110px] min-w-[110px] max-w-[110px]">{isEng ? 'BUYER MODEL NAME' : 'ALICI MODEL ADI'}</th>
+                           <th className="p-1 align-middle text-left w-[115px] min-w-[115px] max-w-[115px]">{isEng ? 'ARTICLE NAME' : 'KALİTE İSMİ'}</th>
+                           <th className="p-1 align-middle text-left w-[80px] min-w-[80px] max-w-[80px]">{isEng ? 'ARTICLE CODE' : 'KALİTE KODU'}</th>
+                           <th className="p-1 align-middle text-left w-[110px] min-w-[110px] max-w-[110px]">{isEng ? 'ARTICLE & COLOR CODE' : 'KALİTE VE RENK KODU'}</th>
+                           <th className="p-1 align-middle text-left w-[115px] min-w-[115px] max-w-[115px]">{isEng ? 'ARTICLE COMPOSITION' : 'KALİTE KOMPOSİZYONU'}</th>
+                           <th className="p-1 align-middle w-[60px] min-w-[60px] max-w-[60px]">{isEng ? 'WEIGHT' : 'GRAMAJ'}<br/>(+/- 5%)</th>
+                           <th className="p-1 align-middle w-[50px] min-w-[50px] max-w-[50px]">{isEng ? 'WIDTH' : 'EN'}<br/>(+/- 3%)</th>
+                           <th className="p-1 align-middle w-[105px] min-w-[105px] max-w-[105px]">{isEng ? 'EX-MILL' : 'FABRİKA ÇIKIŞ'}<br/>{isEng ? 'DATE' : 'TARİHİ'}</th>
+                           <th className="py-1 pl-1 pr-[8px] align-middle w-[95px] min-w-[95px] max-w-[95px] text-right whitespace-nowrap">{isEng ? 'QUANTITY' : 'MİKTAR'} <span className="font-bold text-[11px]">MT</span></th>
+                           <th className="p-1 align-middle w-[60px] min-w-[60px] max-w-[60px] text-center whitespace-nowrap">{isEng ? 'UNIT' : 'BİRİM'}<br/>{isEng ? 'PRICE' : 'FİYAT'} <span className="font-bold text-[11px]">{order.currency}</span></th>
+                           <th className="p-1 align-middle text-right w-auto whitespace-nowrap">{isEng ? 'TOTAL AMOUNT' : 'TOPLAM TUTAR'}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {order.items.map((item: any) => (
+                          <tr key={item.id} className="align-top">
+                             <td className="p-1 uppercase">{item.buyerModelName || "-"}</td>
+                             <td className="p-1 uppercase">{item.qualityName || "-"}</td>
+                             <td className="p-1 uppercase">{item.qualityCode || "-"}</td>
+                             <td className="p-1 uppercase leading-snug">{item.colorCode || "-"}</td>
+                             <td className="p-1 uppercase leading-snug">{item.composition || "-"}</td>
+                             <td className="p-1 uppercase text-center">{item.weight ? `${item.weight} GR/M²` : "-"}</td>
+                             <td className="p-1 uppercase text-center">{item.width ? `${item.width} CM` : "-"}</td>
+                             <td className="p-1 text-center uppercase">{item.deliveryDate || "-"}</td>
+                             <td className="py-1 pl-1 pr-[8px] text-right"><span className="text-[11px]">{item.quantity.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span> <span className="text-[11px] ml-1">MT</span></td>
+                             <td className="p-1 text-right"><span className="text-[11px]">{item.unitPrice.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span> <span className="text-[11px] ml-1">{order.currency}</span></td>
+                             <td className="p-1 text-right text-[11px] pr-2">{item.totalAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} {order.currency}</td>
+                          </tr>
+                        ))}
+                         <tr className="border-t border-slate-800 text-[11px]">
+                            <td colSpan={6} className="p-1 align-middle w-[590px] min-w-[590px] max-w-[590px]">
+                               {isEng ? 'QUANTITY TOLERANCE' : 'METRAJ TOLERANSI'} %{order.tolerance?.replace('%', '') || "-"}
+                            </td>
+                            <td colSpan={2} className="p-1 text-center align-middle whitespace-nowrap w-[155px] min-w-[155px] max-w-[155px] text-[12px] font-bold">{isEng ? 'GRAND TOTALS' : 'GENEL TOPLAMLAR'}</td>
+                            <td className="py-1 pl-1 pr-[10px] text-right w-[95px] min-w-[95px] max-w-[95px] text-[12px] font-bold border-l border-r border-slate-800">
+                              {totalQuantity.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} <span className="text-[12px] font-bold">MT</span>
+                            </td>
+                            <td colSpan={2} className="p-1 text-right w-auto text-[12px] font-bold">
+                              {totalAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} <span className="text-[12px] font-bold">{order.currency}</span>
+                            </td>
+                         </tr>
+                      </tbody>
+                    </table>
+
+                    {/* TERMS TR BLOCK */}
+                    <div className="border-x border-b border-slate-800 text-[11px] w-full bg-white leading-tight font-normal">
+                       <div className="grid grid-cols-[110px_420px_110px_200px_1fr] border-b border-slate-800">
+                          <div className="font-bold p-1 border-r border-slate-800 uppercase">{isEng ? 'PAYMENT TERMS' : 'ÖDEME ŞEKLİ'}</div>
+                          <div className="p-1 border-r border-slate-800 uppercase min-w-0 break-words">{displayPaymentTerms}</div>
+                          <div className="font-bold p-1 border-r border-slate-800 uppercase">{isEng ? 'SELLER REP.' : 'SATICI TEMSİLCİSİ'}</div>
+                          <div className="p-1 border-r border-slate-800 text-center uppercase min-w-0 break-words">{order.sellerRep ? (order.sellerRep.includes('|') ? (isEng ? (order.sellerRep.split('|')[1] || order.sellerRep.split('|')[0]) : order.sellerRep.split('|')[0]) : order.sellerRep) : "-"}</div>
+                          <div className="p-1 text-center text-[11px] text-blue-600 underline min-w-0 break-all flex items-center justify-center">{sellerEmail}</div>
+                       </div>
+                       <div className="grid grid-cols-[110px_420px_110px_200px_1fr] border-b border-slate-800">
+                          <div className="font-bold p-1 border-r border-slate-800 uppercase">{isEng ? 'DELIVERY TERMS' : 'TESLİMAT ŞEKLİ'}</div>
+                          <div className="p-1 border-r border-slate-800 uppercase min-w-0 break-words">
+                             {displayDeliveryTerms} 
+                             {order.deliveryDestination && <span className="ml-2 font-bold">— {order.deliveryDestination}</span>}
+                          </div>
+                          <div className="font-bold p-1 border-r border-slate-800 uppercase">{isEng ? 'BUYER REP.' : 'ALICI TEMSİLCİSİ'}</div>
+                          <div className="p-1 border-r border-slate-800 text-center uppercase min-w-0 break-words">{order.buyerRep ? (order.buyerRep.includes('|') ? (isEng ? (order.buyerRep.split('|')[1] || order.buyerRep.split('|')[0]) : order.buyerRep.split('|')[0]) : order.buyerRep) : "-"}</div>
+                          <div className="p-1 text-center text-[11px] text-blue-600 underline min-w-0 break-all flex items-center justify-center">{buyerEmail}</div>
+                       </div>
+
+                       {/* Bank Info Rows */}
+                       <div className="grid grid-cols-[110px_195px_110px_115px_110px_105px_1fr]">
+                          <div className="font-bold p-1 border-r border-b border-slate-800 uppercase">{isEng ? 'BANK NAME' : 'BANKA ADI'}</div>
+                          <div className="p-1 border-r border-b border-slate-800 uppercase min-w-0 break-words">{bankInfo?.bankName || "-"}</div>
+                          <div className="font-bold p-1 border-r border-b border-slate-800 uppercase">{isEng ? 'BCH NAME & NO' : 'ŞUBE ADI & KODU'}</div>
+                          <div className="p-1 border-r border-b border-slate-800 uppercase text-center min-w-0 break-words">{bankInfo?.branch || "-"}</div>
+                          <div className="font-bold p-1 border-r border-b border-slate-800 uppercase text-center bg-white">{isEng ? 'SWIFT CODE' : 'SWIFT KODU'}</div>
+                          <div className="p-1 uppercase border-r border-b border-slate-800 text-center font-normal min-w-0 break-all flex items-center justify-center">{bankInfo?.swift || "-"}</div>
+                          <div className="p-1 flex flex-col items-center justify-center text-center font-bold text-[11px] uppercase">
+                             {order.brand ? (isEng ? 'ORDER BRAND' : 'SİPARİŞ MARKASI') : ''}
+                          </div>
+                       </div>
+                       <div className="grid grid-cols-[110px_195px_110px_225px_105px_1fr]">
+                          <div className="font-bold p-1 border-r border-slate-800 uppercase">{isEng ? 'ACCOUNT NO' : 'HESAP NO'}</div>
+                          <div className="p-1 border-r border-slate-800 tracking-wider uppercase min-w-0 break-all">{bankInfo?.accountNo || "-"}</div>
+                          <div className="font-bold p-1 border-r border-slate-800 uppercase">{isEng ? 'IBAN NO' : 'IBAN NO'}</div>
+                          <div className="p-1 border-r border-slate-800 tracking-wider uppercase min-w-0 break-all">{bankInfo?.iban || "-"}</div>
+                          <div className="font-bold p-1 border-r border-slate-800 text-center items-center flex justify-center text-[11px] italic">{order.currency}</div>
+                          <div className="p-1 flex items-center justify-center text-center font-normal text-[11px] uppercase">
+                             {order.brand?.name || ''}
+                          </div>
+                       </div>
+                    </div>
+                  </td>
+               </tr>
+            </tbody>
+            <tfoot className="print:table-footer-group">
+               <tr><td className="p-0 border-0">{renderSignature()}</td></tr>
+            </tfoot>
+         </table>
+
+         {/* PAGE BREAK FOR GENERAL TERMS */}
+         <div className="h-8 print:hidden w-full bg-slate-100 border-none"></div>
+
+         {/* TABLE 2: TERMS */}
+         <div style={{ pageBreakBefore: 'always', breakBefore: 'page', display: 'block', height: '1px' }} className="hidden print:block w-full">&nbsp;</div>
+         <table className="w-full border-collapse">
+            <thead className="print:table-header-group">
+               <tr><td className="p-0 border-0">{renderHeader()}</td></tr>
+            </thead>
+            <tbody className="print:table-row-group">
+               <tr>
+                  <td className="p-0 border-0">
+                    <div className="border-x border-b border-t-0 border-slate-800 p-4 text-[11px] leading-tight text-justify bg-white space-y-0.5 pb-4">
+                      <h3 className="font-bold text-[12px] text-center mb-2 uppercase tracking-widest">{isEng ? 'CONTRACT GENERAL CONDITIONS' : 'SÖZLEŞME GENEL ŞARTLARI'}</h3>
+                      {termsToUse.map((term, i) => (
+                         <div key={i}>{term}</div>
+                      ))}
+                    </div>
+                  </td>
+               </tr>
+            </tbody>
+            <tfoot className="print:table-footer-group">
+               <tr><td className="p-0 border-0">{renderSignature()}</td></tr>
+            </tfoot>
+         </table>
+      </div>
+    </div>
+  );
+}
