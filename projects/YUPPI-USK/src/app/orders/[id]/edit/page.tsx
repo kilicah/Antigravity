@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import OrderEntryForm from "@/app/components/orders/OrderEntryForm";
 
+export const dynamic = 'force-dynamic';
 export default async function EditOrderPage({
   params,
 }: {
@@ -17,7 +18,10 @@ export default async function EditOrderPage({
     where: { id },
     include: {
       items: true,
-      productionOrder: true
+      productionOrder: true,
+      logs: {
+        orderBy: { createdAt: 'desc' }
+      }
     }
   });
 

@@ -165,6 +165,16 @@ export async function POST(req: NextRequest) {
       }
     });
 
+    const username = req.headers.get("x-user-username") || "Bilinmeyen Kullanıcı";
+    await prisma.orderLog.create({
+      data: {
+        orderId: newOrder.id,
+        username: username,
+        action: "CREATE",
+        details: "Sipariş oluşturuldu."
+      }
+    });
+
     // Ensure variant synchronization finishes before returning Response
     await syncOrderItemsToVariants(parseInt(body.buyerId), body.items).catch(console.error);
 

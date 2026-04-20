@@ -15,13 +15,13 @@ export default function AccountingInvoiceDocument({ order, bankInfo, repUser }: 
 
   // Helper arrays for language toggle
   const t = {
-    sellerTitle: isEng ? "EXPORTER" : "İHRACATÇI FİRMA",
-    customerTitle: isEng ? "IMPORTER" : "İTHALATÇI FİRMA",
+    sellerTitle: isEng ? "SELLER" : "SATICI FİRMA",
+    customerTitle: isEng ? "BUYER" : "ALICI FİRMA",
     deliveryTitle: isEng ? "SHIP TO / CONSIGNEE" : "SEVK ADRESİ / ALICI",
     invoiceNo: isEng ? "CONTRACT NO" : "SİPARİŞ NO",
     invoiceDate: isEng ? "CONTRACT DATE" : "SİPARİŞ TARİHİ",
     customerPo: isEng ? "BUYER'S P.O. NO" : "ALICI SİPARİŞ NO",
-    typeOfGoods: isEng ? "TYPE OF GOODS" : "ÜRÜN CİNSİ",
+    typeOfGoods: isEng ? "BUYER MODEL NAME" : "ALICI MODEL ADI",
     articleName: isEng ? "ARTICLE NAME" : "KALİTE İSMİ",
     articleCode: isEng ? "ARTICLE CODE" : "KALİTE KODU",
     colorCode: isEng ? "COLOR CODE" : "RENK KODU",
@@ -73,6 +73,10 @@ export default function AccountingInvoiceDocument({ order, bankInfo, repUser }: 
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
           }
+          .w-\\[1002px\\] {
+            transform: scale(0.76);
+            transform-origin: top center;
+          }
         }
       `}</style>
       {/* Dil Seçimi Butonları (Sadece Ekranda Görünür, Yazdırmada Gizlenir) */}
@@ -104,12 +108,6 @@ export default function AccountingInvoiceDocument({ order, bankInfo, repUser }: 
           className={`px-4 py-2 font-bold rounded shadow-sm border ${isEng ? 'bg-indigo-600 text-white border-indigo-700' : 'bg-white text-slate-600 hover:bg-slate-50 border-slate-300'}`}
         >
           🇬🇧 ENGLISH
-        </button>
-          <button
-          onClick={() => setIsSigned(!isSigned)}
-          className={`px-4 py-2 font-bold rounded shadow-sm border ${isSigned ? 'bg-green-600 text-white border-green-700' : 'bg-white text-green-600 hover:bg-green-50 border-green-300'}`}
-        >
-          ✍️ {isSigned ? 'İMZAYI KALDIR' : 'İMZALA'}
         </button>
         <button
             onClick={() => window.print()}
@@ -165,7 +163,7 @@ export default function AccountingInvoiceDocument({ order, bankInfo, repUser }: 
           
           {/* 2. COMMERCIAL INVOICE (401px x 135px) */}
           <div className="border-r-2 border-black p-2 flex justify-center items-center h-[135px]">
-              <h1 className="text-[#fdb912] font-sans font-bold text-[36px] text-center leading-tight tracking-wider uppercase drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">
+              <h1 className="text-[#ce9c4e] font-sans font-bold text-[36px] text-center leading-tight tracking-wider uppercase drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">
                 {isEng ? (
                   <>ACCOUNTING<br/>VOUCHER</>
                 ) : (
@@ -177,9 +175,9 @@ export default function AccountingInvoiceDocument({ order, bankInfo, repUser }: 
           {/* 3. LOGO (200px x 135px) */}
           <div className="p-2 flex justify-center items-center h-[135px]">
                {isUSKM ? (
-                 <img src="/images/Defenni-M-Kirmizi.jpg" alt="Logo" className="max-h-[89px] max-w-[198px] object-contain mix-blend-multiply" />
+                 <img src="/images/Defenni-M-Kum.jpg" alt="Logo" className="max-h-[89px] max-w-[198px] object-contain mix-blend-multiply" />
                ) : isUSKT ? (
-                 <img src="/images/Defenni-T-Kirmizi.jpg" alt="Logo" className="max-h-[89px] max-w-[198px] object-contain mix-blend-multiply" />
+                 <img src="/images/Defenni-T-Kum.jpg" alt="Logo" className="max-h-[89px] max-w-[198px] object-contain mix-blend-multiply" />
                ) : sellerName.includes("DEFENNİ") || sellerName.includes("DEFENNI") ? (
                  <img src="/defenni-logo.png" alt="Logo" className="max-h-[89px] max-w-[198px] object-contain mix-blend-multiply" />
                ) : (
@@ -311,11 +309,11 @@ export default function AccountingInvoiceDocument({ order, bankInfo, repUser }: 
               
               {order.items.map((item: any) => (
                 <tr key={item.id} className="uppercase align-top leading-snug">
-                  <td className="px-1 pb-2">
-                    <div>{item.typeOfGoods ? `${item.typeOfGoods} ` : ''}{item.width ? `${item.width}CM ` : ''}{item.weight ? `/ ${item.weight}${/^[0-9.,]+$/.test(item.weight.toString().trim()) ? ' GR/M2' : ''}` : ''}</div>
+                  <td className="px-1 pb-2 font-bold break-words text-center">
+                    {item.buyerModelName || "-"}
                   </td>
                   <td className="px-1 pb-2 break-words text-center font-bold">
-                     <span className="font-normal">{item.qualityName || "-"}</span>{item.buyerModelName ? ` (${item.buyerModelName})` : ""}
+                     {item.qualityName || "-"}
                   </td>
                   <td className="px-1 pb-2 break-words">{item.qualityCode || "-"}</td>
                   <td className="px-1 pb-2 break-words text-center">{item.colorCode || "-"}</td>
@@ -409,31 +407,6 @@ export default function AccountingInvoiceDocument({ order, bankInfo, repUser }: 
              )}
           </div>
 
-          {/* Signature Area */}
-          <div className="grid grid-cols-[580px_1fr]">
-            <div className="border-r-2 border-black border-t-2 uppercase bg-white flex items-center justify-center font-bold tracking-wide py-1.5 text-[13px]">
-               {t.authSign}
-            </div>
-            <div className="border-t-2 border-black"></div>
-          </div>
-        </div>
-
-        {/* BOTTOM STAMPS */}
-        <div className="w-full flex justify-between px-10 py-2 relative">
-            {/* Kaşe Resmi Dinamik */}
-           <div className="w-1/2 flex justify-start -ml-6 -mt-3">
-              {isSigned && (
-                 isUSKM ? (
-                   <img src="/images/USKM-Kase-Imza.png" alt="Stamp" className="w-[300px] object-contain opacity-90 mix-blend-multiply filter contrast-125 sepia-[0.3]" />
-                 ) : isUSKT ? (
-                   <img src="/images/USKT-Kase-Imza.png" alt="Stamp" className="w-[300px] object-contain opacity-90 mix-blend-multiply filter contrast-125 sepia-[0.3]" />
-                 ) : sellerName.includes("DEFENNİ") || sellerName.includes("DEFENNI") ? (
-                    <img src="/defenni-logo.png" alt="Stamp" className="w-[300px] object-contain opacity-90 mix-blend-multiply grayscale" />
-                 ) : (
-                    <div className="font-bold border px-10 py-6 uppercase bg-slate-50 text-slate-400 border-slate-300 transform -rotate-6">STAMP</div>
-                 )
-              )}
-           </div>
         </div>
 
       </div>

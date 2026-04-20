@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import OrderEntryForm from "@/app/components/orders/OrderEntryForm";
-import Link from "next/link"; // Added import for Link component
+import Link from "next/link";
 
+export const dynamic = 'force-dynamic';
 export default async function NewOrderPage() {
   // Fetch initial data needed for the form
   const companies = await prisma.company.findMany({ where: { isActive: true }, orderBy: { name: "asc" } });

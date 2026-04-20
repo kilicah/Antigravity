@@ -154,6 +154,7 @@ model Order {
   // Extensions
   items           OrderItem[]
   productionOrder ProductionOrder?
+  logs            OrderLog[]
 
   isActive Boolean @default(true)
   createdAt DateTime @default(now())
@@ -240,6 +241,17 @@ model ProductionOrder {
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model OrderLog {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  username  String
+  action    String   // CREATE, UPDATE, STATUS_CHANGE
+  details   String   // Human readable log details
+  createdAt DateTime @default(now())
+
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model Invoice {

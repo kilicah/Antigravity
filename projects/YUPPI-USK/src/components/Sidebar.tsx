@@ -37,7 +37,7 @@ export default function Sidebar() {
     { name: "Kontrol Merkezi", href: "/", icon: "📊" },
     { name: "Sipariş Giriş", href: "/orders/new", icon: "✨" },
     { name: "Siparişler", href: "/orders", icon: "📋" },
-    { name: "Üretim Takibi", href: "/production", icon: "🏭" },
+    { name: "Sipariş Durumu", href: "/production", icon: "🏭" },
     { name: "Faturalar", href: "/invoices", icon: "💰" },
     { name: "Firmalar", href: "/companies", icon: "🏢" },
     { name: "Ürünler", href: "/products", icon: "📦" },

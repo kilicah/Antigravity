@@ -21,10 +21,12 @@ export async function PUT(
         { status: 400 }
       );
     }
+    const username = req.headers.get("x-user-username") || "Bilinmeyen Kullanıcı";
 
     const updatedOrder = await prisma.$transaction(async (tx) => {
       // Find existing items to safely manage updates vs deletes
       const existingItems = await tx.orderItem.findMany({ where: { orderId: id }});
+      const oldOrder = await tx.order.findUnique({ where: { id } });
       const incomingItemIds = body.items.filter((i: any) => i.id).map((i: any) => parseInt(i.id));
       const itemsToDelete = existingItems.filter(item => !incomingItemIds.includes(item.id));
       
@@ -99,7 +101,7 @@ export async function PUT(
         }
       }
 
-      return await tx.order.update({
+      const updatedRes = await tx.order.update({
         where: { id },
         data: {
           contractDate: new Date(body.contractDate),
@@ -149,6 +151,53 @@ export async function PUT(
           items: true,
         }
       });
+      
+      const changes: string[] = [];
+      const formatVal = (v: any) => v === null || v === undefined || v === "" ? "Boş" : String(v);
+
+      if (oldOrder?.deliveryTerms !== (body.deliveryTerms || null)) 
+        changes.push(`• Teslim Şekli: ${formatVal(oldOrder?.deliveryTerms)} ➔ ${formatVal(body.deliveryTerms)}`);
+      
+      if (oldOrder?.paymentTerms !== (body.paymentTerms || null)) 
+        changes.push(`• Ödeme Şekli: ${formatVal(oldOrder?.paymentTerms)} ➔ ${formatVal(body.paymentTerms)}`);
+        
+      if (oldOrder?.currency !== body.currency) 
+        changes.push(`• Para Birimi: ${formatVal(oldOrder?.currency)} ➔ ${formatVal(body.currency)}`);
+        
+      if (oldOrder?.sellerId !== body.sellerId) changes.push(`• Satıcı Firma değiştirildi`);
+      if (oldOrder?.buyerId !== body.buyerId) changes.push(`• Alıcı Firma değiştirildi`);
+      if (itemsToDelete.length > 0) changes.push(`• ${itemsToDelete.length} Kalem Silindi`);
+
+      for (const bItem of body.items) {
+        if (bItem.id) {
+           const oItem = existingItems.find(i => i.id === parseInt(bItem.id));
+           if (oItem) {
+              const label = oItem.qualityCode || oItem.qualityName || 'İsimsiz Kalem';
+              if (oItem.quantity !== Number(bItem.quantity)) {
+                 changes.push(`• Kalem (${label}) Miktarı: ${oItem.quantity} ➔ ${bItem.quantity}`);
+              }
+              if (oItem.unitPrice !== Number(bItem.unitPrice)) {
+                 changes.push(`• Kalem (${label}) Birim Fiyatı: ${oItem.unitPrice} ➔ ${bItem.unitPrice}`);
+              }
+              // Check bsdd/bq/exmd dates implicitly
+           }
+        } else {
+           changes.push(`• Yeni Kalem eklendi: ${bItem.qualityCode || bItem.qualityName || 'İsimsiz Kalem'}`);
+        }
+      }
+      
+      let detailsStr = changes.length > 0 ? changes.join("\n") : "• Sipariş detayları veya üretim notları güncellendi.";
+
+      await tx.orderLog.create({
+        data: {
+          orderId: id,
+          username: username,
+          action: "UPDATE",
+          details: detailsStr
+        }
+      });
+
+      return updatedRes;
     });
 
     // Ensure variant synchronization finishes before returning Response

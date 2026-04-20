@@ -165,45 +165,77 @@ export default function OrderEntryForm({ companies, products = [], initialData }
     }
   }, [initialData]);
 
-  const [items, setItems] = useState(initialData?.items?.length > 0 ? initialData.items : [{
-    buyerModelName: "",
-    qualityName: "",
-    qualityCode: "",
-    colorCode: "",
-    composition: "",
-    weight: "",
-    width: "",
-    quantity: "",
-    unitPrice: "",
-    totalAmount: 0,
-    deliveryDate: "",
-    bsRequest: false,
-    ldRequest: "WAIT",
-    ldDetail: "",
-    ppsRequest: false,
-    topsRequest: false,
-    srlRequest: "WAIT",
-    srlDetail: "",
-    fdRequest: false,
-    pshpRequest: false,
-    susRequest: false,
-    ltRequest: "WAIT",
-    ltDetail: "",
-    bdd: "",
-    bq: "",
-    exmd: "",
-    etd: "",
-    fds: "WAIT",
-    cs: "WAIT",
-    csSentDate: "",
-    csApprovalDate: "",
-    ldSentDate: "",
-    ldApprovalDate: "",
-    bsad: "",
-    pl: false,
-    fabricType: "",
-    apQuantity: ""
-  }]);
+  const formatISO = (val: any) => {
+    if (!val) return "";
+    try {
+      const d = new Date(val);
+      if (isNaN(d.getTime())) return "";
+      return d.toISOString().split('T')[0];
+    } catch {
+      return "";
+    }
+  };
+
+  const [items, setItems] = useState(
+    initialData?.items?.length > 0 
+      ? initialData.items.map((it: any) => ({
+          ...it,
+          bdd: formatISO(it.bdd),
+          exmd: formatISO(it.exmd),
+          etd: formatISO(it.etd),
+          csSentDate: formatISO(it.csSentDate),
+          csApprovalDate: formatISO(it.csApprovalDate),
+          ldSentDate: formatISO(it.ldSentDate),
+          ldApprovalDate: formatISO(it.ldApprovalDate),
+          bsad: formatISO(it.bsad),
+          rsMs: formatISO(it.rsMs),
+          bsMs: formatISO(it.bsMs),
+          bltRd: formatISO(it.bltRd),
+          bltMs: formatISO(it.bltMs),
+          bltMa: formatISO(it.bltMa),
+          ltAd: formatISO(it.ltAd),
+          bsSentDate: formatISO(it.bsSentDate)
+        }))
+      : [{
+          buyerModelName: "",
+          qualityName: "",
+          qualityCode: "",
+          colorCode: "",
+          composition: "",
+          weight: "",
+          width: "",
+          quantity: "",
+          unitPrice: "",
+          totalAmount: 0,
+          deliveryDate: "",
+          bsRequest: false,
+          ldRequest: "WAIT",
+          ldDetail: "",
+          ppsRequest: false,
+          topsRequest: false,
+          srlRequest: "WAIT",
+          srlDetail: "",
+          fdRequest: false,
+          pshpRequest: false,
+          susRequest: false,
+          ltRequest: "WAIT",
+          ltDetail: "",
+          bdd: "",
+          bq: "",
+          exmd: "",
+          etd: "",
+          fds: "WAIT",
+          cs: "WAIT",
+          csSentDate: "",
+          csApprovalDate: "",
+          ldSentDate: "",
+          ldApprovalDate: "",
+          bsad: "",
+          pl: false,
+          fabricType: "",
+          apQuantity: ""
+        }]
+  );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -1395,8 +1427,8 @@ export default function OrderEntryForm({ companies, products = [], initialData }
                   <td className="p-1.5 border-r border-slate-200">
                     <input 
                       type="date" 
-                      value={item.bsdd || ''} 
-                      onChange={(e) => handleItemChange(index, "bsdd", e.target.value)} 
+                      value={item.bdd || ''} 
+                      onChange={(e) => handleItemChange(index, "bdd", e.target.value)} 
                       className="w-full px-1 py-1.5 text-xs font-mono border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
                     />
                   </td>
@@ -1405,8 +1437,8 @@ export default function OrderEntryForm({ companies, products = [], initialData }
                       type="number" 
                       step="0.01"
                       min="0"
-                      value={item.bsq || ''} 
-                      onChange={(e) => handleItemChange(index, "bsq", e.target.value)} 
+                      value={item.bq || ''} 
+                      onChange={(e) => handleItemChange(index, "bq", e.target.value)} 
                       className="w-full px-1 py-1.5 min-w-[50px] text-xs border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-right font-mono" 
                     />
                   </td>
@@ -1677,6 +1709,53 @@ export default function OrderEntryForm({ companies, products = [], initialData }
       </div>
 
     </form>
+
+    {initialData && initialData.logs && initialData.logs.length > 0 && (
+      <div className="mt-8 bg-white border border-slate-200 shadow-sm rounded-xl overflow-hidden print:hidden mb-8">
+        <div className="bg-slate-800 px-4 py-3 border-b border-slate-700">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            Sipariş İşlem Geçmişi
+          </h2>
+        </div>
+        <div className="overflow-x-auto max-h-[300px] overflow-y-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 sticky top-0 shadow-sm z-10">
+              <tr>
+                <th className="px-4 py-3 whitespace-nowrap w-48">Tarih & Saat</th>
+                <th className="px-4 py-3 whitespace-nowrap w-48">Kullanıcı</th>
+                <th className="px-4 py-3 whitespace-nowrap w-32">İşlem</th>
+                <th className="px-4 py-3">Detaylar</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {initialData.logs.map((log: any) => (
+                <tr key={log.id} className="hover:bg-slate-50 transition-colors">
+                  <td className="px-4 py-3 text-slate-500 font-mono text-[13px]">
+                    {new Date(log.createdAt).toLocaleString('tr-TR', { dateStyle: 'medium', timeStyle: 'short' })}
+                  </td>
+                  <td className="px-4 py-3 font-semibold text-slate-700">
+                    {log.username}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`px-2 py-1 text-[11px] font-bold rounded uppercase tracking-wide ${
+                      log.action === 'CREATE' ? 'bg-emerald-100 text-emerald-700' :
+                      log.action === 'UPDATE' ? 'bg-blue-100 text-blue-700' :
+                      'bg-slate-100 text-slate-700'
+                    }`}>
+                      {log.action}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-slate-600 whitespace-pre-line leading-relaxed">
+                    {log.details}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    )}
 
     {errorModalOpen && (
       <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
