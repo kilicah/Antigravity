@@ -37,26 +37,26 @@ export default function TrackingBoard({ order, items: initialItems }: { order: a
   };
 
   const columns = [
-    { label: "ETD", field: "etd", type: "date", bg: "bg-blue-50" },
-    { label: "FDS", field: "fds", type: "select", options: ["WAIT", "YES", "NO"], bg: "bg-emerald-50" },
-    { label: "C/S", field: "cs", type: "select", options: ["WAIT", "YES", "NO"], bg: "bg-emerald-50" },
-    { label: "C/S-SD", field: "csSentDate", type: "date", bg: "bg-emerald-50" },
-    { label: "C/S-AD", field: "csApprovalDate", type: "date", bg: "bg-emerald-50" },
-    { label: "L/D-SD", field: "ldSentDate", type: "date", bg: "bg-purple-50" },
-    { label: "L/D-AD", field: "ldApprovalDate", type: "date", bg: "bg-purple-50" },
-    { label: "B/S-SD", field: "bsSentDate", type: "date", bg: "bg-orange-50" },
-    { label: "B/S-AD", field: "bsApprovalDate", type: "date", bg: "bg-orange-50" },
-    { label: "M.PA", field: "mpa", type: "checkbox", bg: "bg-amber-50" },
-    { label: "D.PA", field: "dpa", type: "checkbox", bg: "bg-amber-50" },
-    { label: "R/S", field: "rs", type: "select", options: ["WAIT", "YES", "NO"], bg: "bg-rose-50" },
-    { label: "R/S-MS", field: "rsMs", type: "date", bg: "bg-rose-50" },
-    { label: "B.S-MS", field: "bsMs", type: "date", bg: "bg-rose-50" },
-    { label: "B.LT-RD", field: "bltRd", type: "date", bg: "bg-teal-50" },
-    { label: "B.LT-MS", field: "bltMs", type: "date", bg: "bg-teal-50" },
-    { label: "B.LT-MA", field: "bltMa", type: "date", bg: "bg-teal-50" },
-    { label: "LT-AD", field: "ltAd", type: "date", bg: "bg-teal-50" },
-    { label: "B.SAD", field: "bsad", type: "date", bg: "bg-teal-50" },
-    { label: "PL", field: "pl", type: "checkbox", bg: "bg-slate-100" }
+    { label: "ETD", field: "etd", type: "date", bg: "bg-blue-50", desc: "Estimated Time of Delivery" },
+    { label: "FDS", field: "fds", type: "select", options: ["WAIT", "YES", "NO"], bg: "bg-emerald-50", desc: "Fabric Direction Sample" },
+    { label: "C/S", field: "cs", type: "select", options: ["WAIT", "YES", "NO"], bg: "bg-emerald-50", desc: "Color Standard" },
+    { label: "C/S-SD", field: "csSentDate", type: "date", bg: "bg-emerald-50", desc: "Color Standard - Sent Date" },
+    { label: "C/S-AD", field: "csApprovalDate", type: "date", bg: "bg-emerald-50", desc: "Color Standard - Approval Date" },
+    { label: "L/D-SD", field: "ldSentDate", type: "date", bg: "bg-purple-50", desc: "Lab Dip - Sent Date" },
+    { label: "L/D-AD", field: "ldApprovalDate", type: "date", bg: "bg-purple-50", desc: "Lab Dip - Approval Date" },
+    { label: "B/S-SD", field: "bsSentDate", type: "date", bg: "bg-orange-50", desc: "Buyer's Sample - Sent Date" },
+    { label: "B/S-AD", field: "bsApprovalDate", type: "date", bg: "bg-orange-50", desc: "Buyer's Sample - Approval Date" },
+    { label: "M.PA", field: "mpa", type: "checkbox", bg: "bg-amber-50", desc: "Main Production Approval" },
+    { label: "D.PA", field: "dpa", type: "checkbox", bg: "bg-amber-50", desc: "Delivery Production Approval" },
+    { label: "R/S", field: "rs", type: "select", options: ["WAIT", "YES", "NO"], bg: "bg-rose-50", desc: "Red Seal" },
+    { label: "R/S-MS", field: "rsMs", type: "date", bg: "bg-rose-50", desc: "Red Seal - MS" },
+    { label: "B.S-MS", field: "bsMs", type: "date", bg: "bg-rose-50", desc: "Buyer's Sample - MS" },
+    { label: "B.LT-RD", field: "bltRd", type: "date", bg: "bg-teal-50", desc: "Bulk Lab Test - Requested Date" },
+    { label: "B.LT-MS", field: "bltMs", type: "date", bg: "bg-teal-50", desc: "Bulk Lab Test - MS" },
+    { label: "B.LT-MA", field: "bltMa", type: "date", bg: "bg-teal-50", desc: "Bulk Lab Test - MA" },
+    { label: "LT-AD", field: "ltAd", type: "date", bg: "bg-teal-50", desc: "Lab Test - Approval Date" },
+    { label: "B.SAD", field: "bsad", type: "date", bg: "bg-teal-50", desc: "Bulk Sample Approval Date" },
+    { label: "PL", field: "pl", type: "checkbox", bg: "bg-slate-100", desc: "Packing List" }
   ];
 
   return (
@@ -78,8 +78,8 @@ export default function TrackingBoard({ order, items: initialItems }: { order: a
                 </th>
                 <th className="py-3 px-3 border-r border-slate-700 uppercase min-w-[60px] text-center">MİKTAR</th>
                 {columns.map((col, idx) => (
-                  <th key={idx} className="border-r border-slate-700 py-3 px-2 text-center uppercase tracking-wider min-w-[100px]" title={col.label}>
-                     {col.label}
+                  <th key={idx} className="border-r border-slate-700 py-3 px-2 text-center uppercase tracking-wider min-w-[100px]" title={col.desc}>
+                     <span className="cursor-help border-b border-dotted border-slate-400/60 hover:border-slate-300 pb-0.5 transition-colors">{col.label}</span>
                   </th>
                 ))}
               </tr>
@@ -108,22 +108,38 @@ export default function TrackingBoard({ order, items: initialItems }: { order: a
                      const isCheckbox = col.type === "checkbox";
                      const isSelect = col.type === "select";
 
+                     let disabled = false;
+                     if ((col.field === "csSentDate" || col.field === "csApprovalDate") && item.cs === "NO") disabled = true;
+                     if ((col.field === "ldSentDate" || col.field === "ldApprovalDate") && item.ldRequest === "NO") disabled = true;
+                     if ((col.field === "bsSentDate" || col.field === "bsApprovalDate" || col.field === "bsMs") && (!item.bq || Number(item.bq) === 0)) disabled = true;
+                     if (col.field === "rsMs" && item.rs === "NO") disabled = true;
+
                      return (
                        <td key={idx} className={`border-r border-slate-200 p-1.5 text-center align-middle ${col.bg}`}>
                           {isDate && (
                             <input 
                               type="date"
+                              disabled={disabled}
                               value={formatDateForInput(item[col.field])}
                               onChange={(e) => handleUpdate(item.id, col.field, e.target.value)}
-                              className="w-full bg-transparent border border-transparent hover:border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded px-1 min-w-[105px] text-center h-[26px] cursor-pointer"
+                              className={`w-full border rounded px-1 min-w-[105px] text-center h-[26px] transition-colors focus:ring-1 focus:ring-indigo-500 ${
+                                disabled 
+                                  ? 'bg-slate-100/60 text-slate-400 border-slate-200 cursor-not-allowed' 
+                                  : 'bg-transparent border-transparent hover:border-slate-300 focus:border-indigo-500 cursor-pointer'
+                              }`}
                             />
                           )}
 
                           {isSelect && (
                             <select
                               value={item[col.field] || "WAIT"}
+                              disabled={disabled}
                               onChange={(e) => handleUpdate(item.id, col.field, e.target.value)}
-                              className={`w-full bg-transparent border border-transparent hover:border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded px-1 text-center h-[26px] cursor-pointer font-bold ${item[col.field] === 'YES' || item[col.field] === 'OK' ? 'text-emerald-700' : item[col.field] === 'NO' ? 'text-rose-700' : 'text-slate-500'}`}
+                              className={`w-full border rounded px-1 text-center h-[26px] font-bold focus:ring-1 focus:ring-indigo-500 transition-colors ${
+                                disabled
+                                  ? 'bg-slate-100/60 text-slate-400 border-slate-200 cursor-not-allowed'
+                                  : `bg-transparent border-transparent hover:border-slate-300 focus:border-indigo-500 cursor-pointer ${item[col.field] === 'YES' || item[col.field] === 'OK' ? 'text-emerald-700' : item[col.field] === 'NO' ? 'text-rose-700' : 'text-slate-500'}`
+                              }`}
                             >
                                {col.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                             </select>
@@ -134,8 +150,13 @@ export default function TrackingBoard({ order, items: initialItems }: { order: a
                               <input 
                                 type="checkbox"
                                 checked={!!item[col.field]}
+                                disabled={disabled}
                                 onChange={(e) => handleUpdate(item.id, col.field, e.target.checked)}
-                                className="w-5 h-5 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 cursor-pointer"
+                                className={`w-5 h-5 rounded focus:ring-indigo-500 ${
+                                  disabled
+                                    ? 'text-slate-300 border-slate-200 cursor-not-allowed'
+                                    : 'text-indigo-600 border-slate-300 cursor-pointer'
+                                }`}
                               />
                             </div>
                           )}

@@ -24,6 +24,12 @@ export async function PUT(
     const username = req.headers.get("x-user-username") || "Bilinmeyen Kullanıcı";
 
     const updatedOrder = await prisma.$transaction(async (tx) => {
+      const changes: string[] = [];
+      const formatVal = (v: any) => {
+         if (v instanceof Date) return v.toLocaleDateString("tr-TR");
+         return v === null || v === undefined || v === "" || v === false ? "Boş/Hayır" : (v === true ? "Evet" : String(v));
+      };
+
       // Find existing items to safely manage updates vs deletes
       const existingItems = await tx.orderItem.findMany({ where: { orderId: id }});
       const oldOrder = await tx.order.findUnique({ where: { id } });
@@ -90,6 +96,24 @@ export async function PUT(
         };
 
         if (item.id) {
+           const oItem = existingItems.find(i => i.id === parseInt(item.id));
+           if (oItem) {
+              const label = oItem.qualityCode || oItem.qualityName || 'İsimsiz Kalem';
+              const excludeKeys = ['id', 'orderId', 'createdAt', 'updatedAt'];
+              for (const [key, val] of Object.entries(itemData)) {
+                 if (excludeKeys.includes(key)) continue;
+                 const oldVal = oItem[key as keyof typeof oItem];
+                 
+                 let oldStr = oldVal instanceof Date ? oldVal.getTime() : oldVal;
+                 let newStr = val instanceof Date ? (val as Date).getTime() : val;
+                 if (oldStr === null || oldStr === undefined || oldStr === "") oldStr = null;
+                 if (newStr === null || newStr === undefined || newStr === "") newStr = null;
+                 
+                 if (oldStr !== newStr) {
+                    changes.push(`• Kalem (${label}) [${key}] alanı: ${formatVal(oldVal)} ➔ ${formatVal(val)}`);
+                 }
+              }
+           }
           await tx.orderItem.update({
              where: { id: parseInt(item.id) },
              data: itemData
@@ -151,9 +175,6 @@ export async function PUT(
           items: true,
         }
       });
-      
-      const changes: string[] = [];
-      const formatVal = (v: any) => v === null || v === undefined || v === "" ? "Boş" : String(v);
 
       if (oldOrder?.deliveryTerms !== (body.deliveryTerms || null)) 
         changes.push(`• Teslim Şekli: ${formatVal(oldOrder?.deliveryTerms)} ➔ ${formatVal(body.deliveryTerms)}`);
@@ -169,21 +190,9 @@ export async function PUT(
       if (itemsToDelete.length > 0) changes.push(`• ${itemsToDelete.length} Kalem Silindi`);
 
       for (const bItem of body.items) {
-        if (bItem.id) {
-           const oItem = existingItems.find(i => i.id === parseInt(bItem.id));
-           if (oItem) {
-              const label = oItem.qualityCode || oItem.qualityName || 'İsimsiz Kalem';
-              if (oItem.quantity !== Number(bItem.quantity)) {
-                 changes.push(`• Kalem (${label}) Miktarı: ${oItem.quantity} ➔ ${bItem.quantity}`);
-              }
-              if (oItem.unitPrice !== Number(bItem.unitPrice)) {
-                 changes.push(`• Kalem (${label}) Birim Fiyatı: ${oItem.unitPrice} ➔ ${bItem.unitPrice}`);
-              }
-              // Check bsdd/bq/exmd dates implicitly
-           }
-        } else {
-           changes.push(`• Yeni Kalem eklendi: ${bItem.qualityCode || bItem.qualityName || 'İsimsiz Kalem'}`);
-        }
+         if (!bItem.id) {
+            changes.push(`• Yeni Kalem eklendi: ${bItem.qualityCode || bItem.qualityName || 'İsimsiz Kalem'}`);
+         }
       }
       
       let detailsStr = changes.length > 0 ? changes.join("\n") : "• Sipariş detayları veya üretim notları güncellendi.";
