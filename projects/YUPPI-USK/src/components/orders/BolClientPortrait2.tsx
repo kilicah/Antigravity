@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function BolClientPortrait({
+export default function BolClientPortrait22({
   invoice,
   firstOrder,
   seller,
@@ -119,8 +119,8 @@ export default function BolClientPortrait({
         </div>
         <div className="flex items-center space-x-2">
           <div className="flex bg-slate-200 p-1 rounded items-center gap-1 mr-2">
-             <Link href={`/invoices/${invoice.id}/bol?format=1`} className="px-3 py-1 text-sm font-bold rounded bg-white text-indigo-700 shadow-sm">Format 1</Link>
-             <Link href={`/invoices/${invoice.id}/bol?format=2`} className="px-3 py-1 text-sm font-bold rounded text-slate-500 hover:text-slate-700">Format 2</Link>
+             <Link href={`/invoices/${invoice.id}/bol?format=1`} className="px-3 py-1 text-sm font-bold rounded text-slate-500 hover:text-slate-700">Format 1</Link>
+             <Link href={`/invoices/${invoice.id}/bol?format=2`} className="px-3 py-1 text-sm font-bold rounded bg-white text-indigo-700 shadow-sm">Format 2</Link>
           </div>
           <button
             onClick={() => setIsEng(false)}
@@ -151,13 +151,13 @@ export default function BolClientPortrait({
       </div>
 
       <div className="bg-white shadow-2xl print:shadow-none flex justify-center py-6 print:py-0 w-[794px]">
-        <div className="w-[794px] shrink-0 bg-white text-black font-['Arial',_'Helvetica',_sans-serif] text-[11px] leading-tight border-2 border-black relative box-border">
+        <div className="w-[794px] shrink-0 bg-white text-black font-['Arial',_'Helvetica',_sans-serif] text-[11px] leading-tight border border-black relative box-border">
           
           {/* ROW 1 */}
-          <div className="grid grid-cols-[318px_318px_158px] border-b-2 border-black">
+          <div className="grid grid-cols-[315px_315px_158px] border-b border-black">
             {/* 1. SELLER */}
-            <div className="border-r-2 border-black p-2 flex flex-col h-[135px]">
-               <div className="font-bold underline uppercase mb-0.5 text-[12px]">{t.sellerTitle}</div>
+            <div className="border-r border-black p-2 flex flex-col h-[135px]">
+               <div className="font-bold underline uppercase mb-0.5 text-[11px]">{t.sellerTitle}</div>
                <div className="font-bold uppercase text-[11px]">{isEng && seller?.nameEn ? seller?.nameEn : (seller?.name || "USK TEKSTİL SANAYİ VE TİCARET LİMİTED ŞİRKETİ")}</div>
                <div className="uppercase whitespace-pre-wrap leading-snug">
                  {isEng && seller?.addressEn ? seller?.addressEn : (seller?.address || "DEMİRTAŞ DUMLUPINAR OSB., MUSTAFA KARAER CD., NO:49/2,")}
@@ -175,8 +175,8 @@ export default function BolClientPortrait({
             </div>
             
             {/* 2. TITLE */}
-            <div className="border-r-2 border-black p-2 flex justify-center items-center h-[135px]">
-              <h1 className="text-[#d81e1e] font-sans font-bold text-[36px] text-center leading-tight tracking-wider uppercase whitespace-pre-wrap">
+            <div className="border-r border-black p-2 flex justify-center items-center h-[135px]">
+              <h1 className="text-[#d81e1e] font-sans font-bold text-[30px] text-center leading-tight tracking-wider uppercase whitespace-pre-wrap">
                 {t.documentTitle}
               </h1>
             </div>
@@ -187,19 +187,19 @@ export default function BolClientPortrait({
                  const sellerN = (seller?.name || "USK TEKSTİL").toUpperCase();
                  const isM = sellerN.includes("MENSUCAT") || sellerN.includes("USKM");
                  const isT = sellerN.includes("TEKSTİL") || sellerN.includes("TEKSTIL") || sellerN.includes("USKT");
-                 if (isM) return <img src="/images/Defenni-M-Kirmizi.jpg" alt="Logo" className="max-h-[89px] max-w-[198px] object-contain mix-blend-multiply" />;
-                 if (isT) return <img src="/images/Defenni-T-Kirmizi.jpg" alt="Logo" className="max-h-[89px] max-w-[198px] object-contain mix-blend-multiply" />;
-                 if (sellerN.includes("DEFENNİ") || sellerN.includes("DEFENNI")) return <img src="/defenni-logo.png" alt="Logo" className="max-h-[89px] max-w-[198px] object-contain mix-blend-multiply" />;
+                 if (isM) return <img src="/images/Defenni-M-Kirmizi.jpg" alt="Logo" className="max-h-[84px] max-w-[188px] object-contain mix-blend-multiply" />;
+                 if (isT) return <img src="/images/Defenni-T-Kirmizi.jpg" alt="Logo" className="max-h-[84px] max-w-[188px] object-contain mix-blend-multiply" />;
+                 if (sellerN.includes("DEFENNİ") || sellerN.includes("DEFENNI")) return <img src="/defenni-logo.png" alt="Logo" className="max-h-[84px] max-w-[188px] object-contain mix-blend-multiply" />;
                  return <div className="text-xl font-bold text-slate-300">{sellerN.split(' ')[0]}</div>;
               })()}
             </div>
           </div>
 
           {/* ROW 2 */}
-          <div className="grid grid-cols-[318px_318px_158px] border-b-2 border-black">
+          <div className="grid grid-cols-[315px_315px_158px] border-b border-black">
             {/* 1. BUYER */}
-            <div className="border-r-2 border-black p-2 flex flex-col h-[135px] leading-snug">
-               <div className="font-bold underline uppercase mb-0.5 text-[12px]">{t.buyerTitle}</div>
+            <div className="border-r border-black p-2 flex flex-col h-[135px] leading-snug">
+               <div className="font-bold underline uppercase mb-0.5 text-[11px]">{t.buyerTitle}</div>
                <div className="font-bold uppercase text-[11px]">{isEng && invoice.buyer?.nameEn ? invoice.buyer?.nameEn : (invoice.buyer?.name || "-")}</div>
                <div className="uppercase whitespace-pre-wrap">
                  {isEng && invoice.buyer?.addressEn ? invoice.buyer?.addressEn : (invoice.buyer?.address || "-")}
@@ -242,8 +242,8 @@ export default function BolClientPortrait({
             </div>
             
             {/* 2. DELIVERY ADDRESS */}
-            <div className="border-r-2 border-black p-2 flex flex-col h-[135px] leading-snug">
-                <div className="font-bold underline uppercase mb-0.5 text-[12px]">{t.deliveryTitle}</div>
+            <div className="border-r border-black p-2 flex flex-col h-[135px] leading-snug">
+                <div className="font-bold underline uppercase mb-0.5 text-[11px]">{t.deliveryTitle}</div>
                 <div className="font-bold uppercase text-[11px]">{firstOrder?.shipTo ? ((isEng && firstOrder.shipTo.nameEn) ? firstOrder.shipTo.nameEn : firstOrder.shipTo.name) : ((isEng && invoice.buyer?.nameEn) ? invoice.buyer?.nameEn : (invoice.buyer?.name || "-"))}</div>
                 <div className="uppercase whitespace-pre-wrap">
                   {firstOrder?.shipTo ? ((isEng && firstOrder.shipTo.addressEn) ? firstOrder.shipTo.addressEn : firstOrder.shipTo.address) : ((isEng && invoice.buyer?.addressEn) ? invoice.buyer?.addressEn : (invoice.buyer?.address || "-"))}
@@ -274,24 +274,24 @@ export default function BolClientPortrait({
             {/* 3. INVOICE INFO */}
             <div className="flex flex-col h-[135px]">
                 <div className="h-[45px] border-b border-black flex flex-col justify-center px-4 leading-snug">
-                    <div className="font-bold uppercase text-[12px] mb-0.5">{t.invoiceNo}</div>
+                    <div className="font-bold uppercase text-[11px] mb-0.5">{t.invoiceNo}</div>
                     <div className="text-[11px]">{invoiceNo}</div>
                 </div>
                 <div className="h-[45px] border-b border-black flex flex-col justify-center px-4 leading-snug">
-                    <div className="font-bold uppercase text-[12px] mb-0.5">{t.invoiceDate}</div>
+                    <div className="font-bold uppercase text-[11px] mb-0.5">{t.invoiceDate}</div>
                     <div className="text-[11px]">{invoice.invoiceDate ? new Date(invoice.invoiceDate).toLocaleDateString('tr-TR') : "-"}</div>
                 </div>
                 <div className="h-[45px] flex flex-col justify-center px-4 leading-snug">
-                    <div className="font-bold uppercase text-[12px] mb-0.5">{t.customerPo}</div>
+                    <div className="font-bold uppercase text-[11px] mb-0.5">{t.customerPo}</div>
                     <div className="text-[11px] uppercase">{Array.from(new Set(invoice.items.map((i: any) => i.orderItem.order.buyerPoNo).filter(Boolean))).join(', ') || "-"}</div>
                 </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-[318px_476px] border-b-2 border-black min-h-[90px]">
+          <div className="grid grid-cols-[315px_1fr] border-b border-black min-h-[90px]">
             {/* TRANSPORTER COMPANY */}
             <div className="p-2 border-r border-black relative">
-               <div className="font-bold underline uppercase mb-1 text-[12px]">{t.transporterComp}</div>
+               <div className="font-bold underline uppercase mb-1 text-[11px]">{t.transporterComp}</div>
                <div className="font-bold uppercase text-[11px]">{invoice.logisticsCompany?.name || firstOrder?.transporter || "-"}</div>
                <div className="uppercase">{invoice.logisticsCompany?.address || "MASLAK MH, BUYUKDERE CD., NO.255"}</div>
                <div className="uppercase">{invoice.logisticsCompany?.city || "ISTANBUL, TURKIYE"}</div>
@@ -312,7 +312,7 @@ export default function BolClientPortrait({
 
             {/* CUSTOM AGENCY */}
             <div className="p-2 relative border-b-0 border-black">
-               <div className="font-bold underline uppercase mb-1 text-[12px]">{t.customAgency}</div>
+               <div className="font-bold underline uppercase mb-1 text-[11px]">{t.customAgency}</div>
                <div className="uppercase text-[11px]">{invoice.customsCompany?.name || "HGL GUMRUK MUSAVIRLIGI LOJ. VE DIS TICARET A.S."}</div>
                <div className="uppercase">{invoice.customsCompany?.address || "BEYLIKDUZU MERMERCILER OSB MH., 7. CD., NO.4, K.2"}</div>
                <div className="uppercase">{invoice.customsCompany?.city || "BEYLIKDUZU, 34524, ISTANBUL, TURKIYE"}</div>
@@ -332,92 +332,101 @@ export default function BolClientPortrait({
                     </>
                   )}
                </div>
-               
-               {isSigned && (() => {
+            </div>
+          </div>
+
+          {/* DETAILS GRID */}
+          <div className="grid grid-cols-[238px_1fr] border-b border-black font-bold uppercase text-[11px] leading-tight">
+             <div className="p-1 px-2 border-r border-black border-b flex items-center">{t.typesOfGoods}</div>
+             <div className="p-1 px-2 border-b border-black font-normal flex items-center">{productDesign}</div>
+
+             <div className="p-1 px-2 border-r border-black border-b flex items-center">{t.gtypeNo}</div>
+             <div className="border-b border-black grid grid-cols-[1fr_158px_1fr]">
+                <div className="p-1 px-2 border-r border-black font-normal flex items-center">{invoice.items[0]?.orderItem.composition?.includes('5407') ? '5407.61.90.90.19' : '5407.61.90.90.19'}</div>
+                <div className="p-1 px-2 border-r border-black flex items-center">{t.goodsSpc}</div>
+                <div className="p-1 px-2 font-normal text-[11px] leading-tight flex items-center break-words">{productSpecs}</div>
+             </div>
+
+             <div className="p-1 px-2 border-r border-black border-b flex items-center">{t.paymentTerms}</div>
+             <div className="border-b border-black grid grid-cols-[1fr_158px_1fr]">
+                <div className="p-1 px-2 border-r border-black font-normal flex items-center">
+                   {(() => {
+                      const pt = firstOrder?.paymentTerms || "90 DAYS NET";
+                      return pt.includes('|') ? (isEng ? pt.split('|')[1].trim() : pt.split('|')[0].trim()) : pt;
+                   })()}
+                </div>
+                <div className="p-1 px-2 border-r border-black flex items-center">{t.dueDate}</div>
+                <div className="p-1 px-2 font-normal flex items-center">{dueDate}</div>
+             </div>
+             
+             <div className="p-1 px-2 border-r border-black border-b flex items-center">{t.deliveryTerms}</div>
+             <div className="p-1 px-2 border-b border-black font-normal flex items-center">
+                 {(() => {
+                    const dt = `${firstOrder?.deliveryTerms || "-"} ${firstOrder?.deliveryDestination || ""}`.trim();
+                    return dt.includes('|') ? (isEng ? dt.split('|')[1].trim() : dt.split('|')[0].trim()) : dt;
+                 })()}
+             </div>
+
+             <div className="p-1 px-2 border-r border-black border-b flex items-center">{t.totalQuantity}</div>
+             <div className="border-b border-black grid grid-cols-[1fr_1fr]">
+                <div className="p-1 px-2 border-r border-black text-right pr-6 tracking-wider font-normal flex items-center justify-end">{totalQuantity.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                <div className="p-1 px-4 font-normal flex items-center">{unit}</div>
+             </div>
+
+             <div className="p-1 px-2 border-r border-black border-b flex items-center">{t.totalAmount}</div>
+             <div className="border-b border-black grid grid-cols-[1fr_1fr]">
+                <div className="p-1 px-2 border-r border-black text-right pr-6 tracking-wider font-normal flex items-center justify-end">{totalAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                <div className="p-1 px-4 font-normal flex items-center">{currency}</div>
+             </div>
+
+             <div className="p-1 px-2 border-r border-black border-b flex items-center">{t.totalGrossKg}</div>
+             <div className="border-b border-black grid grid-cols-[1fr_64px_158px_1fr]">
+                <div className="p-1 px-2 border-r border-black text-right pr-6 tracking-wider font-normal flex items-center justify-end">{grossKg ? grossKg.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-"}</div>
+                <div className="p-1 px-2 border-r border-black font-normal flex items-center">KG</div>
+                <div className="p-1 px-2 border-r border-black flex items-center">{t.nofRolls}</div>
+                <div className="p-1 px-2 text-center font-normal flex items-center justify-center">{rollCount || "-"}</div>
+             </div>
+
+             <div className="p-1 px-2 border-r border-black border-b flex items-center">{t.totalNetKg}</div>
+             <div className="border-b border-black grid grid-cols-[1fr_64px_158px_1fr]">
+                <div className="p-1 px-2 border-r border-black text-right pr-6 tracking-wider font-normal flex items-center justify-end">{netKg ? netKg.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-"}</div>
+                <div className="p-1 px-2 border-r border-black font-normal flex items-center">KG</div>
+                <div className="p-1 px-2 border-r border-black text-[11px] flex items-center">{t.nofSacks}</div>
+                <div className="p-1 px-2 text-center font-normal flex items-center justify-center">{sackCount || "-"}</div>
+             </div>
+             
+             <div className="p-1 px-2 border-r border-black flex items-center">{t.manufacturer}</div>
+             <div className="p-1 px-2 text-center font-normal flex items-center justify-center">{isEng && seller?.nameEn ? seller?.nameEn : (seller?.name || "U.S.K. TEKSTIL SANAYI VE TICARET LIMITED SIRKETI")}</div>
+          </div>
+
+          {/* BOTTOM NOTES */}
+          <div className="grid grid-cols-[238px_1fr] border-b border-black font-bold uppercase text-[11px] leading-tight">
+             <div className="p-1 px-2 border-r border-black border-b flex items-center">{t.documentsNeeds}</div>
+             <div className="p-1 px-2 border-b border-black font-normal flex items-center">EUR 1</div>
+
+             <div className="p-1 px-2 border-r border-black min-h-[40px] flex items-center">{t.notes}</div>
+             <div className="p-1 px-2 font-normal min-h-[40px] flex items-center">IN ALL DOCUMENTS, GOODS NAME AND SPECSIFICATIONS WILL BE SAME</div>
+          </div>
+
+          <div className="text-center font-bold text-[11px] uppercase tracking-wider p-3 relative min-h-[65px]">
+             <div className="relative z-10 bg-white inline-block px-2">{t.turkishOrigin}</div>
+             
+             {isSigned && (() => {
                   const sellerN = (isEng && seller?.nameEn ? seller?.nameEn : (seller?.name || "USK TEKSTİL")).toUpperCase();
                   const isUSKM = sellerN.includes("MENSUCAT") || sellerN.includes("USKM");
                   const isUSKT = sellerN.includes("TEKSTİL") || sellerN.includes("TEKSTIL") || sellerN.includes("USKT");
                   return (
-                    <div className="absolute top-0 right-10 flex justify-center items-center opacity-90 z-20 pointer-events-none drop-shadow-md overflow-visible">
+                    <div className="absolute top-[1px] left-10 flex justify-center items-center opacity-90 z-0 pointer-events-none overflow-visible">
                       {isUSKM ? (
-                         <img src="/images/USKM-Kase-Imza.png" alt="Stamp" className="w-[180px] h-auto object-contain mix-blend-multiply filter contrast-125 sepia-[0.3]" />
+                         <img src="/images/USKM-Kase-Imza.png" alt="Stamp" className="w-[240px] h-auto object-contain mix-blend-multiply filter contrast-125 sepia-[0.3]" />
                       ) : isUSKT ? (
-                         <img src="/images/USKT-Kase-Imza.png" alt="Stamp" className="w-[180px] h-auto object-contain mix-blend-multiply filter contrast-125 sepia-[0.3]" />
+                         <img src="/images/USKT-Kase-Imza.png" alt="Stamp" className="w-[240px] h-auto object-contain mix-blend-multiply filter contrast-125 sepia-[0.3]" />
                       ) : (
                          <div className="font-bold border px-10 py-6 uppercase bg-slate-50 text-slate-400 border-slate-300 transform -rotate-6">STAMP</div>
                       )}
                     </div>
                   );
-               })()}
-            </div>
-          </div>
-
-          {/* DETAILS GRID */}
-          <div className="grid grid-cols-[238px_1fr] border-b-2 border-black font-bold uppercase text-[11px] leading-snug">
-             <div className="p-2 border-r border-black border-b">{t.typesOfGoods}</div>
-             <div className="p-2 border-b border-black font-normal">{productDesign}</div>
-
-             <div className="p-2 border-r border-black border-b">{t.gtypeNo}</div>
-             <div className="border-b border-black grid grid-cols-[1fr_158px_1fr]">
-                <div className="p-2 border-r border-black font-normal">{invoice.items[0]?.orderItem.composition?.includes('5407') ? '5407.61.90.90.19' : '5407.61.90.90.19'}</div>
-                <div className="p-2 border-r border-black">{t.goodsSpc}</div>
-                <div className="p-2 font-normal text-[11px] leading-tight break-words">{productSpecs}</div>
-             </div>
-
-             <div className="p-2 border-r border-black border-b">{t.paymentTerms}</div>
-             <div className="border-b border-black grid grid-cols-[1fr_158px_1fr]">
-                <div className="p-2 border-r border-black font-normal">{firstOrder?.paymentTerms || "90 DAYS NET"}</div>
-                <div className="p-2 border-r border-black">{t.dueDate}</div>
-                <div className="p-2 font-normal">{dueDate}</div>
-             </div>
-             
-             <div className="p-2 border-r border-black border-b">{t.deliveryTerms}</div>
-             <div className="p-2 border-b border-black font-normal">{firstOrder?.deliveryTerms || "-"} {firstOrder?.deliveryDestination || ""}</div>
-
-             <div className="p-2 border-r border-black border-b">{t.totalQuantity}</div>
-             <div className="border-b border-black grid grid-cols-[1fr_1fr]">
-                <div className="p-2 border-r border-black text-right pr-6 tracking-wider font-normal">{totalQuantity.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                <div className="p-2 pl-4 font-normal">{unit}</div>
-             </div>
-
-             <div className="p-2 border-r border-black border-b">{t.totalAmount}</div>
-             <div className="border-b border-black grid grid-cols-[1fr_1fr]">
-                <div className="p-2 border-r border-black text-right pr-6 tracking-wider font-normal">{totalAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                <div className="p-2 pl-4 font-normal">{currency}</div>
-             </div>
-
-             <div className="p-2 border-r border-black border-b">{t.totalGrossKg}</div>
-             <div className="border-b border-black grid grid-cols-[1fr_64px_158px_1fr]">
-                <div className="p-2 border-r border-black text-right pr-6 tracking-wider font-normal">{grossKg ? grossKg.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-"}</div>
-                <div className="p-2 border-r border-black font-normal">KG</div>
-                <div className="p-2 border-r border-black">{t.nofRolls}</div>
-                <div className="p-2 text-center font-normal">{rollCount || "-"}</div>
-             </div>
-
-             <div className="p-2 border-r border-black border-b">{t.totalNetKg}</div>
-             <div className="border-b border-black grid grid-cols-[1fr_64px_158px_1fr]">
-                <div className="p-2 border-r border-black text-right pr-6 tracking-wider font-normal">{netKg ? netKg.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "-"}</div>
-                <div className="p-2 border-r border-black font-normal">KG</div>
-                <div className="p-2 border-r border-black text-[11px]">{t.nofSacks}</div>
-                <div className="p-2 text-center font-normal">{sackCount || "-"}</div>
-             </div>
-             
-             <div className="p-2 border-r border-black">{t.manufacturer}</div>
-             <div className="p-2 text-center font-normal">{isEng && seller?.nameEn ? seller?.nameEn : (seller?.name || "U.S.K. TEKSTIL SANAYI VE TICARET LIMITED SIRKETI")}</div>
-          </div>
-
-          {/* BOTTOM NOTES */}
-          <div className="border-t-[4px] border-black"></div>
-          <div className="grid grid-cols-[238px_1fr] border-b-2 border-black font-bold uppercase text-[11px] leading-snug">
-             <div className="p-2 border-r border-black border-b">{t.documentsNeeds}</div>
-             <div className="p-2 border-b border-black font-normal">EUR 1</div>
-
-             <div className="p-2 border-r border-black h-[100px]">{t.notes}</div>
-             <div className="p-2 font-normal h-[100px]">IN ALL DOCUMENTS, GOODS NAME AND SPECSIFICATIONS WILL BE SAME</div>
-          </div>
-
-          <div className="text-center font-bold text-[12px] uppercase tracking-wider p-3">
-             {t.turkishOrigin}
+             })()}
           </div>
         </div>
       </div>

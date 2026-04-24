@@ -1,9 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import BolClientPortrait from "@/components/orders/BolClientPortrait";
+import BolClientPortrait2 from "@/components/orders/BolClientPortrait2";
 
-export default async function BoLPrintPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function BoLPrintPage({ params, searchParams }: { params: Promise<{ id: string }>, searchParams: Promise<{ format?: string }> }) {
   const invoiceId = parseInt((await params).id, 10);
+  const resolvedSearchParams = await searchParams;
+  const isFormat2 = resolvedSearchParams.format === '2';
   
   const invoice = await prisma.invoice.findUnique({
     where: { id: invoiceId },
@@ -52,23 +55,23 @@ export default async function BoLPrintPage({ params }: { params: Promise<{ id: s
   const rollCount = invoice.packingList?.totalRolls || invoice.rollCount || 0;
   const sackCount = invoice.sackCount || "-";
 
-  return (
-    <BolClientPortrait
-      invoice={invoice}
-      firstOrder={firstOrder}
-      seller={seller}
-      productDesign={productDesign}
-      productSpecs={productSpecs}
-      dueDate={dueDate}
-      grossKg={grossKg}
-      netKg={netKg}
-      rollCount={rollCount}
-      sackCount={sackCount}
-      totalAmount={totalAmount}
-      totalQuantity={totalQuantity}
-      currency={currency}
-      unit={unit}
-      invoiceNo={invoiceNo}
-    />
-  );
+  const props = {
+      invoice,
+      firstOrder,
+      seller,
+      productDesign,
+      productSpecs,
+      dueDate,
+      grossKg,
+      netKg,
+      rollCount,
+      sackCount,
+      totalAmount,
+      totalQuantity,
+      currency,
+      unit,
+      invoiceNo
+  };
+
+  return isFormat2 ? <BolClientPortrait2 {...props} /> : <BolClientPortrait {...props} />;
 }

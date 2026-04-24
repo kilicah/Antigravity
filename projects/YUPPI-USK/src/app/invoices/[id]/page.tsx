@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CommercialInvoicePortrait from "@/components/orders/CommercialInvoicePortrait";
+import CommercialInvoicePortrait2 from "@/components/orders/CommercialInvoicePortrait2";
 import PackingListManager from "../components/PackingListManager";
 
 export default async function SelectedInvoicePage({
@@ -127,7 +128,7 @@ export default async function SelectedInvoicePage({
       <PackingListManager invoiceId={id} />
 
       <div className="bg-white shadow-2xl print:shadow-none flex justify-center pb-12 print:pb-0">
-        <CommercialInvoicePortrait 
+        <CommercialInvoicePortrait2 
           order={hybridOrderData as any} 
           bankInfo={bankInfo} 
         />
