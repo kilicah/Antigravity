@@ -4,10 +4,12 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { numberToWords } from "@/utils/numberToWords";
+import { usePathname } from "next/navigation";
 
-export default function CommercialInvoiceDocument({ order, bankInfo, repUser }: { order: any; bankInfo: any; repUser?: any }) {
+export default function CommercialInvoicePortrait({ order, bankInfo, repUser }: { order: any; bankInfo: any; repUser?: any }) {
   const [isEng, setIsEng] = useState(order.language === 'ENG');
   const [isSigned, setIsSigned] = useState(false);
+  const pathname = usePathname();
 
   const sellerName = order.seller.name.toUpperCase();
   const isUSKM = sellerName.includes("MENSUCAT") || sellerName.includes("USKM");
@@ -78,7 +80,7 @@ export default function CommercialInvoiceDocument({ order, bankInfo, repUser }: 
         }
       `}</style>
       {/* Dil Seçimi Butonları (Sadece Ekranda Görünür, Yazdırmada Gizlenir) */}
-      <div className="flex justify-between items-center mb-6 print:hidden w-full max-w-[1002px]">
+      <div className="flex justify-between items-center mb-6 print:hidden w-full max-w-[794px]">
         <div className="space-x-4 flex items-center">
           <Link 
             href={`/orders/${order.id}`}
@@ -107,7 +109,7 @@ export default function CommercialInvoiceDocument({ order, bankInfo, repUser }: 
         >
           🇬🇧 ENGLISH
         </button>
-          <button
+        <button
           onClick={() => setIsSigned(!isSigned)}
           className={`px-4 py-2 font-bold rounded shadow-sm border ${isSigned ? 'bg-green-600 text-white border-green-700' : 'bg-white text-green-600 hover:bg-green-50 border-green-300'}`}
         >
@@ -123,14 +125,14 @@ export default function CommercialInvoiceDocument({ order, bankInfo, repUser }: 
         </div>
       </div>
 
-      <div className="w-[1002px] bg-white text-black font-['Arial',_'Helvetica',_sans-serif] text-[12px] leading-tight border-2 border-black relative">
+      <div className="w-[794px] bg-white text-black font-['Arial',_'Helvetica',_sans-serif] text-[11px] leading-tight border-2 border-black relative">
         
         {/* ROW 1 */}
-        <div className="grid grid-cols-[401px_401px_200px] border-b-2 border-black">
+        <div className="grid grid-cols-[318px_318px_158px] border-b-2 border-black">
           {/* 1. SELLER TITLE (401px x 135px) */}
           <div className="border-r-2 border-black p-2 flex flex-col h-[135px]">
-             <div className="font-bold underline uppercase mb-0.5 text-[13px]">{t.sellerTitle}</div>
-             <div className="font-bold uppercase text-[12px]">{isEng && order.seller.nameEn ? order.seller.nameEn : order.seller.name}</div>
+             <div className="font-bold underline uppercase mb-0.5 text-[12px]">{t.sellerTitle}</div>
+             <div className="font-bold uppercase text-[11px]">{isEng && order.seller.nameEn ? order.seller.nameEn : order.seller.name}</div>
              <div className="uppercase whitespace-pre-wrap leading-snug">
                {isEng && order.seller.addressEn ? order.seller.addressEn : order.seller.address}
                {(() => {
@@ -191,11 +193,11 @@ export default function CommercialInvoiceDocument({ order, bankInfo, repUser }: 
         </div>
 
         {/* ROW 2 */}
-        <div className="grid grid-cols-[401px_401px_200px] border-b-2 border-black">
+        <div className="grid grid-cols-[318px_318px_158px] border-b-2 border-black">
           {/* 1. CUSTOMER TITLE (401px x 135px) */}
           <div className="border-r-2 border-black p-2 flex flex-col h-[135px] leading-snug">
-             <div className="font-bold underline uppercase mb-0.5 text-[13px]">{t.customerTitle}</div>
-             <div className="font-bold uppercase text-[12px]">{isEng && order.buyer.nameEn ? order.buyer.nameEn : order.buyer.name}</div>
+             <div className="font-bold underline uppercase mb-0.5 text-[12px]">{t.customerTitle}</div>
+             <div className="font-bold uppercase text-[11px]">{isEng && order.buyer.nameEn ? order.buyer.nameEn : order.buyer.name}</div>
              <div className="uppercase whitespace-pre-wrap">
                {isEng && order.buyer.addressEn ? order.buyer.addressEn : order.buyer.address}
                {(() => {
@@ -230,10 +232,10 @@ export default function CommercialInvoiceDocument({ order, bankInfo, repUser }: 
           
           {/* 2. DELIVERY ADDRESS (401px x 135px) */}
           <div className="border-r-2 border-black p-2 flex flex-col h-[135px] leading-snug">
-              <div className="font-bold underline uppercase mb-0.5 text-[13px]">{t.deliveryTitle}</div>
+              <div className="font-bold underline uppercase mb-0.5 text-[12px]">{t.deliveryTitle}</div>
               {order.shipTo ? (
                 <>
-                  <div className="font-bold uppercase text-[12px]">{isEng && order.shipTo.nameEn ? order.shipTo.nameEn : order.shipTo.name}</div>
+                  <div className="font-bold uppercase text-[11px]">{isEng && order.shipTo.nameEn ? order.shipTo.nameEn : order.shipTo.name}</div>
                   <div className="uppercase whitespace-pre-wrap">
                     {isEng && order.shipTo.addressEn ? order.shipTo.addressEn : order.shipTo.address}
                     {(() => {
@@ -274,20 +276,20 @@ export default function CommercialInvoiceDocument({ order, bankInfo, repUser }: 
           <div className="flex flex-col h-[135px]">
               {/* Fatura No (45px) */}
               <div className="h-[45px] border-b border-black flex flex-col justify-center px-4 leading-snug">
-                  <div className="font-bold uppercase text-[13px] mb-0.5">{t.invoiceNo}</div>
-                  <div className="text-[12px]">{order.invoice?.invoiceNo || "-"}</div>
+                  <div className="font-bold uppercase text-[12px] mb-0.5">{t.invoiceNo}</div>
+                  <div className="text-[11px]">{order.invoice?.invoiceNo || "-"}</div>
               </div>
               
               {/* Tarihi (45px) */}
               <div className="h-[45px] border-b border-black flex flex-col justify-center px-4 leading-snug">
-                  <div className="font-bold uppercase text-[13px] mb-0.5">{t.invoiceDate}</div>
-                  <div className="text-[12px]">{order.invoice?.invoiceDate ? new Date(order.invoice.invoiceDate).toLocaleDateString('tr-TR') : "-"}</div>
+                  <div className="font-bold uppercase text-[12px] mb-0.5">{t.invoiceDate}</div>
+                  <div className="text-[11px]">{order.invoice?.invoiceDate ? new Date(order.invoice.invoiceDate).toLocaleDateString('tr-TR') : "-"}</div>
               </div>
               
               {/* PO Alanı (45px) */}
               <div className="h-[45px] flex flex-col justify-center px-4 leading-snug">
-                  <div className="font-bold uppercase text-[13px] mb-0.5">{t.customerPo}</div>
-                  <div className="text-[12px] uppercase">{order.buyerPoNo || "-"}</div>
+                  <div className="font-bold uppercase text-[12px] mb-0.5">{t.customerPo}</div>
+                  <div className="text-[11px] uppercase">{order.buyerPoNo || "-"}</div>
               </div>
           </div>
         </div>
@@ -296,15 +298,15 @@ export default function CommercialInvoiceDocument({ order, bankInfo, repUser }: 
         <div className="w-full">
           <table className="w-full text-center table-fixed border-collapse">
             <thead>
-              <tr className="border-b-2 border-black font-bold uppercase text-[12px] leading-tight">
-                <th className="py-2 px-1 w-[130px]">{t.typeOfGoods}</th>
-                <th className="py-2 px-1 w-[110px]">{t.articleName}</th>
-                <th className="py-2 px-1 w-[100px]">{t.articleCode}</th>
-                <th className="py-2 px-1 w-[80px]">{t.colorCode}</th>
-                <th className="py-2 px-1 w-[142px]">{t.composition}</th>
-                <th className="py-2 px-1 w-[80px]">{t.priceUsd}</th>
-                <th className="py-2 px-1 w-[100px] text-right">{t.quantity} <span className="ml-1">{order.unit}</span></th>
-                <th className="py-2 px-1 w-[120px] text-right pr-2">{t.totalAmount}</th>
+              <tr className="border-b-2 border-black font-bold uppercase text-[11px] leading-tight">
+                <th className="py-2 px-1 w-[115px]">{t.typeOfGoods}</th>
+                <th className="py-2 px-1 w-[105px]">{t.articleName}</th>
+                <th className="py-2 px-1 w-[85px]">{t.articleCode}</th>
+                <th className="py-2 px-1 w-[75px]">{t.colorCode}</th>
+                <th className="py-2 px-1 w-[125px]">{t.composition}</th>
+                <th className="py-2 px-1 w-[70px]">{t.priceUsd}</th>
+                <th className="py-2 px-1 w-[95px] text-right">{t.quantity} <span className="ml-1">{order.unit}</span></th>
+                <th className="py-2 px-1 w-[105px] text-right pr-2">{t.totalAmount}</th>
               </tr>
             </thead>
             <tbody>
@@ -332,7 +334,7 @@ export default function CommercialInvoiceDocument({ order, bankInfo, repUser }: 
               <tr className="h-2"><td colSpan={8}></td></tr>
             </tbody>
             <tfoot>
-              <tr className="border-t-2 border-black text-[12px]">
+              <tr className="border-t-2 border-black text-[11px]">
                  <td colSpan={4} className="p-1 uppercase border-r border-black text-left align-middle">
                     {t.madeInDecl}
                  </td>
@@ -359,16 +361,16 @@ export default function CommercialInvoiceDocument({ order, bankInfo, repUser }: 
         </div>
 
         {/* DETAILS & BANK FOOTER */}
-        <div className="grid grid-cols-[580px_1fr] border-b-2 border-black">
+        <div className="grid grid-cols-[450px_1fr] border-b-2 border-black">
            {/* Left details */}
            <div className="border-r-2 border-black flex flex-col">
               <div className="grid grid-cols-[150px_1fr] border-b border-black">
                  <div className="p-1 font-bold uppercase border-r border-black">{t.paymentTerms}</div>
-                 <div className="p-1 uppercase text-[12px] leading-tight">{paymentTerms}</div>
+                 <div className="p-1 uppercase text-[11px] leading-tight">{paymentTerms}</div>
               </div>
               <div className="grid grid-cols-[150px_1fr] border-b border-black">
                  <div className="p-1 font-bold uppercase border-r border-black">{t.deliveryTerms}</div>
-                 <div className="p-1 uppercase text-[12px] leading-tight">{deliveryDest}</div>
+                 <div className="p-1 uppercase text-[11px] leading-tight">{deliveryDest}</div>
               </div>
               <div className="grid grid-cols-[150px_1fr] border-b border-black">
                  <div className="p-1 font-bold uppercase border-r border-black">{t.transporter}</div>
@@ -379,28 +381,28 @@ export default function CommercialInvoiceDocument({ order, bankInfo, repUser }: 
               <div className="flex w-full divide-x divide-black border-b border-black">
                  <div className="flex flex-1">
                    <div className="w-[150px] p-1 font-bold uppercase border-r border-black flex items-center">{t.totalGrossKg}</div>
-                   <div className="flex-1 p-1 text-right pr-4 text-[12px]">{order.invoice?.grossKg?.toLocaleString('tr-TR') || "-"}</div>
+                   <div className="flex-1 p-1 text-right pr-4 text-[11px]">{order.invoice?.grossKg?.toLocaleString('tr-TR') || "-"}</div>
                  </div>
                  <div className="flex flex-1">
                    <div className="w-[140px] p-1 font-bold uppercase border-r border-black pl-2 flex items-center">{t.numberRolls}</div>
-                   <div className="flex-1 p-1 text-right pr-2 text-[12px]">{order.invoice?.rollCount || "-"}</div>
+                   <div className="flex-1 p-1 text-right pr-2 text-[11px]">{order.invoice?.rollCount || "-"}</div>
                  </div>
               </div>
               <div className="flex w-full divide-x divide-black border-b border-black">
                  <div className="flex flex-1">
                    <div className="w-[150px] p-1 font-bold uppercase border-r border-black flex items-center">{t.totalNetKg}</div>
-                   <div className="flex-1 p-1 text-right pr-4 text-[12px]">{order.invoice?.netKg?.toLocaleString('tr-TR') || "-"}</div>
+                   <div className="flex-1 p-1 text-right pr-4 text-[11px]">{order.invoice?.netKg?.toLocaleString('tr-TR') || "-"}</div>
                  </div>
                  <div className="flex flex-1">
                    <div className="w-[140px] p-1 font-bold uppercase border-r border-black pl-2 flex items-center">{t.numberSacks}</div>
-                   <div className="flex-1 p-1 text-right pr-2 text-[12px]">{order.invoice?.sackCount || "-"}</div>
+                   <div className="flex-1 p-1 text-right pr-2 text-[11px]">{order.invoice?.sackCount || "-"}</div>
                  </div>
               </div>
               
               {/* This flex-1 div absorbs all remaining height securely, preventing rows above from stretching vertically */}
               <div className="flex-1 bg-white min-h-[50px]"></div>
 
-              <div className="border-t-2 border-black uppercase bg-white flex items-center justify-center font-bold tracking-wide py-2 text-[13px] mt-auto">
+              <div className="border-t-2 border-black uppercase bg-white flex items-center justify-center font-bold tracking-wide py-2 text-[12px] mt-auto">
                  {t.authSign}
               </div>
            </div>
@@ -409,24 +411,24 @@ export default function CommercialInvoiceDocument({ order, bankInfo, repUser }: 
            <div className="flex flex-col">
               <div className="grid grid-cols-[130px_1fr] border-b border-black">
                  <div className="p-1 font-bold uppercase border-r border-black">{t.bankName}</div>
-                 <div className="p-1 uppercase text-[12px] leading-tight flex items-center">{bankInfo?.bankName || "-"}</div>
+                 <div className="p-1 uppercase text-[11px] leading-tight flex items-center">{bankInfo?.bankName || "-"}</div>
               </div>
               <div className="grid grid-cols-[130px_1fr] border-b border-black">
                  <div className="p-1 font-bold uppercase border-r border-black">{t.branchNameNo}</div>
-                 <div className="p-1 uppercase text-[12px] leading-tight flex items-center">{bankInfo?.branch || "-"}</div>
+                 <div className="p-1 uppercase text-[11px] leading-tight flex items-center">{bankInfo?.branch || "-"}</div>
               </div>
               <div className="grid grid-cols-[130px_1fr_40px] border-b border-black">
                  <div className="p-1 font-bold uppercase border-r border-black">{t.accountNo}</div>
-                 <div className="p-1 uppercase text-[12px] leading-tight border-r border-black flex items-center">{bankInfo?.accountNo || "-"}</div>
-                 <div className="p-1 font-bold uppercase text-[12px] leading-tight text-center flex items-center justify-center">{order.currency}</div>
+                 <div className="p-1 uppercase text-[11px] leading-tight border-r border-black flex items-center">{bankInfo?.accountNo || "-"}</div>
+                 <div className="p-1 font-bold uppercase text-[11px] leading-tight text-center flex items-center justify-center">{order.currency}</div>
               </div>
               <div className="grid grid-cols-[130px_1fr] border-b border-black">
                  <div className="p-1 font-bold uppercase border-r border-black">{t.swiftCode}</div>
-                 <div className="p-1 uppercase text-[12px] leading-tight flex items-center">{bankInfo?.swift || "-"}</div>
+                 <div className="p-1 uppercase text-[11px] leading-tight flex items-center">{bankInfo?.swift || "-"}</div>
               </div>
               <div className="grid grid-cols-[130px_1fr] border-b border-black">
                  <div className="p-1 font-bold uppercase border-r border-black">{t.ibanNo}</div>
-                 <div className="p-1 uppercase text-[12px] leading-tight flex items-center">{bankInfo?.iban || "-"}</div>
+                 <div className="p-1 uppercase text-[11px] leading-tight flex items-center">{bankInfo?.iban || "-"}</div>
               </div>
               
               {/* Origin Section exactly like screenshot */}
@@ -461,3 +463,4 @@ export default function CommercialInvoiceDocument({ order, bankInfo, repUser }: 
     </div>
   );
 }
+

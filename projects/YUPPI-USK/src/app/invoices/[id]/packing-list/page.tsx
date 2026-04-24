@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import PackingListClient from "@/components/orders/PackingListClient";
+import PackingListClientPortrait from "@/components/orders/PackingListClientPortrait";
 
 export default async function PackingListPrintPage({ params }: { params: Promise<{ id: string }> }) {
   const invoiceId = parseInt((await params).id, 10);
@@ -55,7 +55,7 @@ export default async function PackingListPrintPage({ params }: { params: Promise
   const buyerModelNames = Array.from(new Set(invoice.items.map(ix => ix.orderItem.buyerModelName).filter(Boolean))).join(', ');
   
   return (
-    <PackingListClient
+    <PackingListClientPortrait
       invoice={invoice}
       firstOrder={firstOrder}
       seller={seller}

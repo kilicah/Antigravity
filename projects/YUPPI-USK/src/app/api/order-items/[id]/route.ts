@@ -18,7 +18,7 @@ export async function PATCH(
       "etd", "fds", "cs", "csSentDate", "csApprovalDate",
       "ldSentDate", "ldApprovalDate", "bsSentDate", "bsApprovalDate",
       "mpa", "dpa", "rs", "rsMs", "bsMs", "bltRd", "bltMs", "bltMa",
-      "ltAd", "bsad", "pl"
+      "ltAd", "bsad", "pl", "plFileUrl", "plFileName"
     ];
 
     const dateFields = [

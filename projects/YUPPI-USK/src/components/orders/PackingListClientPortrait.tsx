@@ -2,8 +2,9 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-export default function PackingListClient({
+export default function PackingListClientPortrait({
   invoice,
   firstOrder,
   seller,
@@ -16,6 +17,7 @@ export default function PackingListClient({
 }: any) {
   const [isEng, setIsEng] = useState(true);
   const [isSigned, setIsSigned] = useState(false);
+  const pathname = usePathname();
 
   const t = {
     sellerTitle: isEng ? "SELLER" : "İHRACATÇI FİRMA",
@@ -56,7 +58,7 @@ export default function PackingListClient({
       `}</style>
       
       {/* HEADER ACTION (HIDDEN IN PRINT) */}
-      <div className="flex justify-between items-center print:hidden mb-4 w-full max-w-[1002px]">
+      <div className="flex justify-between items-center print:hidden mb-4 w-full max-w-[794px]">
         <div className="space-x-4 flex items-center">
           <Link href={`/invoices/${invoice.id}`} className="px-4 py-2 text-slate-600 bg-white border border-slate-300 rounded hover:bg-slate-50 transition-colors">
             &larr; Faturaya Dön
@@ -98,16 +100,16 @@ export default function PackingListClient({
         </div>
       </div>
 
-      <div className="bg-white shadow-2xl print:shadow-none flex justify-center py-6 print:py-0 w-[1002px]">
+      <div className="bg-white shadow-2xl print:shadow-none flex justify-center py-6 print:py-0 w-[794px]">
         {/* Changed grid-cols from 401_401_200 to 400_400_198 to fix right-side border overflow when container box is 1002 with border-box */}
-        <div className="w-[1002px] shrink-0 bg-white text-black font-['Arial',_'Helvetica',_sans-serif] text-[12px] leading-tight border-2 border-black relative box-border">
+        <div className="w-[794px] shrink-0 bg-white text-black font-['Arial',_'Helvetica',_sans-serif] text-[11px] leading-tight border-2 border-black relative box-border">
           
         {/* ROW 1 */}
-        <div className="grid grid-cols-[400px_400px_198px] border-b-2 border-black">
+        <div className="grid grid-cols-[318px_318px_158px] border-b-2 border-black">
           {/* 1. SELLER TITLE */}
           <div className="border-r-2 border-black p-2 flex flex-col h-[135px]">
-             <div className="font-bold underline uppercase mb-0.5 text-[13px]">{t.sellerTitle}</div>
-             <div className="font-bold uppercase text-[12px]">{isEng && seller?.nameEn ? seller?.nameEn : (seller?.name || "-")}</div>
+             <div className="font-bold underline uppercase mb-0.5 text-[12px]">{t.sellerTitle}</div>
+             <div className="font-bold uppercase text-[11px]">{isEng && seller?.nameEn ? seller?.nameEn : (seller?.name || "-")}</div>
              <div className="uppercase whitespace-pre-wrap leading-snug">
                {isEng && seller?.addressEn ? seller?.addressEn : (seller?.address || "-")}
                {(() => {
@@ -154,11 +156,11 @@ export default function PackingListClient({
         </div>
 
         {/* ROW 2 */}
-        <div className="grid grid-cols-[400px_400px_198px] border-b-2 border-black">
+        <div className="grid grid-cols-[318px_318px_158px] border-b-2 border-black">
           {/* 1. CUSTOMER TITLE */}
           <div className="border-r-2 border-black p-2 flex flex-col h-[135px] leading-snug">
-             <div className="font-bold underline uppercase mb-0.5 text-[13px]">{t.buyerTitle}</div>
-             <div className="font-bold uppercase text-[12px]">{isEng && invoice.buyer?.nameEn ? invoice.buyer?.nameEn : (invoice.buyer?.name || "-")}</div>
+             <div className="font-bold underline uppercase mb-0.5 text-[12px]">{t.buyerTitle}</div>
+             <div className="font-bold uppercase text-[11px]">{isEng && invoice.buyer?.nameEn ? invoice.buyer?.nameEn : (invoice.buyer?.name || "-")}</div>
              <div className="uppercase whitespace-pre-wrap">
                {isEng && invoice.buyer?.addressEn ? invoice.buyer?.addressEn : (invoice.buyer?.address || "-")}
                {(() => {
@@ -185,8 +187,8 @@ export default function PackingListClient({
           
           {/* 2. DELIVERY ADDRESS */}
           <div className="border-r-2 border-black p-2 flex flex-col h-[135px] leading-snug">
-              <div className="font-bold underline uppercase mb-0.5 text-[13px]">{t.deliveryTitle}</div>
-              <div className="font-bold uppercase text-[12px]">{firstOrder?.shipTo ? ((isEng && firstOrder.shipTo.nameEn) ? firstOrder.shipTo.nameEn : firstOrder.shipTo.name) : ((isEng && invoice.buyer?.nameEn) ? invoice.buyer?.nameEn : (invoice.buyer?.name || "-"))}</div>
+              <div className="font-bold underline uppercase mb-0.5 text-[12px]">{t.deliveryTitle}</div>
+              <div className="font-bold uppercase text-[11px]">{firstOrder?.shipTo ? ((isEng && firstOrder.shipTo.nameEn) ? firstOrder.shipTo.nameEn : firstOrder.shipTo.name) : ((isEng && invoice.buyer?.nameEn) ? invoice.buyer?.nameEn : (invoice.buyer?.name || "-"))}</div>
               <div className="uppercase whitespace-pre-wrap">
                 {firstOrder?.shipTo ? ((isEng && firstOrder.shipTo.addressEn) ? firstOrder.shipTo.addressEn : firstOrder.shipTo.address) : ((isEng && invoice.buyer?.addressEn) ? invoice.buyer?.addressEn : (invoice.buyer?.address || "-"))}
                 {(() => {
@@ -208,16 +210,16 @@ export default function PackingListClient({
           {/* 3. DOCS INFO */}
           <div className="flex flex-col h-[135px]">
               <div className="h-[45px] border-b border-black flex flex-col justify-center px-4 leading-snug">
-                  <div className="font-bold uppercase text-[13px] mb-0.5">{t.invoiceNo}</div>
-                  <div className="text-[12px]">{invoiceNo}</div>
+                  <div className="font-bold uppercase text-[12px] mb-0.5">{t.invoiceNo}</div>
+                  <div className="text-[11px]">{invoiceNo}</div>
               </div>
               <div className="h-[45px] border-b border-black flex flex-col justify-center px-4 leading-snug">
-                  <div className="font-bold uppercase text-[13px] mb-0.5">{t.invoiceDate}</div>
-                  <div className="text-[12px]">{invoice.invoiceDate ? new Date(invoice.invoiceDate).toLocaleDateString('tr-TR') : "-"}</div>
+                  <div className="font-bold uppercase text-[12px] mb-0.5">{t.invoiceDate}</div>
+                  <div className="text-[11px]">{invoice.invoiceDate ? new Date(invoice.invoiceDate).toLocaleDateString('tr-TR') : "-"}</div>
               </div>
               <div className="h-[45px] flex flex-col justify-center px-4 leading-snug">
-                  <div className="font-bold uppercase text-[13px] mb-0.5">{t.customerPo}</div>
-                  <div className="text-[12px] uppercase">{buyerPoNos || "-"}</div>
+                  <div className="font-bold uppercase text-[12px] mb-0.5">{t.customerPo}</div>
+                  <div className="text-[11px] uppercase">{buyerPoNos || "-"}</div>
               </div>
           </div>
         </div>
@@ -225,15 +227,15 @@ export default function PackingListClient({
         {/* ROLLS TABLE */}
         <table className="w-full text-center border-collapse">
           <thead className="font-bold">
-            <tr className="border-b-2 border-black font-bold uppercase text-[12px] leading-tight">
+            <tr className="border-b-2 border-black font-bold uppercase text-[11px] leading-tight">
               <th className="py-2 px-1 border-r border-black w-12">{t.roll}</th>
               <th className="py-2 px-1 border-r border-black">{t.design}</th>
-              <th className="py-2 px-1 border-r border-black w-32">{t.orderNo}</th>
+              <th className="py-2 px-1 border-r border-black w-24">{t.orderNo}</th>
               <th className="py-2 px-1 border-r border-black w-10">{t.lot}</th>
               <th className="py-2 px-1 border-r border-black w-24">{t.barNo}</th>
-              <th className="py-2 px-1 border-r border-black w-[80px] text-right pr-3">{t.meters}</th>
-              <th className="py-2 px-1 border-r border-black w-[80px] text-right pr-3">{t.netKg}</th>
-              <th className="py-2 px-1 w-[80px] text-right pr-3">{t.grossKg}</th>
+              <th className="py-2 px-1 border-r border-black w-[64px] text-right pr-3">{t.meters}</th>
+              <th className="py-2 px-1 border-r border-black w-[64px] text-right pr-3">{t.netKg}</th>
+              <th className="py-2 px-1 w-[64px] text-right pr-3">{t.grossKg}</th>
             </tr>
           </thead>
           <tbody className="align-middle">
@@ -308,29 +310,29 @@ export default function PackingListClient({
                   );
                 })()}
               </td>
-              <td colSpan={2} className="border-r border-black p-1.5 text-left uppercase pl-3 bg-white text-[12px]">{t.totalMeters}</td>
-              <td className="p-1.5 text-right pr-2 font-normal bg-white text-[12px]">
+              <td colSpan={2} className="border-r border-black p-1.5 text-left uppercase pl-3 bg-white text-[11px]">{t.totalMeters}</td>
+              <td className="p-1.5 text-right pr-2 font-normal bg-white text-[11px]">
                 {rolls.reduce((s: any, r: any) => s + (r.quantity || 0), 0).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </td>
             </tr>
             {/* SUMMARY BOX - ROW 2 */}
             <tr className="font-bold border-b border-black">
-              <td colSpan={2} className="border-r border-black p-1.5 text-left uppercase pl-3 bg-white text-[12px]">{t.totalNetKg}</td>
-              <td className="p-1.5 text-right pr-2 font-normal bg-white text-[12px]">
+              <td colSpan={2} className="border-r border-black p-1.5 text-left uppercase pl-3 bg-white text-[11px]">{t.totalNetKg}</td>
+              <td className="p-1.5 text-right pr-2 font-normal bg-white text-[11px]">
                 {rolls.reduce((s: any, r: any) => s + (r.netKg || 0), 0).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </td>
             </tr>
             {/* SUMMARY BOX - ROW 3 */}
             <tr className="font-bold border-b border-black">
-              <td colSpan={2} className="border-r border-black p-1.5 text-left uppercase pl-3 bg-white text-[12px]">{t.totalGrossKg}</td>
-              <td className="p-1.5 text-right pr-2 font-normal bg-white text-[12px]">
+              <td colSpan={2} className="border-r border-black p-1.5 text-left uppercase pl-3 bg-white text-[11px]">{t.totalGrossKg}</td>
+              <td className="p-1.5 text-right pr-2 font-normal bg-white text-[11px]">
                 {rolls.reduce((s: any, r: any) => s + (r.grossKg || 0), 0).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </td>
             </tr>
             {/* SUMMARY BOX - ROW 4 (missing border-b previously, now fixed) */}
             <tr className="font-bold border-b-2 border-black">
-              <td colSpan={2} className="border-r border-black p-1.5 text-left uppercase pl-3 bg-white text-[12px]">{t.totalRolls}</td>
-              <td className="p-1.5 text-right pr-2 font-normal bg-white text-[12px]">
+              <td colSpan={2} className="border-r border-black p-1.5 text-left uppercase pl-3 bg-white text-[11px]">{t.totalRolls}</td>
+              <td className="p-1.5 text-right pr-2 font-normal bg-white text-[11px]">
                 {invoice.packingList?.totalRolls || rolls.length}
               </td>
             </tr>
@@ -343,3 +345,4 @@ export default function PackingListClient({
     </div>
   );
 }
+

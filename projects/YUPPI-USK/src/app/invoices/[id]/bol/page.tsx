@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import BolClient from "@/components/orders/BolClient";
+import BolClientPortrait from "@/components/orders/BolClientPortrait";
 
 export default async function BoLPrintPage({ params }: { params: Promise<{ id: string }> }) {
   const invoiceId = parseInt((await params).id, 10);
@@ -53,7 +53,7 @@ export default async function BoLPrintPage({ params }: { params: Promise<{ id: s
   const sackCount = invoice.sackCount || "-";
 
   return (
-    <BolClient
+    <BolClientPortrait
       invoice={invoice}
       firstOrder={firstOrder}
       seller={seller}

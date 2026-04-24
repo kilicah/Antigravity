@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import CommercialInvoiceDocument from "@/components/orders/CommercialInvoiceDocument";
+import CommercialInvoicePortrait from "@/components/orders/CommercialInvoicePortrait";
 import PackingListManager from "../components/PackingListManager";
 
 export default async function SelectedInvoicePage({
@@ -127,7 +127,10 @@ export default async function SelectedInvoicePage({
       <PackingListManager invoiceId={id} />
 
       <div className="bg-white shadow-2xl print:shadow-none flex justify-center pb-12 print:pb-0">
-         <CommercialInvoiceDocument order={hybridOrderData as any} bankInfo={bankInfo}  />
+        <CommercialInvoicePortrait 
+          order={hybridOrderData as any} 
+          bankInfo={bankInfo} 
+        />
       </div>
 
     </div>

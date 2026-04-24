@@ -222,6 +222,8 @@ model OrderItem {
 
   // Post-Production fields
   pl         Boolean @default(false)
+  plFileUrl  String?
+  plFileName String?
   fabricType String?
   apQuantity Float?
 
