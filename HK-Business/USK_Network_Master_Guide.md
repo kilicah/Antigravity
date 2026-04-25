@@ -58,8 +58,16 @@ Eğer `HK-Business` veya `USK2024-11` bilgisayarlarındaki **Antigravity Ajanlar
 <context_for_other_agents>
 ### SYSTEM CONTEXT FOR ANTIGRAVITY AGENTS
 You are operating within a distributed infrastructure connected entirely via **Tailscale**.
-- **Current Device Context:** You are running on either `USK2024-11` (Server, 192.168.13.x/14.x) or `HK-Business` (Daily Work & NAS 192.168.12.252).
-- **The Bridge:** A remote machine named `USK2024-12` connects to your machine. It relies on a mobile Hotspot (iPhone) which requires strict IPv4 DNS constraints.
+
+**Tanımlamalar (Network Topology):**
+* Bu bilgisayar USK2024-12 işyerindeki 2 bilgisayarıma ulaşmak için kullandığım Bilgisayardır.
+* USK2024-11 Server ve Geliştirme olarak kullandığım W11 Pro Bilgisayardır ve sadece uzak erişimi vardır. Local 192.168.13.1 ve 192.168.14.1 blok erşimine sahiptir.
+* HK-Business Günlük kullanım olarak kullandığım W11 Pro Bilgisayardır. Local 192.168.12.1 blok erşimine sahiptir. 192.168.12.252 Nas Sunucu erişimi vardır.
+* HK iPhone kullandığım telefon iPhone 17e modelidir.
+* HK Pad kullandığım tablet Mi Pad Pro 7 modelidir.
+* Tüm alt yapıda birbirini bağlamak için Tailscale kullanılmaktadır.
+
+**Kritik Kurallar:**
 - **Rule 1:** NEVER disable or modify Tailscale Subnet routes or MagicDNS (`100.100.100.100`). The user relies heavily on local IP (`192.168.x.x`) file sharing and RDP.
 - **Rule 2:** If you experience connection drops between machines, verify that Tailscale Interface Metric is set to `100` and IPv6 is DISABLED on the main physical adapters providing internet to the machines.
 - **Rule 3:** DO NOT attempt to run network adapter modification commands (`Disable-NetAdapterBinding`, `Set-NetIPInterface`) automatically in the background using `run_command` and `Start-Process powershell -Verb RunAs`. Windows Security policies or Defender will silently block background agent UAC executions. Instead, generate the exact PowerShell snippet and instruct the USER to manually open an elevated PowerShell prompt and execute it.
