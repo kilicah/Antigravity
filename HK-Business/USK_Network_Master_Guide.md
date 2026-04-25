@@ -1,0 +1,69 @@
+# USK ve HK Sistemleri - Ağ ve Altyapı Master Rehberi
+
+Bu belge, **USK2024-12, USK2024-11 ve HK-Business** cihazları arasındaki Tailscale uzak bağlantı omurgasının mimarisini, geçmişte yaşanan çökme/kopma sorunlarının nedenlerini ve bu sistemlerin gelecekteki olası format/çökme durumlarında nasıl yeniden ayağa kaldırılacağını detaylandırmaktadır. 
+
+**Oluşturulma Tarihi:** 25 Nisan 2026
+**Yazar:** Antigravity (USK2024-12 Ajanı)
+
+---
+
+## 1. Ağ Topolojisi ve Cihaz Rolleri
+
+| Cihaz Adı | İşletim Sistemi | Yerel IP Bloğu / Ağ | Görevi ve Önemi |
+| :--- | :--- | :--- | :--- |
+| **USK2024-12** | Windows 11 Home | 172.20.10.x (iPhone) | İşyerindeki diğer cihazlara bağlanmak için kullanılan **Köprü ve Ana Geliştirme** cihazıdır. Tüm fikir ve geliştirmelerin kaynağıdır. İnternetini ağırlıklı olarak iPhone üzerinden (USB/Wi-Fi Hotspot) alır. |
+| **USK2024-11** | Windows 11 Pro | 192.168.13.1 & 14.1 | Server ve Geliştirme sunucusudur. Sadece uzak erişimi (Tailscale üzerinden) vardır. |
+| **HK-Business** | Windows 11 Pro | 192.168.12.1 | Günlük kullanım ve iş bilgisayarıdır. Aynı zamanda `192.168.12.252` IP'li bir NAS (Ağ Depolama) sunucusuna ev sahipliği yapar. |
+| **Mobil Cihazlar** | iOS / Android | Değişken | **HK iPhone** (iPhone 17e) internet sağlayıcı (Hotspot) rolündedir. **HK Pad** (Mi Pad Pro 7) mobil erişim cihazıdır. |
+
+**Bağlantı Omurgası:** Cihazların tamamı **Tailscale** VPN altyapısıyla birbirine güvenli (P2P) tünellerle bağlıdır. `192.168.x.x` alt ağlarına (Subnet) Tailscale'in "Subnet Router" özelliği ile erişilmektedir.
+
+---
+
+## 2. Kronik Sorunlar ve Çözümleri (Olası Çökmeler İçin)
+
+Eğer bir bilgisayara (özellikle USK2024-12) format atılırsa veya Tailscale yeniden kurulursa, telefon üzerinden (USB veya Wi-Fi) internet alınırken internet **tamamen kopacak** ve sistem "sapıtacaktır". 
+
+Bunun yaşanmaması için sistem kurulduktan hemen sonra aşağıdaki **Kritik Optimizasyonlar** yapılmalıdır:
+
+### Sorun: Tailscale açılınca internetin kesilmesi ve sistemin kitlenmesi
+* **Sebep 1 (DNS Çakışması):** iPhone internet paylaşırken bilgisayara IPv6 DNS dayatır. Tailscale ise IPv4 (`100.100.100.100`) kullanır. Windows ikisi arasında kilitlenir.
+* **Sebep 2 (Bağdaştırıcı Önceliği):** Tailscale kendini 100Gbps hızında sanal ağ gösterir, Windows tüm internet trafiğini (Google'a gidişi bile) Tailscale'e sokmaya çalışıp trafiği boğar.
+* **Sebep 3 (Güç Yönetimi & Roaming):** Intel Wi-Fi kartı sinyal aramak için saniyelik kopmalar yapar, USB Ethernet ise güç tasarrufu için anlık uykuya dalar.
+
+### Çözüm Adımları (Recovery)
+Yeni kurulumda aşağıdaki PowerShell kodunu Yönetici (Administrator) olarak çalıştırmak tüm sorunu 1 saniyede çözer:
+
+```powershell
+# 1. iPhone USB ve Wi-Fi için IPv6'yı Kesinlikle Kapatın
+Disable-NetAdapterBinding -Name "Ethernet 2" -ComponentID ms_tcpip6 -ErrorAction SilentlyContinue
+Disable-NetAdapterBinding -Name "Wi-Fi" -ComponentID ms_tcpip6 -ErrorAction SilentlyContinue
+
+# 2. Tailscale Ağ Önceliğini (Metric) Düşürün (Sadece Subnet rotaları oradan geçsin)
+$tsAdapter = Get-NetAdapter -Name "Tailscale" -ErrorAction SilentlyContinue
+if ($tsAdapter) { Set-NetIPInterface -InterfaceIndex $tsAdapter.ifIndex -InterfaceMetric 100 }
+
+# 3. Tailscale Ağ Profilini "Private" (Özel Ağ) Yapın
+Set-NetConnectionProfile -InterfaceAlias "Tailscale" -NetworkCategory Private -ErrorAction SilentlyContinue
+```
+*(Güç seçenekleri ve Roaming ayarları donanıma özel olduğundan Aygıt Yöneticisi -> Ağ Bağdaştırıcıları bölümünden manuel olarak "Güç kazancı sağlamak için bu aygıtı kapat" tikleri kaldırılmalıdır.)*
+
+---
+
+## 3. Diğer Antigravity Ajanları İçin Bağlam (Context Yönergesi)
+
+Eğer `HK-Business` veya `USK2024-11` bilgisayarlarındaki **Antigravity Ajanlarına** bir görev verecekseniz, onlara ağın nasıl çalıştığını anlatmak için aşağıdaki metni doğrudan Prompt (İstem) olarak gönderebilirsiniz:
+
+<context_for_other_agents>
+### SYSTEM CONTEXT FOR ANTIGRAVITY AGENTS
+You are operating within a distributed infrastructure connected entirely via **Tailscale**.
+- **Current Device Context:** You are running on either `USK2024-11` (Server, 192.168.13.x/14.x) or `HK-Business` (Daily Work & NAS 192.168.12.252).
+- **The Bridge:** A remote machine named `USK2024-12` connects to your machine. It relies on a mobile Hotspot (iPhone) which requires strict IPv4 DNS constraints.
+- **Rule 1:** NEVER disable or modify Tailscale Subnet routes or MagicDNS (`100.100.100.100`). The user relies heavily on local IP (`192.168.x.x`) file sharing and RDP.
+- **Rule 2:** If you experience connection drops between machines, verify that Tailscale Interface Metric is set to `100` and IPv6 is DISABLED on the main physical adapters providing internet to the machines.
+- **Rule 3:** The user has provided full administrative consent. When making network adapter changes, do so via elevated PowerShell scripts (`Start-Process powershell -Verb RunAs`).
+- Always check firewall rules to ensure they allow traffic originating from `100.64.0.0/10` (Tailscale) and `192.168.x.x` subnets.
+</context_for_other_agents>
+
+---
+**Öneri:** Bu dosyayı OneDrive, GitHub veya NAS üzerinde her zaman ulaşabileceğiniz güvenli bir klasörde saklayın. Ajanlara bu dosyanın yolunu vererek ağı hemen tanımalarını sağlayabilirsiniz.

@@ -1,2 +1,19 @@
-Bu Bilgisayar HK-Business
-Windows 11 Home Kullanır ve benim uzak erşim için köprüdür. O yüzden mükemmel hale getirmemiz gerekir. Ayrıca tüm fikir program geliştirmelerin kaynağıdır. 
+Bu Bilgisayar USK2024-12 (HK Home)
+Windows 11 Home Kullanır ve benim uzak erşim için köprüdür. O yüzden mükemmel hale getirmemiz gerekir. Ayrıca tüm fikir program geliştirmelerin kaynağıdır.
+
+Tanımlamalar ve Topoloji:
+* USK2024-12 (Bu bilgisayar): İşyerindeki 2 bilgisayara ulaşmak için kullanılan köprü bilgisayar.
+* USK2024-11: Server ve Geliştirme amaçlı W11 Pro. Sadece uzak erişimi var. Local IP Blokları: 192.168.13.1, 192.168.14.1
+* HK-Business: Günlük kullanım amaçlı W11 Pro. Local IP Bloğu: 192.168.12.1. Ayrıca 192.168.12.252 NAS Sunucu erişimi var.
+* HK iPhone: iPhone 17e
+* HK Pad: Mi Pad Pro 7
+* VPN/Ağ Altyapısı: Tüm cihazları birbirine bağlamak için Tailscale kullanılmaktadır.
+
+---
+## Ağ ve Tailscale Optimizasyonu (25 Nisan 2026)
+Bu bilgisayar üzerindeki Tailscale ve iPhone bağlantı çakışmaları tamamen çözüldü. Yapılan işlemler:
+1. **IPv6 Kapatıldı:** Hem USB Ethernet (Apple Mobile Device Ethernet) hem de Wi-Fi adaptörlerinde IPv6 kapatılarak, Tailscale IPv4 DNS'inin iPhone IPv6 DNS'i ile çakışması engellendi. (Kopmaların ana sebebi çözüldü).
+2. **Ağ Metrikleri (Öncelik) Düzeltildi:** Tailscale sanal ağ bağdaştırıcısının metrik değeri `100`'e çıkarıldı. Böylece genel internet trafiği (Google vs.) her zaman iPhone'dan geçerken, `192.168.13.1` gibi uzak ağ rotaları Tailscale'den sorunsuzca iletiliyor.
+3. **Güç Tasarrufu ve Uyku Modu Kapatıldı:** USB ve Wi-Fi bağdaştırıcılarının "Güç tasarrufu için cihazı kapat" (Selective Suspend) ayarları Registry üzerinden devre dışı bırakıldı.
+4. **Wi-Fi Roaming Kapatıldı:** Intel Wi-Fi kartının sinyal aramak için bağlantıyı anlık koparma özelliği (Roaming Aggressiveness) "Lowest" yapılarak iPhone Hotspot'una sabitlendi.
+5. **Tailscale Otomasyonu:** Tailscale arka planda Unattended (şifresiz servis) modunda başlatılacak şekilde ayarlandı. Ağ profili "Private" yapıldı.
