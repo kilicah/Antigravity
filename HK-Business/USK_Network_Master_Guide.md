@@ -32,19 +32,20 @@ Bunun yaşanmaması için sistem kurulduktan hemen sonra aşağıdaki **Kritik O
 * **Sebep 3 (Güç Yönetimi & Roaming):** Intel Wi-Fi kartı sinyal aramak için saniyelik kopmalar yapar, USB Ethernet ise güç tasarrufu için anlık uykuya dalar.
 
 ### Çözüm Adımları (Recovery)
-Yeni kurulumda aşağıdaki PowerShell kodunu Yönetici (Administrator) olarak çalıştırmak tüm sorunu 1 saniyede çözer:
+
+> [!WARNING]
+> **Windows Güvenlik & UAC Uyarısı:** Aşağıdaki komutların *Antigravity Ajanları tarafından* (`Start-Process powershell -Verb RunAs` vb. kullanılarak) arka planda otomatik çalıştırılmaya çalışılması, UAC onaylansa dahi Windows Güvenlik Politikaları (veya Defender) tarafından sessizce engellenebilir (Hata vermeden işlem boşa düşer). 
+> **Kesin Çözüm:** Bu yüzden ajan üzerinden otomatize etmeye çalışmak vakit kaybıdır. Kullanıcı olarak Başlat menüsünden **PowerShell'i Yönetici Olarak Çalıştırıp** aşağıdaki kod bloğunu bizzat konsola yapıştırın. Saniyeler içinde tüm optimizasyon başarıyla işlenecektir.
 
 ```powershell
-# 1. iPhone USB ve Wi-Fi için IPv6'yı Kesinlikle Kapatın
-Disable-NetAdapterBinding -Name "Ethernet 2" -ComponentID ms_tcpip6 -ErrorAction SilentlyContinue
-Disable-NetAdapterBinding -Name "Wi-Fi" -ComponentID ms_tcpip6 -ErrorAction SilentlyContinue
+# 1. iPhone USB ve Wi-Fi için IPv6'yı Kesinlikle Kapatın (İsimler her bilgisayarda farklı olabileceği için dinamik tarama yapılır)
+Get-NetAdapter | Where-Object { $_.Name -match "Ethernet|Wi-Fi" } | Disable-NetAdapterBinding -ComponentID ms_tcpip6
 
 # 2. Tailscale Ağ Önceliğini (Metric) Düşürün (Sadece Subnet rotaları oradan geçsin)
-$tsAdapter = Get-NetAdapter -Name "Tailscale" -ErrorAction SilentlyContinue
-if ($tsAdapter) { Set-NetIPInterface -InterfaceIndex $tsAdapter.ifIndex -InterfaceMetric 100 }
+Set-NetIPInterface -InterfaceAlias "Tailscale" -InterfaceMetric 100
 
 # 3. Tailscale Ağ Profilini "Private" (Özel Ağ) Yapın
-Set-NetConnectionProfile -InterfaceAlias "Tailscale" -NetworkCategory Private -ErrorAction SilentlyContinue
+Set-NetConnectionProfile -InterfaceAlias "Tailscale" -NetworkCategory Private
 ```
 *(Güç seçenekleri ve Roaming ayarları donanıma özel olduğundan Aygıt Yöneticisi -> Ağ Bağdaştırıcıları bölümünden manuel olarak "Güç kazancı sağlamak için bu aygıtı kapat" tikleri kaldırılmalıdır.)*
 
@@ -61,7 +62,7 @@ You are operating within a distributed infrastructure connected entirely via **T
 - **The Bridge:** A remote machine named `USK2024-12` connects to your machine. It relies on a mobile Hotspot (iPhone) which requires strict IPv4 DNS constraints.
 - **Rule 1:** NEVER disable or modify Tailscale Subnet routes or MagicDNS (`100.100.100.100`). The user relies heavily on local IP (`192.168.x.x`) file sharing and RDP.
 - **Rule 2:** If you experience connection drops between machines, verify that Tailscale Interface Metric is set to `100` and IPv6 is DISABLED on the main physical adapters providing internet to the machines.
-- **Rule 3:** The user has provided full administrative consent. When making network adapter changes, do so via elevated PowerShell scripts (`Start-Process powershell -Verb RunAs`).
+- **Rule 3:** DO NOT attempt to run network adapter modification commands (`Disable-NetAdapterBinding`, `Set-NetIPInterface`) automatically in the background using `run_command` and `Start-Process powershell -Verb RunAs`. Windows Security policies or Defender will silently block background agent UAC executions. Instead, generate the exact PowerShell snippet and instruct the USER to manually open an elevated PowerShell prompt and execute it.
 - Always check firewall rules to ensure they allow traffic originating from `100.64.0.0/10` (Tailscale) and `192.168.x.x` subnets.
 </context_for_other_agents>
 
