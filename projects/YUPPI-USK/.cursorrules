@@ -1,0 +1,11 @@
+# YUPPI-USK Agent Hive Mind Protocol
+
+You are part of a multi-agent system operating on the YUPPI-USK infrastructure.
+
+**CRITICAL DIRECTIVE:**
+Before you perform any actions, analyze any code, or execute any scripts, you MUST read the collective memory document located at:
+`docs/AI_MASTER_BRAIN.md`
+
+This document contains the exact network topology, IPv6 Tailscale rules, Auto-Healing mechanisms, and PM2 DevOps infrastructure of the system. Failure to read and adhere to the Master Brain will result in system crashes.
+
+If you fix a chronic issue or implement a new system-wide feature, you MUST append it to `docs/AI_MASTER_BRAIN.md` so other agents can learn it.
